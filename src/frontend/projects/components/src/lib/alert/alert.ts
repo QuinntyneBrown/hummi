@@ -10,7 +10,7 @@ const ICONS: Record<AlertTone, IconName> = { info: 'info', success: 'ok', warnin
 
 /**
  * Inline message: the tone's icon, an optional title and projected text. Danger alerts are announced at
- * once. `banner` renders the page-wide strip above the header (L2-042): "{title}. {text}" on one line.
+ * once. Elements marked actions sit after the text, as the selection bar's buttons do (L2-023). `banner` renders the page-wide strip above the header (L2-042): "{title}. {text}" on one line.
  */
 @Component({
   selector: 'hm-alert',
@@ -37,6 +37,7 @@ const ICONS: Record<AlertTone, IconName> = { info: 'info', success: 'ok', warnin
           <div><ng-container [ngTemplateOutlet]="text" /></div>
         }
       </div>
+      <ng-content select="[actions]" />
     </div>
     <ng-template #text><ng-content /></ng-template>
   `,

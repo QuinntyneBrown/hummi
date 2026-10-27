@@ -41,7 +41,7 @@ class CreatePlaylistCommand {
   +string Name
   +bool IsPublic
 }
-class RenamePlaylistCommand {
+class UpdatePlaylistCommand {
   +Guid PlaylistId
   +string Name
 }
@@ -50,5 +50,5 @@ class CreatePlaylistCommandHandler {
 }
 CreatePlaylistCommandHandler ..> CreatePlaylistCommand : handles
 CreatePlaylistCommandHandler ..> Playlist : creates
-RenamePlaylistCommand ..> PlaylistName
+UpdatePlaylistCommand ..> PlaylistName
 @enduml

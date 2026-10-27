@@ -13,8 +13,17 @@ export interface Toast {
   /** True for the cover of a track without artwork; false shows the dot. */
   cover: boolean;
   undo?: () => void;
-  /** A danger toast (L2-018 AC4): title, text and an optional action; it stays until dismissed. */
-  danger?: { title: string; text: string; action?: { label: string; run: () => void } };
+  /** A toned card (L2-018 AC4, L2-020): title, text and an optional action. Danger stays until dismissed. */
+  card?: ToastCard;
+}
+
+export type ToastTone = 'success' | 'warning' | 'danger';
+
+export interface ToastCard {
+  tone: ToastTone;
+  title: string;
+  text: string;
+  action?: { label: string; run: () => void };
 }
 
 /** Queues toasts for hm-toast-region; pills dismiss themselves after TOAST_MS, danger toasts stay. */
@@ -39,14 +48,14 @@ export class ToastService {
 
   /** Shows a danger toast that stays until the listener dismisses it or runs its action. */
   showDanger(title: string, text: string, action?: { label: string; run: () => void }): void {
-    const toast: Toast = {
-      id: this.nextId++,
-      message: title,
-      coverUrl: null,
-      cover: false,
-      danger: { title, text, action },
-    };
+    this.showCard({ tone: 'danger', title, text, action });
+  }
+
+  /** Shows a toned card; success and warning dismiss themselves after TOAST_MS, danger stays. */
+  showCard(card: ToastCard): void {
+    const toast: Toast = { id: this.nextId++, message: card.title, coverUrl: null, cover: false, card };
     this.items.update((list) => [...list, toast]);
+    if (card.tone !== 'danger') setTimeout(() => this.dismiss(toast.id), TOAST_MS);
   }
 
   dismiss(id: number): void {
@@ -64,9 +73,9 @@ export class ToastService {
   template: `
     <div class="toast-region" [class.toast-region--noplayer]="noPlayer()" role="status" aria-live="polite">
       @for (toast of service.toasts(); track toast.id) {
-        @if (toast.danger; as d) {
-          <div class="toast toast--danger" role="alert">
-            <hm-icon name="alert" />
+        @if (toast.card; as d) {
+          <div [class]="'toast toast--' + d.tone" [attr.role]="d.tone === 'danger' ? 'alert' : 'status'">
+            <hm-icon [name]="d.tone === 'success' ? 'ok' : 'alert'" />
             <div class="toast__body">
               <div class="toast__title">{{ d.title }}</div>
               <div class="toast__text">{{ d.text }}</div>

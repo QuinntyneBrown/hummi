@@ -49,7 +49,9 @@
               >
                 <hm-icon name="heart" [fill]="library.isLiked(t.id)" />
               </button>
-              <button hmButton type="button" (click)="gate.allow()"><hm-icon name="plus" />Add to playlist</button>
+              <button hmButton type="button" (click)="dialogs.addToPlaylist([t])">
+                <hm-icon name="plus" />Add to playlist
+              </button>
               <button hmButton type="button"><hm-icon name="share" />Share</button>
               <button hmButton="ghost" class="btn--icon" type="button" aria-label="Report this track">
                 <hm-icon name="flag" />

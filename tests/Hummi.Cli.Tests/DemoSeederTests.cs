@@ -97,6 +97,9 @@ public sealed class DemoSeederTests : IDisposable
         Assert.True(new Hummi.Infrastructure.Accounts.IdentityPasswordHasher().Verify(listener.PasswordHash, DemoSeeder.DemoPassword));
         Assert.Equal(DemoSeeder.DemoLikes.Count, await db.TrackLikes.CountAsync(l => l.ListenerId == listener.Id));
         Assert.Equal(DemoSeeder.DemoFollows.Count, await db.ArtistFollows.CountAsync(f => f.ListenerId == listener.Id));
+        var playlist = await db.Playlists.Include(p => p.Entries).SingleAsync();
+        Assert.Equal(DemoSeeder.DemoPlaylist, playlist.Name);
+        Assert.Equal(DemoSeeder.DemoLikes.Count, playlist.Entries.Count);
     }
 
     [Fact]

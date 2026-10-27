@@ -133,6 +133,15 @@ def region(*toasts, top=False):
     return f'<div class="{cls}" role="status" aria-live="polite">{"".join(toasts)}</div>'
 
 
+def card_toast(tone, title, text, action):
+    """A toned toast card: icon, title, text, one action and Dismiss (L2-018 AC4, L2-020)."""
+    role = "alert" if tone == "danger" else "status"
+    ic = {"danger": "alert", "warning": "alert", "success": "check"}[tone]
+    return (f'<div class="toast toast--{tone}" role="{role}">{icon(ic)}<div class="toast__body"><div class="toast__title">{title}</div>'
+            f'<div class="toast__text">{text}</div><button class="toast__action" type="button">{action}</button></div>'
+            f'<button class="close" type="button" aria-label="Dismiss">{icon("close", "icon--sm")}</button></div>')
+
+
 def toast(state, under):
     t = {
         "play-next": toast_pill("“Road March Riddim” will play next", "road-march-riddim"),
@@ -141,9 +150,10 @@ def toast(state, under):
         "removed": toast_pill("Removed “Road March Riddim” from your library", "road-march-riddim", undo=True),
         "album-added": toast_pill("Added Mas on the Avenue to your library", "feathers-up"),
         "downloads": toast_pill("Downloads are saved for offline listening on this device"),
-        "danger": ('<div class="toast toast--danger" role="alert">' + icon("alert") + '<div class="toast__body"><div class="toast__title">Couldn’t like the track</div>'
-                   '<div class="toast__text">Check your connection and try again.</div><button class="toast__action" type="button">Retry</button></div>'
-                   '<button class="close" type="button" aria-label="Dismiss">' + icon("close", "icon--sm") + "</button></div>"),
+        "danger": card_toast("danger", "Couldn’t like the track", "Check your connection and try again.", "Retry"),
+        "added": card_toast("success", "Added to Road trip to the north coast", "“Feathers Up” is now track 25.", "Undo"),
+        "duplicate": card_toast("warning", "Already in this playlist", "“Feathers Up” is in Road trip to the north coast. Add it again?", "Add again"),
+        "add-failed": card_toast("danger", "Couldn’t add the track", "The connection dropped before we could save. Nothing was added.", "Retry"),
     }
     n = "Auto-dismisses after 4 s. Sits above the player bar; 24px from the bottom when no player is shown."
     return under + region(t[state]) + note(n, "bottom: 12rem; right: 1rem;")
@@ -165,6 +175,6 @@ def banner(state, under):
 
 
 NOTIFS = [
-    dict(id="toast", title="Toast", opens_from="playlist", states=["info", "success", "play-next", "removed", "album-added", "downloads", "danger"], na={"warning": "Problems are shown as banners (L2-042), inline error blocks or the danger toast."}, render=toast, desc="Transient pill confirming an action"),
+    dict(id="toast", title="Toast", opens_from="playlist", states=["info", "success", "play-next", "removed", "album-added", "downloads", "danger", "added", "duplicate", "add-failed"], na={"warning": "Problems are shown as banners (L2-042), inline error blocks or the danger toast."}, render=toast, desc="Transient pill confirming an action"),
     dict(id="banner", title="Banner", opens_from="home", states=["info", "success", "warning", "danger", "persistent"], render=banner, desc="Page-wide message above the top bar"),
 ]

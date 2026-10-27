@@ -140,6 +140,46 @@ Mock: the layer over Home in every state. Rendered by the shell from `@hummi/sea
 | Error | `hm-error-block` ("Your library didn’t load", Try again) | None |
 | Signed out | `hm-empty-state` (lock, "Sign in to see your library"), `hmButton` links "Sign in" and "Create account" | None |
 
+## Playlist (`pages/playlist`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Header | `hm-page-header` (name, "{n} tracks · {length} · {private|public}"), `hmButton="primary"` Play, `hmButton` Share, Rename, Delete | `PlaylistComponent` in `@hummi/library`; owner actions only when `isOwner` |
+| Selection bar | `hm-alert` (info, "{n} tracks selected") with `actions`: `hmButton` "Remove from playlist", "Add to another playlist" | Selected row indexes signal |
+| Tracks | `hm-track-list` with `selectable` (row checkbox "Select {title}") through `LibraryStore.withLikes` | None |
+| Loading | `hm-skeleton` rows in `.track-list` | None |
+| Empty | `hm-empty-state` ("Nothing here yet"), `hmButton="primary"` link "Browse genres"; only Share in the header | None |
+| Error | `hm-error-block` ("This playlist didn’t load") | None |
+
+## Add to playlist (`dialogs/add-to-playlist`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Dialog | `hm-dialog` ("Add “{title}” to a playlist", "Pick one or more. You can change this later.") | `AddToPlaylistDialogComponent` in `@hummi/library`, rendered by the shell's `hm-playlist-dialog-host` |
+| Choices | `fieldset` of `hm-checkbox` per playlist (hint "{n} tracks"), ghost `hmButton` "New playlist" | Membership or append mode (ADR 0013) |
+| Footer | `hmButton` Cancel, `hmButton="primary"` Save; busy "Saving…" with `.spinner` | None |
+| Failed | `hm-alert` (danger, "That didn’t work") | None |
+| Empty | `hm-empty-state` ("No playlists"), `hmButton="primary"` "Create playlist" | None |
+| Toasts | `ToastService.showCard` success "Added to {playlist}" with Undo, warning "Already in this playlist" with Add again, danger "Couldn’t add the track" with Retry | None |
+
+## New playlist and Rename (`dialogs/create-playlist`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Dialog | `hm-dialog` ("New playlist" or "Rename playlist") | `PlaylistFormDialogComponent` in `@hummi/library` |
+| Fields | `hm-text-field` "Playlist name" (required, help "Up to 60 characters"), `hm-checkbox` "Make it public" | Name check mirrored from `PlaylistName` |
+| Footer | `hmButton` Cancel, `hmButton="primary"` "Create playlist" or "Save name"; busy "Saving…" | None |
+| Failed | `hm-alert` (danger, "That didn’t work") | None |
+
+## Delete playlist (`dialogs/delete-playlist`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Dialog | `hm-dialog` (danger, "Delete “{name}”?") | `DeletePlaylistDialogComponent` in `@hummi/library` |
+| Field | `hm-text-field` "Type the playlist name to confirm" (help "This deletes {n} tracks from the playlist, not from Hummi.") | Exact-match check |
+| Footer | `hmButton` Cancel, `hmButton="danger"` "Delete playlist" (disabled until it matches); busy "Deleting…" | None |
+| Failed | `hm-alert` (danger, "That didn’t work") | None |
+
 ## Now playing (`pages/now-playing`)
 
 Mock: the layer over Home. Routed at `/now-playing` in `@hummi/player`; the player bar is hidden there (ADR 0009).
@@ -193,6 +233,7 @@ Rendered by the shell from `@hummi/player` (`hm-track-menu-host`) for `PlayerOve
 | Region | `hm-toast-region` (polite live region, `toast-region--noplayer` without the player bar) | Rendered once by the shell |
 | Pill | `hm-toast-region` pill: track cover or coral dot, message, optional Undo; dismissed after 4 seconds | None |
 | Danger | `hm-toast-region` danger toast (`ToastService.showDanger`): alert icon, title, text, optional action (Retry), Dismiss; stays until dismissed (ADR 0012) | Shell turns `LibraryStore.problem` into it |
+| Success, warning | `hm-toast-region` cards (`ToastService.showCard`): icon, title, text, optional action (Undo, Add again), Dismiss; dismissed after 4 seconds (ADR 0013) | None |
 
 ## Sign up (`pages/sign-up`)
 

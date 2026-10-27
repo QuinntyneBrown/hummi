@@ -27,3 +27,28 @@ internal sealed class ArtistFollowConfiguration : IEntityTypeConfiguration<Artis
         builder.HasOne<Artist>().WithMany().HasForeignKey(f => f.ArtistId).OnDelete(DeleteBehavior.Cascade);
     }
 }
+
+internal sealed class PlaylistConfiguration : IEntityTypeConfiguration<Playlist>
+{
+    public void Configure(EntityTypeBuilder<Playlist> builder)
+    {
+        builder.ToTable("Playlists");
+        builder.Property(p => p.Id).ValueGeneratedNever();
+        builder.Property(p => p.Name).HasMaxLength(PlaylistName.MaxLength).IsRequired();
+        builder.HasIndex(p => p.OwnerId);
+        builder.HasOne<Listener>().WithMany().HasForeignKey(p => p.OwnerId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(p => p.Entries).WithOne().HasForeignKey(e => e.PlaylistId).OnDelete(DeleteBehavior.Cascade);
+        builder.Navigation(p => p.Entries).HasField("entries").UsePropertyAccessMode(PropertyAccessMode.Field);
+    }
+}
+
+internal sealed class PlaylistEntryConfiguration : IEntityTypeConfiguration<PlaylistEntry>
+{
+    public void Configure(EntityTypeBuilder<PlaylistEntry> builder)
+    {
+        builder.ToTable("PlaylistEntries");
+        builder.Property(e => e.Id).ValueGeneratedNever();
+        builder.HasIndex(e => new { e.PlaylistId, e.Position });
+        builder.HasOne<Track>().WithMany().HasForeignKey(e => e.TrackId).OnDelete(DeleteBehavior.Cascade);
+    }
+}

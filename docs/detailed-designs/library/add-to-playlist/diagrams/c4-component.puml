@@ -10,7 +10,7 @@ Container_Boundary(spa, "Hummi web application") {
   Component(toast, "ToastService", "Service in @hummi/components", "Queues hm-toast notifications in the toast\nregion (L2-041)")
 }
 Container_Boundary(api, "Hummi.Api") {
-  Component(ctl, "PlaylistsController", "ASP.NET Core controller", "Authorized /api/playlists endpoints; maps\nresults through ProblemDetailsMapper")
+  Component(ctl, "PlaylistsController", "ASP.NET Core controller", "Authorized /api/playlists endpoints; maps\nresults through ToProblem")
   Component(cmd, "SetTrackMembershipCommandHandler", "MediatR command handler", "Loads the listed owned playlists, adds or\nremoves the track on each, and commits once")
   Component(pl, "Playlist", "Domain aggregate", "AddTrack returns the new position; owner\ncheck on every change")
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")

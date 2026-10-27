@@ -18,18 +18,18 @@ The dialog sends one command with the full membership change, applied in one tra
 
 **Frontend — Hummi web application (Angular)**
 
-- **`AddToPlaylistDialog`** — Dialog component in @hummi/library. Renders `hm-dialog` with `hm-checkbox` per playlist, New playlist link, Cancel and Save; busy, error and no-playlists states
+- **`AddToPlaylistDialog`** — Dialog component in @hummi/library, opened through `PlaylistDialogs` and rendered by the shell. Renders `hm-dialog` with `hm-checkbox` per playlist, New playlist, Cancel and Save; busy, error and no-playlists states; membership mode for one track, append mode for a selection or an album (ADR 0013)
 - **`SignInGate`** — Service in @hummi/api. Checks `SessionStore` before a save action and opens the Sign in to save this dialog when signed out (`L2-032`)
 - **`PlaylistsApi`** — Typed HTTP service in @hummi/api. Calls the `/api/playlists` endpoints
-- **`ToastService`** — Service in @hummi/components. Queues `hm-toast` notifications in the toast region (`L2-041`)
+- **`ToastService`** — Service in @hummi/components. `showCard` adds the success (Undo), warning (Add again) and danger (Retry) toasts
 
 **Backend — Hummi.Api application**
 
-- **`PlaylistsController`** — ASP.NET Core controller. Authorized `/api/playlists` endpoints; maps results through `ProblemDetailsMapper`
+- **`PlaylistsController`** — ASP.NET Core controller. `/api/playlists` endpoints, every change for the owner only; maps results to ProblemDetails with `ToProblem`
 
 **Backend — Hummi Application and Domain**
 
-- **`SetTrackMembershipCommandHandler`** — MediatR command handler. Loads the listed owned playlists, adds or removes the track on each, and commits once
+- **`SetTrackMembershipCommandHandler`** — MediatR command handler. Loads the listed owned playlists, adds or removes the track on each, and commits once; `AddTracksToPlaylistCommandHandler` appends and answers 409 for a duplicate unless allowed
 - **`Playlist`** — Domain aggregate. `AddTrack` returns the new position; owner check on every change
 
 **Backend — Hummi Infrastructure**

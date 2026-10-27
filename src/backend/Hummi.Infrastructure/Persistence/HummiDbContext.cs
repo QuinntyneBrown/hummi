@@ -29,6 +29,10 @@ public sealed class HummiDbContext(DbContextOptions<HummiDbContext> options) : D
 
     public DbSet<ArtistFollow> ArtistFollows => Set<ArtistFollow>();
 
+    public DbSet<Playlist> Playlists => Set<Playlist>();
+
+    public DbSet<PlaylistEntry> PlaylistEntries => Set<PlaylistEntry>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HummiDbContext).Assembly);
 }

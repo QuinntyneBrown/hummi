@@ -34,10 +34,17 @@ internal sealed class TestDb : DbContext, IHummiDbContext
 
     public DbSet<ArtistFollow> ArtistFollows => Set<ArtistFollow>();
 
+    public DbSet<Playlist> Playlists => Set<Playlist>();
+
+    public DbSet<PlaylistEntry> PlaylistEntries => Set<PlaylistEntry>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<TrackLike>().HasKey(l => new { l.ListenerId, l.TrackId });
         modelBuilder.Entity<ArtistFollow>().HasKey(f => new { f.ListenerId, f.ArtistId });
+        modelBuilder.Entity<Playlist>().Property(p => p.Id).ValueGeneratedNever();
+        modelBuilder.Entity<Playlist>().HasMany(p => p.Entries).WithOne().HasForeignKey(e => e.PlaylistId);
+        modelBuilder.Entity<PlaylistEntry>().Property(e => e.Id).ValueGeneratedNever();
     }
 
     public static readonly DateTimeOffset Now = new(2026, 10, 27, 9, 0, 0, TimeSpan.Zero);

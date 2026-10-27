@@ -7,4 +7,9 @@ export const routes: Routes = [
     title: 'Library · Hummi',
     loadComponent: () => import('./library/library').then((m) => m.LibraryComponent),
   },
+  {
+    path: 'playlists/:id',
+    title: 'Playlist · Hummi',
+    loadComponent: () => import('./playlist/playlist').then((m) => m.PlaylistComponent),
+  },
 ];

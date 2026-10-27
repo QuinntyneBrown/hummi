@@ -8,7 +8,7 @@ Container_Boundary(spa, "Hummi web application") {
   Component(client, "PlaylistsApi", "Typed HTTP service in @hummi/api", "Calls the /api/playlists endpoints")
 }
 Container_Boundary(api, "Hummi.Api") {
-  Component(ctl, "PlaylistsController", "ASP.NET Core controller", "Authorized /api/playlists endpoints; maps\nresults through ProblemDetailsMapper")
+  Component(ctl, "PlaylistsController", "ASP.NET Core controller", "Authorized /api/playlists endpoints; maps\nresults through ToProblem")
   Component(cmd, "DeletePlaylistCommandHandler", "MediatR command handler", "Checks ownership, deletes the playlist, its\nentries, SavedPlaylist rows and ShareLink\nrows")
   Component(pl, "Playlist", "Domain aggregate", "Delete(by) returns Forbidden for a non-owner")
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")

@@ -8,7 +8,7 @@ export { IconComponent, type IconName } from './lib/icon/icon';
 export { EqualizerComponent } from './lib/equalizer/equalizer';
 export { SkeletonComponent } from './lib/skeleton/skeleton';
 export { ErrorBlockComponent, DEFAULT_ERROR_TEXT } from './lib/error-block/error-block';
-export { formatDuration, type TrackItem } from './lib/track/track-item';
+export { formatDuration, formatLength, type TrackItem } from './lib/track/track-item';
 export { TrackRowComponent } from './lib/track-row/track-row';
 export { TrackListComponent } from './lib/track-list/track-list';
 export { TrackCardComponent } from './lib/track-card/track-card';
@@ -19,7 +19,14 @@ export { ScrubberComponent } from './lib/scrubber/scrubber';
 export { PlayerLayerComponent } from './lib/player-layer/player-layer';
 export { QueueDrawerComponent } from './lib/queue-drawer/queue-drawer';
 export { TrackMenuComponent } from './lib/track-menu/track-menu';
-export { ToastRegionComponent, ToastService, TOAST_MS, type Toast } from './lib/toast/toast';
+export {
+  ToastRegionComponent,
+  ToastService,
+  TOAST_MS,
+  type Toast,
+  type ToastCard,
+  type ToastTone,
+} from './lib/toast/toast';
 export { DialogComponent } from './lib/dialog/dialog';
 export { ChipDirective } from './lib/chip/chip';
 export { GenreTileComponent } from './lib/genre-tile/genre-tile';

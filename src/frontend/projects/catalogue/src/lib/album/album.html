@@ -34,7 +34,9 @@
           <button hmButton="primary" type="button" (click)="player.playFrom(a.tracks, 0)">
             <hm-icon name="play" />Play
           </button>
-          <button hmButton type="button" (click)="gate.allow()"><hm-icon name="plus" />Add to playlist</button>
+          <button hmButton type="button" (click)="dialogs.addToPlaylist(a.tracks, true)">
+            <hm-icon name="plus" />Add to playlist
+          </button>
           <button hmButton type="button"><hm-icon name="share" />Share</button>
         </div>
         <hm-track-list

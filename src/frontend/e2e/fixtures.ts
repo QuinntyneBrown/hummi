@@ -1,4 +1,4 @@
-import { test as base, expect, type Page } from '@playwright/test';
+import { test as base, expect, type Page, type Route } from '@playwright/test';
 
 /**
  * Tests never reach a real backend: every /api and /media call is answered by a fake registered with page.route.
@@ -544,6 +544,171 @@ export async function fakeLibrary(
   });
   return { writes, reads: () => reads };
 }
+
+export interface FakePlaylist {
+  id: string;
+  name: string;
+  isPublic: boolean;
+  ownerName: string;
+  isOwner: boolean;
+  tracks: FakeTrack[];
+}
+
+/** Which playlist calls fail and how: an HTTP status, or 0 for a dropped connection. */
+export type PlaylistFailures = Partial<
+  Record<'create' | 'update' | 'delete' | 'membership' | 'append' | 'remove' | 'get', number>
+>;
+
+/**
+ * A stateful fake of the playlist endpoints over the given playlists: /api/me/playlists,
+ * /api/me/playlist-membership, /api/playlists and /api/playlists/{id}[/tracks|/entries/remove].
+ * Calls are recorded as "{METHOD} {path}" with their bodies; failures answer problem details.
+ */
+export async function fakePlaylists(
+  page: Page,
+  start: FakePlaylist[] = [],
+  failures: PlaylistFailures = {},
+): Promise<{ playlists: FakePlaylist[]; calls: { call: string; body: unknown }[]; failures: PlaylistFailures }> {
+  const playlists = start.map((p) => ({ ...p, tracks: [...p.tracks] }));
+  const calls: { call: string; body: unknown }[] = [];
+  const all = Object.values(TRACKS);
+  let next = playlists.length + 1;
+  const json = (body: unknown, status = 200) => ({
+    status,
+    contentType: 'application/json',
+    body: JSON.stringify(body),
+  });
+  const problem = (status: number, code = 'UNEXPECTED', title = 'Server error') => ({
+    status,
+    contentType: 'application/problem+json',
+    body: JSON.stringify({ title, code }),
+  });
+  const detail = (p: FakePlaylist) => ({
+    id: p.id,
+    name: p.name,
+    isPublic: p.isPublic,
+    isOwner: p.isOwner,
+    ownerName: p.ownerName,
+    trackCount: p.tracks.length,
+    durationSeconds: p.tracks.reduce((sum, t) => sum + t.durationSeconds, 0),
+    entries: p.tracks.map((track, i) => ({ entryId: `${p.id}-e${i}`, track })),
+  });
+  const fail = async (route: Route, key: keyof PlaylistFailures): Promise<boolean> => {
+    const status = failures[key];
+    if (status === undefined) return false;
+    if (status === 0) await route.abort('internetdisconnected');
+    else await route.fulfill(problem(status));
+    return true;
+  };
+  await page.route(/\/api\/(me\/playlists|me\/playlist-membership|playlists)(\/|\?|$)/, async (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    const method = request.method();
+    const body = request.postDataJSON?.() ?? null;
+    calls.push({ call: `${method} ${url.pathname}`, body });
+    const [, , , id, sub, action] = url.pathname.split('/');
+    if (url.pathname === '/api/me/playlists') {
+      const trackId = url.searchParams.get('trackId');
+      return route.fulfill(
+        json(
+          playlists
+            .filter((p) => p.isOwner)
+            .map((p) => ({
+              id: p.id,
+              name: p.name,
+              trackCount: p.tracks.length,
+              containsTrack: p.tracks.some((t) => t.id === trackId),
+            })),
+        ),
+      );
+    }
+    if (url.pathname === '/api/me/playlist-membership') {
+      if (await fail(route, 'membership')) return;
+      const { trackId, playlistIds } = body as { trackId: string; playlistIds: string[] };
+      const track = all.find((t) => t.id === trackId)!;
+      const added = [];
+      const removed = [];
+      for (const p of playlists.filter((p) => p.isOwner)) {
+        const has = p.tracks.some((t) => t.id === trackId);
+        if (playlistIds.includes(p.id) && !has) {
+          p.tracks.push(track);
+          added.push({ id: p.id, name: p.name, position: p.tracks.length });
+        } else if (!playlistIds.includes(p.id) && has) {
+          p.tracks = p.tracks.filter((t) => t.id !== trackId);
+          removed.push(p.id);
+        }
+      }
+      return route.fulfill(json({ added, removed }));
+    }
+    if (!id && method === 'POST') {
+      if (await fail(route, 'create')) return;
+      const { name, isPublic, trackIds } = body as { name: string; isPublic: boolean; trackIds: string[] };
+      const p: FakePlaylist = {
+        id: `new${next++}`,
+        name,
+        isPublic,
+        ownerName: 'Nadia Charles',
+        isOwner: true,
+        tracks: (trackIds ?? []).map((t) => all.find((a) => a.id === t)!),
+      };
+      playlists.push(p);
+      return route.fulfill(json({ id: p.id, name: p.name, position: p.tracks.length }, 201));
+    }
+    const p = playlists.find((x) => x.id === id);
+    if (!p) return route.fulfill(problem(404, 'PLAYLIST_NOT_FOUND', 'This playlist isn’t on Hummi'));
+    if (!sub && method === 'GET') {
+      if (await fail(route, 'get')) return;
+      return route.fulfill(json(detail(p)));
+    }
+    if (!sub && method === 'PUT') {
+      if (await fail(route, 'update')) return;
+      Object.assign(p, body);
+      return route.fulfill({ status: 204, body: '' });
+    }
+    if (!sub && method === 'DELETE') {
+      if (await fail(route, 'delete')) return;
+      playlists.splice(playlists.indexOf(p), 1);
+      return route.fulfill({ status: 204, body: '' });
+    }
+    if (sub === 'tracks') {
+      if (await fail(route, 'append')) return;
+      const { trackIds, allowDuplicates } = body as { trackIds: string[]; allowDuplicates: boolean };
+      const fresh = allowDuplicates ? trackIds : trackIds.filter((t) => !p.tracks.some((x) => x.id === t));
+      if (!fresh.length) return route.fulfill(problem(409, 'ALREADY_IN_PLAYLIST', 'Already in this playlist'));
+      p.tracks.push(...fresh.map((t) => all.find((a) => a.id === t)!));
+      return route.fulfill(json({ id: p.id, name: p.name, position: p.tracks.length }));
+    }
+    if (sub === 'entries' && action === 'remove') {
+      if (await fail(route, 'remove')) return;
+      const { entryIds } = body as { entryIds: string[] };
+      const keep = detail(p)
+        .entries.filter((e) => !entryIds.includes(e.entryId))
+        .map((e) => e.track);
+      p.tracks = keep;
+      return route.fulfill({ status: 204, body: '' });
+    }
+    return route.fulfill(problem(501, 'NO_FAKE'));
+  });
+  return { playlists, calls, failures };
+}
+
+export const ROAD_TRIP: FakePlaylist = {
+  id: 'p1',
+  name: 'Road trip to the north coast',
+  isPublic: false,
+  ownerName: 'Nadia Charles',
+  isOwner: true,
+  tracks: [TRACKS.jouvert, TRACKS.feathersUp, TRACKS.panyard],
+};
+
+export const RAINY_DAY: FakePlaylist = {
+  id: 'p2',
+  name: 'Rainy-day panyard',
+  isPublic: false,
+  ownerName: 'Nadia Charles',
+  isOwner: true,
+  tracks: [TRACKS.panyard],
+};
 
 export const test = base.extend<{ visitor: void }>({
   visitor: [

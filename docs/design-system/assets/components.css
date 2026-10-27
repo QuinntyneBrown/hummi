@@ -421,6 +421,10 @@ legend { font: var(--text-label); padding: 0; margin-bottom: var(--space-2); }
 .track { display: grid; grid-template-columns: 1.5rem 3rem minmax(0, 1fr) auto; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); min-height: var(--target-comfortable); }
 .track:hover, .track[data-state="hover"] { background: var(--color-bg-subtle); }
 .track[aria-current="true"] { background: var(--color-accent-subtle); }
+/* Selectable rows on an owned playlist (L2-023): a checkbox before the number; a checked row is tinted. */
+.track--selectable { grid-template-columns: 1.5rem 1.5rem 3rem minmax(0, 1fr) auto; }
+.track__check { width: 1.125rem; height: 1.125rem; margin: 0; accent-color: var(--color-accent); cursor: pointer; }
+.track--selected { background: var(--color-accent-subtle); }
 .track__num { font: var(--text-caption); color: var(--color-fg-muted); text-align: center; }
 .track__title { font: var(--text-label); } .track__meta { font: var(--text-caption); color: var(--color-fg-muted); }
 .track__title, .track__meta { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -773,8 +777,8 @@ a.avatar { text-decoration: none; }
 .toast__dot { width: 0.5rem; height: 0.5rem; margin-left: var(--space-2); flex: none; border-radius: 50%; background: var(--color-accent); }
 .toast__msg { font: var(--text-label); font-weight: var(--font-weight-bold); white-space: nowrap; }
 .toast__undo { height: 2.25rem; padding: 0 1rem; border: 0; border-radius: var(--radius-full); background: var(--color-bg-canvas); color: var(--color-fg-default); font-size: 0.8125rem; font-weight: var(--font-weight-bold); cursor: pointer; }
-/* A danger toast keeps the card shape: icon, title, text, Retry and Dismiss; it stays until dismissed (L2-018 AC4). */
-.toast.toast--danger { align-items: flex-start; width: min(24rem, calc(100vw - 2rem)); padding: var(--space-4); border-radius: var(--radius-md); white-space: normal; }
+/* Toned toasts keep the card shape: icon, title, text, an action and Dismiss (L2-018 AC4, L2-020). */
+.toast.toast--danger, .toast.toast--success, .toast.toast--warning { align-items: flex-start; width: min(24rem, calc(100vw - 2rem)); padding: var(--space-4); border-radius: var(--radius-md); white-space: normal; }
 
 /* Card more-actions button and kids banner. */
 .card-track__more { position: absolute; z-index: 2; top: 0.5rem; right: 0.5rem; display: grid; place-items: center; width: 2rem; height: 2rem; border: 0; border-radius: 50%; background: color-mix(in srgb, var(--color-bg-canvas) 80%, transparent); backdrop-filter: blur(4px); color: var(--color-fg-default); opacity: 0; cursor: pointer; transition: opacity 150ms; }

@@ -17,9 +17,9 @@ skinparam package {
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
   participant "PlaylistPage" as page
-  participant "SelectionModel" as sel
+  participant "Selection signal" as sel
   participant "PlaylistsApi" as client
-  participant "DialogService" as dialogs
+  participant "PlaylistDialogs" as dialogs
 end box
 box "Backend — Hummi.Api application" #D1FADF
   participant "PlaylistsController" as ctl

@@ -1,0 +1,82 @@
+@let state = playlist.state();
+@switch (state.status) {
+  @case ('loading') {
+    <hm-page-header heading="Playlist" />
+    <ol class="track-list" aria-busy="true" aria-label="Loading tracks">
+      @for (row of rows; track row) {
+        <li class="track" aria-hidden="true">
+          <span></span>
+          <hm-skeleton shape="rect" width="3rem" height="3rem" />
+          <div><hm-skeleton width="50%" /><hm-skeleton width="30%" /></div>
+          <span></span>
+        </li>
+      }
+    </ol>
+  }
+  @case ('error') {
+    <hm-page-header heading="Playlist" />
+    <hm-error-block heading="This playlist didn’t load" (retry)="playlist.reload()" />
+  }
+  @case ('ready') {
+    @let p = state.value;
+    <hm-page-header [heading]="p.name" [subtitle]="subtitle(p)">
+      @if (p.entries.length) {
+        <button hmButton="primary" type="button" (click)="player.playFrom(tracks(), 0)">
+          <hm-icon name="play" />Play
+        </button>
+      }
+      <button hmButton type="button"><hm-icon name="share" />Share</button>
+      @if (p.isOwner && p.entries.length) {
+        <button hmButton type="button" (click)="renaming.set(true)">Rename</button>
+        <button hmButton type="button" (click)="deleting.set(true)">Delete</button>
+      }
+    </hm-page-header>
+    @if (!p.entries.length) {
+      <hm-empty-state
+        heading="Nothing here yet"
+        text="Add tracks from anywhere with Add to playlist, or start from a genre."
+      >
+        <a hmButton="primary" routerLink="/browse">Browse genres</a>
+      </hm-empty-state>
+    } @else {
+      @if (selected().length) {
+        <hm-alert
+          tone="info"
+          [heading]="selected().length + (selected().length === 1 ? ' track selected' : ' tracks selected')"
+        >
+          <ng-container actions>
+            <button hmButton type="button" [disabled]="removing()" (click)="removeSelected(p)">
+              Remove from playlist
+            </button>
+            <button hmButton type="button" (click)="addSelected(p)">
+              <hm-icon name="plus" />Add to another playlist
+            </button>
+          </ng-container>
+        </hm-alert>
+      }
+      <hm-track-list
+        [tracks]="library.withLikes(tracks())"
+        [label]="p.name"
+        [selectable]="p.isOwner"
+        [selected]="selected()"
+        [currentTrackId]="player.current()?.id ?? null"
+        [playing]="player.playing()"
+        (toggleSelect)="toggle($event)"
+        (playTrack)="player.playFrom(tracks(), $event)"
+        (like)="library.toggleLike($event)"
+        (more)="overlays.openTrackMenu($event)"
+      />
+    }
+    @if (renaming()) {
+      <hm-playlist-form-dialog [rename]="p" (closed)="renameClosed()" />
+    }
+    @if (deleting()) {
+      <hm-delete-playlist-dialog
+        [playlistId]="p.id"
+        [name]="p.name"
+        [trackCount]="p.trackCount"
+        (closed)="deleteClosed($event)"
+      />
+    }
+  }
+}

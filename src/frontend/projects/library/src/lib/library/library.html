@@ -28,20 +28,26 @@
   }
   @case ('empty') {
     <hm-page-header heading="Library">
-      <button hmButton="primary" type="button" (click)="gate.allow()"><hm-icon name="plus" />New playlist</button>
+      <button hmButton="primary" type="button" (click)="dialogs.newPlaylist()">
+        <hm-icon name="plus" />New playlist
+      </button>
     </hm-page-header>
     <hm-empty-state
       heading="Your library is empty"
       text="Like a track or create a playlist and it will live here, on every device you sign in on."
     >
-      <button hmButton="primary" type="button" (click)="gate.allow()"><hm-icon name="plus" />Create a playlist</button>
+      <button hmButton="primary" type="button" (click)="dialogs.newPlaylist()">
+        <hm-icon name="plus" />Create a playlist
+      </button>
       <a hmButton routerLink="/browse">Browse genres</a>
     </hm-empty-state>
   }
   @case ('ready') {
     @if (value(); as v) {
       <hm-page-header heading="Library" [subtitle]="subtitle()">
-        <button hmButton="primary" type="button" (click)="gate.allow()"><hm-icon name="plus" />New playlist</button>
+        <button hmButton="primary" type="button" (click)="dialogs.newPlaylist()">
+          <hm-icon name="plus" />New playlist
+        </button>
       </hm-page-header>
       <hm-tabs label="Library" idPrefix="library" [tabs]="tabs" [(selected)]="tab">
         @switch (tab()) {

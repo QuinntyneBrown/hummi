@@ -8,6 +8,7 @@ import {
   inject,
   runInInjectionContext,
   signal,
+  untracked,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
@@ -17,8 +18,8 @@ import {
   LibraryStore,
   PlayerOverlays,
   PlayerStore,
+  PlaylistDialogs,
   SessionStore,
-  SignInGate,
   apiResource,
 } from '@hummi/api';
 import {
@@ -40,7 +41,7 @@ const TABS = ['Playlists', 'Liked', 'Following'] as const;
  * Library (`/library`, L2-019): the counts, New playlist and the Playlists, Liked and Following tabs. It
  * reads GET /api/me/library on every visit, so a change made on another device shows here (AC5). A
  * visitor sees Sign in to see your library; nothing is requested for them. New playlist and Create a
- * playlist ask SignInGate until journey 10 opens the New playlist dialog.
+ * playlist open the New playlist dialog; Library reads again after any playlist change.
  */
 @Component({
   selector: 'hm-library',
@@ -65,7 +66,7 @@ export class LibraryComponent {
   readonly library = inject(LibraryStore);
   readonly player = inject(PlayerStore);
   readonly overlays = inject(PlayerOverlays);
-  readonly gate = inject(SignInGate);
+  readonly dialogs = inject(PlaylistDialogs);
   readonly tabs = TABS;
   readonly tab = signal<string>('Playlists');
   readonly tiles = [1, 2, 3, 4, 5, 6];
@@ -100,6 +101,15 @@ export class LibraryComponent {
       if (this.session.signedIn() && !this.resource()) {
         const load = () => this.api.library().pipe(tap((v) => this.library.apply(v)));
         this.resource.set(runInInjectionContext(injector, () => apiResource(load)));
+      }
+    });
+    // A playlist was created, changed or deleted: read again.
+    let seen = this.dialogs.changes();
+    effect(() => {
+      const changes = this.dialogs.changes();
+      if (changes !== seen) {
+        seen = changes;
+        untracked(() => this.resource()?.reload());
       }
     });
   }
