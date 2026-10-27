@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve hummi",
-    "build:libs": "ng build api && ng build components && ng build player && ng build discovery && ng build catalogue",
+    "build:libs": "ng build api && ng build components && ng build player && ng build discovery && ng build catalogue && ng build search",
     "build:app": "ng build hummi",
     "build:all": "npm run build:libs && npm run build:app",
     "format": "prettier --write .",

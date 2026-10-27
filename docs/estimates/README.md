@@ -1,7 +1,7 @@
 # Estimates
 
 - Overall effort: 132 days
-- Complete: 22%
+- Complete: 25%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
@@ -13,7 +13,7 @@
 | [playback](playback.md) | 13 days | 35% |
 | [library](library.md) | 22 days | 0% |
 | [sharing](sharing.md) | 5 days | 0% |
-| [search](search.md) | 4 days | 0% |
+| [search](search.md) | 4 days | 95% |
 | [settings](settings.md) | 10 days | 0% |
 | [notifications](notifications.md) | 6 days | 0% |
 | [reporting](reporting.md) | 3 days | 0% |

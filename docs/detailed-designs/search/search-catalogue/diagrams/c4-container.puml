@@ -6,7 +6,7 @@ title Containers — Search the catalogue
 Person(listener, "Listener", "Uses Hummi in a browser")
 System_Boundary(hummi, "Hummi") {
   Container(web, "web", "Caddy", "Serves the Angular build, terminates TLS, proxies /api and /media")
-  Container(spa, "Hummi web application", "Angular", "Renders search results and tabs")
+  Container(spa, "Hummi web application", "Angular", "Renders the search overlay")
   Container(api, "Hummi.Api", "ASP.NET Core", "Matches text against the catalogue")
   ContainerDb(db, "Hummi database", "Azure SQL, EF Core", "Catalogue, accounts, library and notifications")
 }
@@ -14,5 +14,5 @@ Rel(listener, web, "Opens", "HTTPS")
 Rel(web, spa, "Delivers")
 Rel(spa, web, "Calls /api", "JSON/HTTPS")
 Rel(web, api, "Proxies", "HTTP")
-Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, db, "Reads", "EF Core")
 @enduml

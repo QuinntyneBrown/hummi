@@ -2,4 +2,4 @@
 
 | Design | Effort | Complete |
 |---|---|---|
-| search-catalogue | 4 days | 0% |
+| search-catalogue | 4 days | 95% |

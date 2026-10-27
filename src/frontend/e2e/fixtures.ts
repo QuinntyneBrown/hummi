@@ -349,6 +349,47 @@ export async function fakePlays(page: Page): Promise<{ posted: { trackId: string
   return { posted };
 }
 
+/** GET /api/search for "pan", as the demo catalogue answers it. */
+export const PAN_RESULTS = {
+  query: 'pan',
+  topResult: TRACKS.panyard,
+  artists: [
+    { slug: 'laventille-steel-orchestra', name: 'Laventille Steel Orchestra' },
+    { slug: 'panorama-players', name: 'Panorama Players' },
+    { slug: 'pan-masters', name: 'Pan Masters' },
+  ],
+  songs: [TRACKS.panyard, TRACKS.longTitle, TRACKS.feathersUp],
+};
+
+/**
+ * Answers GET /api/search: PAN_RESULTS for "pan", no matches for anything else, or problem details when
+ * status is set. Keeps each query asked.
+ */
+export async function fakeSearch(
+  page: Page,
+  options: { status?: number; delayMs?: number } = {},
+): Promise<{ queries: string[] }> {
+  const queries: string[] = [];
+  await page.route('**/api/search?*', async (route) => {
+    const q = new URL(route.request().url()).searchParams.get('q') ?? '';
+    queries.push(q);
+    if (options.delayMs) await new Promise((resolve) => setTimeout(resolve, options.delayMs));
+    if (options.status)
+      return route.fulfill({
+        status: options.status,
+        contentType: 'application/problem+json',
+        body: JSON.stringify({
+          title: 'Search isn’t working right now',
+          status: options.status,
+          code: 'SEARCH_UNAVAILABLE',
+        }),
+      });
+    const body = q === 'pan' ? PAN_RESULTS : { query: q, topResult: null, artists: [], songs: [] };
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+  });
+  return { queries };
+}
+
 export const test = base.extend<{ visitor: void }>({
   visitor: [
     async ({ page }, use) => {

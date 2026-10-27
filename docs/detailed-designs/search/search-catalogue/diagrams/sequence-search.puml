@@ -16,9 +16,8 @@ skinparam package {
 }
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
-  participant "TopBarSearchComponent" as field
-  participant "SearchPage" as page
-  participant "RecentSearchesStore" as recent
+  participant "AppShellComponent" as shell
+  participant "SearchOverlayComponent" as overlay
   participant "SearchApi" as client
 end box
 box "Backend — Hummi.Api application" #D1FADF
@@ -31,27 +30,29 @@ box "Backend — Hummi Infrastructure" #FFF4E5
   participant "SqlSearchIndex" as idx
   database "Hummi database" as db
 end box
-u -> field : Type "rain" and submit
-field -> page : Navigate /search?q=rain (L2-006)
-page -> page : Subtitle "Searching…", skeleton rows (L2-006)
-page -> client : search("rain", All)
-client -> ctl : GET /api/search?q=rain&type=all
+u -> shell : Activate "Search songs and artists" or press /
+shell -> overlay : Open; query field takes focus (L2-006)
+u -> overlay : Type "pan"
+overlay -> overlay : 250 ms later: skeleton rows (L2-006)
+overlay -> client : search("pan")
+client -> ctl : GET /api/search?q=pan
 ctl -> q : Send SearchCatalogueQuery
-q -> idx : SearchAsync("rain", All)
-idx -> db : SELECT ... WHERE Title LIKE '%rain%'
+q -> idx : SearchAsync("pan", 3, 7)
+idx -> db : SELECT ... WHERE Title LIKE '%pan%'
 db --> idx : Rows
 idx --> q : Ranked hits
 q --> ctl : Result<SearchResultsDto>
 alt hits found
-  ctl --> client : 200, Total = 7
-  client --> page : Results
-  page -> recent : add("rain")
-  page --> u : "7 results", tabs, Tracks and Playlists shelves (L2-006)
+  ctl --> client : 200
+  client --> overlay : Results
+  overlay --> u : Top result, Artists, Songs (L2-006)
 else no hits
-  ctl --> client : 200, Total = 0
-  page --> u : "0 results", "Nothing matches “…”", Clear search, Browse genres (L2-007)
+  ctl --> client : 200, no songs or artists
+  overlay --> u : "Nothing matches “…”" (L2-007)
 else index unreachable
   ctl --> client : 503 ProblemDetails
-  page --> u : "Search isn’t working right now", query kept (L2-007)
+  overlay --> u : "Search isn’t working right now", query kept (L2-007)
 end
+u -> overlay : Close or Escape
+overlay -> shell : close(); page beneath unchanged (L2-006)
 @enduml

@@ -21,6 +21,9 @@ const PATHS = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   flag: '<path d="M5 21V4h12l-2 4 2 4H5"/>',
   shuffle: '<path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M19 4l2 3-2 3M19 14l2 3-2 3"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  'arrow-up-right': '<path d="M7 17 17 7M8 7h9v9"/>',
 } as const;
 
 export type IconName = keyof typeof PATHS;

@@ -1,4 +1,5 @@
 <hm-top-nav [links]="links" [open]="navOpen()" (menuToggle)="toggleNav()">
+  <hm-search-pill (activate)="search.openWith()" />
   @if (session.user(); as user) {
     <span class="avatar avatar--nav" role="img" [attr.aria-label]="'Account: ' + user.displayName">{{
       user.displayName.charAt(0)
@@ -15,6 +16,9 @@
     <span>hummi.fm — free music, made in the open.</span>
   </footer>
 </main>
+@if (search.open()) {
+  <hm-search-overlay (closed)="searchClosed()" />
+}
 @if (showPlayer()) {
   @if (player.current(); as track) {
     <hm-player-bar

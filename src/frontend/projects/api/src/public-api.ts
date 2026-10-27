@@ -24,3 +24,5 @@ export {
   type Licence,
   type TrackDetailDto,
 } from './lib/catalogue/catalogue-api';
+export { SearchApi, type ArtistHitDto, type SearchResultsDto } from './lib/search/search-api';
+export { SearchStore } from './lib/search/search-store';

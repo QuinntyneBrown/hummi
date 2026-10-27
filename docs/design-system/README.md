@@ -68,6 +68,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-27. Open [index.html]
 | [Waveform](components/waveform.html) | Media | 33% played, Unplayed | track/default, now-playing/default |
 | [Hero](components/hero.html) | Media | Recommendation | home/default, track/default |
 | [Notification item](components/notification-item.html) | Media | Unread and read | notifications/default, notifications/read |
+| [Search layer](components/search-layer.html) | Media | Search pill, Bar, empty, Bar, with text, Top result | search/default, search/empty |
 
 ## Patterns
 

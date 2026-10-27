@@ -9,9 +9,10 @@ Mock: every page under `docs/mocks/pages/` (header, main, player bar).
 | Part | Library components | Local UI |
 |---|---|---|
 | Skip link | `hm-skip-link` | None |
-| Header | `hm-top-nav` with the brand (`hm-logo`), links Home, Soca, Kids, Steelpan, Your library and the "Open navigation" toggle | End slot: signed out, "Sign in" and "Sign up" links styled with `hmButton`; signed in, the display name |
+| Header | `hm-top-nav` with the brand (`hm-logo`), links Home, Soca, Kids, Steelpan, Your library and the "Open navigation" toggle | End slot: `hm-search-pill` ("Search songs and artists", opens the search layer); signed out, "Sign in" and "Sign up" links styled with `hmButton`; signed in, the display name |
 | Main | None | `main#main.container.app-main` wrapping the router outlet |
 | Footer | None | `footer.site-footer` with the two taglines |
+| Search layer | `hm-search-overlay` from `@hummi/search`, rendered while `SearchStore.open()` | None |
 | Player bar | `hm-player-bar` (uses `hm-icon`, `hm-equalizer`) | Shown only when a track is loaded and the route has no `data.hidePlayer` |
 
 ## Home (`pages/home`)
@@ -101,3 +102,18 @@ Mock: every page under `docs/mocks/pages/` (header, main, player bar).
 | Loading | `hm-skeleton` block and lines inside an `aria-busy` region | Layout only |
 | Not found | Not found composition above | None |
 | Error | `hm-error-block` ("Licence details didn’t load") | None |
+
+## Search (`pages/search`)
+
+Mock: the layer over Home in every state. Rendered by the shell from `@hummi/search` (ADR 0008).
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Layer and bar | `hm-search-layer` (scrim, `role="dialog"` "Search", query field "Search songs and artists", "Clear" once text is typed, "Close") | None |
+| Top result | `hm-top-result` (cover, title, "{artist} · {duration}") | None |
+| Artists | `hm-search-artist` under a `layer-h` "Artists" heading, up to 3 | Results grid layout (`layer-search__body--results`) |
+| Songs | `hm-search-song` (current track marked with `hm-equalizer`, "More actions for {title}") under "Songs", up to 7 | None |
+| Loading | `hm-skeleton` rows inside an `aria-busy` body | Layout only |
+| Empty | `hm-recent-searches` ("Recent", clock icons) and `hm-sound-tile` per genre in a `.sound-grid` ("Browse by sound") | Empty grid layout (`layer-search__body--empty`) |
+| No results | `layer-empty` text block ("Nothing matches “{query}”") | The `layer-empty` block |
+| Error | `hm-error-block` ("Search isn’t working right now") with Try again | None |
