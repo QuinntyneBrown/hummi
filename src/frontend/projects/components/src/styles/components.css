@@ -490,7 +490,7 @@ a.avatar { text-decoration: none; }
 
 /* Cover art: generated artwork over the gradient fallback. */
 .cover img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; }
-.cover--art > svg { display: none; }
+.cover--art svg { display: none; } /* hm-icon wraps the svg, so not a direct child */
 
 /* Top navigation (replaces the sidebar). */
 .topnav { position: sticky; top: 0; z-index: var(--z-sticky); display: flex; align-items: center; gap: var(--space-6); min-height: 4.5rem; padding-inline: var(--layout-margin); background: var(--color-bg-canvas); }
