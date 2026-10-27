@@ -1,0 +1,39 @@
+@let state = directory.state();
+@switch (state.status) {
+  @case ('loading') {
+    <hm-page-header heading="Browse" />
+    <hm-shelf heading="All genres" [busy]="true">
+      <div class="tile-grid" aria-hidden="true">
+        @for (tile of tiles; track tile) {
+          <hm-skeleton shape="rect" height="6rem" />
+        }
+      </div>
+    </hm-shelf>
+  }
+  @case ('error') {
+    <hm-page-header heading="Browse" />
+    <hm-error-block heading="Genres didn’t load" (retry)="directory.reload()" />
+  }
+  @case ('ready') {
+    @if (state.status === 'ready') {
+      <hm-page-header
+        heading="Browse"
+        [subtitle]="subtitle(state.value.genreCount, state.value.openlyLicensedTrackCount)"
+      />
+      <hm-shelf heading="Moods">
+        <div class="pill-row">
+          @for (mood of state.value.moods; track mood.slug) {
+            <a hmChip [routerLink]="['/genres', mood.slug]">{{ mood.name }}</a>
+          }
+        </div>
+      </hm-shelf>
+      <hm-shelf heading="All genres">
+        <div class="tile-grid">
+          @for (genre of state.value.genres; track genre.slug) {
+            <hm-genre-tile [slug]="genre.slug" [name]="genre.name" [tone]="genre.tone" />
+          }
+        </div>
+      </hm-shelf>
+    }
+  }
+}

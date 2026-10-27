@@ -12,34 +12,38 @@ skinparam class {
 hide empty members
 title Class structure — View a genre
 
-enum GenreTrackSort {
-  Newest
-  MostPlayed
+class GenreTrackSort <<static>> {
+  +{static} Newest = "newest"
+  +{static} MostPlayed = "most-played"
 }
 class GetGenreTracksQuery {
-  +string GenreSlug
-  +GenreTrackSort Sort
+  +string Slug
+  +string Sort
   +int Page
 }
-class GetGenreTracksQueryValidator
 class GetGenreTracksQueryHandler {
+  +{static} int PageSize = 50
   +Handle(q: GetGenreTracksQuery): Task<Result<GenreTracksDto>>
 }
 class GenreTracksDto {
+  +string Slug
   +string Name
   +string Description
+  +int Tone
   +int TrackCount
+  +string Sort
+  +int Page
+  +int PageSize
   +IReadOnlyList<TrackSummaryDto> Tracks
 }
 class Track {
   +Guid Id
-  +Guid GenreId
-  +DateTimeOffset PublishedAt
+  +Guid? GenreId
+  +DateTimeOffset AddedAt
   +long PlayCount
-  +TrackStatus Status
+  +bool Withdrawn
 }
 GetGenreTracksQuery --> GenreTrackSort
-GetGenreTracksQueryValidator ..> GetGenreTracksQuery : validates
 GetGenreTracksQueryHandler ..> GetGenreTracksQuery : handles
 GetGenreTracksQueryHandler ..> Track : reads
 GetGenreTracksQueryHandler ..> GenreTracksDto : returns

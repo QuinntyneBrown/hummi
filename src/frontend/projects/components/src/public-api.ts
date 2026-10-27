@@ -15,3 +15,7 @@ export { TrackCardComponent } from './lib/track-card/track-card';
 export { ShelfComponent } from './lib/shelf/shelf';
 export { TopNavComponent, type NavLink } from './lib/top-nav/top-nav';
 export { PlayerBarComponent } from './lib/player-bar/player-bar';
+export { ChipDirective } from './lib/chip/chip';
+export { GenreTileComponent } from './lib/genre-tile/genre-tile';
+export { PageHeaderComponent } from './lib/page-header/page-header';
+export { EmptyStateComponent } from './lib/empty-state/empty-state';

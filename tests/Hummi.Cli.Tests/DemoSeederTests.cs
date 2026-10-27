@@ -48,6 +48,20 @@ public sealed class DemoSeederTests : IDisposable
     }
 
     [Fact]
+    public async Task Seeded_tracks_fill_the_soca_genre_page()
+    {
+        await db.Database.EnsureCreatedAsync();
+        await DemoSeeder.SeedAsync(db, mediaRoot, TimeProvider.System);
+
+        var soca = (await new Hummi.Application.Discovery.GetGenreTracksQueryHandler(db)
+            .Handle(new Hummi.Application.Discovery.GetGenreTracksQuery("soca"), default)).Value!;
+
+        Assert.Equal(6, soca.TrackCount);
+        Assert.Equal("Feathers Up", soca.Tracks[0].Title);
+        Assert.DoesNotContain(await db.Tracks.ToListAsync(), t => t.GenreId is null);
+    }
+
+    [Fact]
     public async Task Seeding_twice_adds_nothing_the_second_time()
     {
         await DemoSeeder.SeedAsync(db, mediaRoot, TimeProvider.System);

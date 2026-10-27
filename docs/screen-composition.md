@@ -28,3 +28,24 @@ Mock: every page under `docs/mocks/pages/` (header, main, player bar).
 | Part | Library components | Local UI |
 |---|---|---|
 | Message | None | Heading and link to Home; route data `hidePlayer: true` |
+
+## Browse (`pages/browse`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Header | `hm-page-header` ("Browse", "{n} genres · {n} openly licensed tracks") | None |
+| Moods | `hm-shelf` with `hmChip` links in a `.pill-row` | None |
+| All genres | `hm-shelf` with one `hm-genre-tile` per genre in a `.tile-grid` | None |
+| Loading | `hm-shelf` (`busy`) with `hm-skeleton` tiles | Layout only |
+| Error | `hm-error-block` ("Genres didn’t load") | None |
+
+## Genre (`pages/genre`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Header | `hm-page-header` (genre name, "{n} tracks · {description}") | None |
+| Actions | `hmButton` Play all (primary, `hm-icon` play) and Shuffle (`hm-icon` shuffle); `hmChip` toggle buttons Newest and Most played | `.cluster` row |
+| Track list | `hm-track-list` labelled "{genre} tracks" | None |
+| Loading | `hm-skeleton` rows inside an `aria-busy` region | Layout only |
+| Empty | `hm-empty-state` ("No {genre} tracks yet") with an `hmButton` link "Browse genres" | None |
+| Error | `hm-error-block` ("This genre didn’t load") | None |

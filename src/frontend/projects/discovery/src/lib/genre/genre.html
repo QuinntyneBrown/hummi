@@ -1,0 +1,56 @@
+@let state = genre.state();
+@switch (state.status) {
+  @case ('loading') {
+    <hm-page-header [heading]="heading()" />
+    <div aria-busy="true" aria-label="Loading tracks">
+      <ol class="track-list" aria-hidden="true">
+        @for (row of rows; track row) {
+          <li class="track">
+            <span></span>
+            <hm-skeleton shape="rect" width="3rem" height="3rem" />
+            <div><hm-skeleton width="50%" /><hm-skeleton width="30%" /></div>
+            <span></span>
+          </li>
+        }
+      </ol>
+    </div>
+  }
+  @case ('error') {
+    <hm-page-header heading="Genre" />
+    <hm-error-block heading="This genre didn’t load" (retry)="genre.reload()" />
+  }
+  @case ('ready') {
+    @if (state.status === 'ready') {
+      @let page = state.value;
+      <hm-page-header [heading]="page.name" [subtitle]="subtitle(page.trackCount, page.description)" />
+      @if (page.trackCount === 0) {
+        <hm-empty-state
+          [heading]="'No ' + page.name + ' tracks yet'"
+          text="New tracks arrive every day. Try a neighbouring genre while you wait."
+        >
+          <a hmButton="primary" routerLink="/browse">Browse genres</a>
+        </hm-empty-state>
+      } @else {
+        <div class="cluster genre-actions">
+          <button hmButton="primary" type="button" (click)="player.playFrom(page.tracks, 0)">
+            <hm-icon name="play" />Play all
+          </button>
+          <button hmButton type="button" (click)="player.playShuffled(page.tracks)">
+            <hm-icon name="shuffle" />Shuffle
+          </button>
+          <button hmChip type="button" [pressed]="sort() === 'newest'" (click)="sort.set('newest')">Newest</button>
+          <button hmChip type="button" [pressed]="sort() === 'most-played'" (click)="sort.set('most-played')">
+            Most played
+          </button>
+        </div>
+        <hm-track-list
+          [tracks]="page.tracks"
+          [label]="page.name + ' tracks'"
+          [currentTrackId]="player.current()?.id ?? null"
+          [playing]="player.playing()"
+          (playTrack)="player.playFrom(page.tracks, $event)"
+        />
+      }
+    }
+  }
+}

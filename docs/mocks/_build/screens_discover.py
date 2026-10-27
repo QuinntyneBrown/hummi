@@ -75,7 +75,7 @@ def browse(state):
 def genre(state):
     tl = ["road-march-riddim", "feathers-up", "panyard-nights", "sunrise-on-ariapita", "mister-kaiso", "jouvert-morning"]
     c = {"default": f'<div class="cluster" style="margin-bottom:var(--space-4)">{btn("Play all", "primary", "play")}{btn("Shuffle", "", "shuffle")}<button class="chip" type="button" aria-pressed="true">Newest</button><button class="chip" type="button" aria-pressed="false">Most played</button></div>' + track_list(tl, label="Soca tracks"),
-         "loading": skel_rows(8), "error": err("Soca didn’t load"),
+         "loading": skel_rows(8), "error": err("This genre didn’t load"),
          "empty": empty("music", "No Soca tracks yet", "New tracks arrive every day. Try a neighbouring genre while you wait.", btn("Browse genres", "primary", href=P("browse")))}
     return frame(state, "browse", "Soca", "1,204 tracks · road-march riddims, J’ouvert mornings and fete anthems", c)
 

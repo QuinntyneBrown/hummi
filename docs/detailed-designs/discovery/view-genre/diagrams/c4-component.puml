@@ -13,11 +13,11 @@ Container_Boundary(api, "Hummi.Api") {
   Component(q, "GetGenreTracksQueryHandler", "MediatR query handler", "Validates the sort value, orders published\ntracks of the genre and returns a page")
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
 }
-ContainerDb(db, "Hummi database", "Azure SQL", "Tracks indexed by `GenreId`, `PublishedAt`\nand `PlayCount`")
+ContainerDb(db, "Hummi database", "Azure SQL", "Tracks indexed by (`GenreId`, `AddedAt`)\nand (`GenreId`, `PlayCount`)")
 Rel(page, client, "getTracks('ambient', Newest)")
 Rel(client, ctl, "GET\n/api/genres/ambient/tracks?sort=newest")
 Rel(ctl, q, "Send GetGenreTracksQuery")
-Rel(q, ctx, "Published tracks of genre ORDER BY\nPublishedAt DESC")
+Rel(q, ctx, "Published tracks of genre ORDER BY\nAddedAt DESC")
 Rel(ctx, db, "SELECT")
 Rel(page, player, "playList(tracks, 0, shuffle=false)")
 @enduml

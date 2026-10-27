@@ -6,8 +6,9 @@ namespace Hummi.Domain.Catalogue;
 /// </summary>
 public sealed class Track
 {
-    private Track(Guid id, string title, Guid artistId, int durationSeconds, string? coverUrl, DateTimeOffset addedAt)
+    private Track(Guid id, string title, Guid artistId, int durationSeconds, string? coverUrl, DateTimeOffset addedAt, Guid? genreId)
     {
+        GenreId = genreId;
         Id = id;
         Title = title;
         ArtistId = artistId;
@@ -24,6 +25,9 @@ public sealed class Track
 
     public Artist? Artist { get; private set; }
 
+    /// <summary>The genre the track is listed under; null until it is classified.</summary>
+    public Guid? GenreId { get; private set; }
+
     public int DurationSeconds { get; private set; }
 
     public string? CoverUrl { get; private set; }
@@ -39,11 +43,11 @@ public sealed class Track
     /// <summary>Location of the audio file, relative to the media root.</summary>
     public string AudioPath => $"tracks/{Id}.wav";
 
-    public static Track Create(string title, Guid artistId, int durationSeconds, string? coverUrl, DateTimeOffset addedAt)
+    public static Track Create(string title, Guid artistId, int durationSeconds, string? coverUrl, DateTimeOffset addedAt, Guid? genreId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(durationSeconds);
-        return new Track(Guid.NewGuid(), title.Trim(), artistId, durationSeconds, coverUrl, addedAt);
+        return new Track(Guid.NewGuid(), title.Trim(), artistId, durationSeconds, coverUrl, addedAt, genreId);
     }
 
     /// <summary>Counts a play that started now; a play counts as soon as playback starts.</summary>

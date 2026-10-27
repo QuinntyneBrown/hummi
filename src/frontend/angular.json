@@ -162,6 +162,26 @@
           "defaultConfiguration": "production"
         }
       }
+    },
+    "discovery": {
+      "projectType": "library",
+      "root": "projects/discovery",
+      "sourceRoot": "projects/discovery/src",
+      "prefix": "hm",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/discovery/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/discovery/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
     }
   }
 }

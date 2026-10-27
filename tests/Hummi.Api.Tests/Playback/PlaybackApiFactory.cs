@@ -47,6 +47,23 @@ public sealed class PlaybackApiFactory : WebApplicationFactory<Program>
         return tracks;
     }
 
+    /// <summary>Creates the schema with its ten seeded genres and adds tracks to one of them, newest last.</summary>
+    public async Task<Track[]> SeedGenreAsync(string slug, params string[] titles)
+    {
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<HummiDbContext>();
+        await db.Database.EnsureCreatedAsync();
+        var genre = await db.Genres.SingleAsync(g => g.Slug == slug);
+        var artist = Artist.Create("Kaiso Collective");
+        var tracks = titles
+            .Select((title, i) => Track.Create(title, artist.Id, 222, null, DateTimeOffset.UnixEpoch.AddDays(i), genre.Id))
+            .ToArray();
+        db.Artists.Add(artist);
+        db.Tracks.AddRange(tracks);
+        await db.SaveChangesAsync();
+        return tracks;
+    }
+
     public async Task WithdrawAsync(Guid trackId)
     {
         using var scope = Services.CreateScope();
