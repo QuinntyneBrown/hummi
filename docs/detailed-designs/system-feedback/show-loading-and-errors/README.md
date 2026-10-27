@@ -65,6 +65,6 @@ A page uses `apiResource`, which calls a typed API service; controllers and `Exc
 
 ### Behaviour — load, fail and retry
 
-Every page builds its data through `apiResource`, so skeleton and error behaviour are uniform. Try again calls `reload()`, which repeats the request. Request timeout: 15 seconds; a request still open then fails with the default explanation.
+Every page builds its data through `apiResource`, so skeleton and error behaviour are uniform. Journey 02 builds Home this way; each later page adopts it when its journey lands, and Sign in, Sign up and Reset password (L2-039 AC2) render without it in journey 07. Try again calls `reload()`, which repeats the request. Request timeout: 15 seconds; a request still open then fails with the default explanation.
 
 ![Sequence diagram for load, fail and retry](diagrams/sequence-load.png)

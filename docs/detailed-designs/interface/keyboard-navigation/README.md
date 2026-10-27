@@ -9,6 +9,8 @@ submitted with errors moves focus to an error summary that links to each invalid
 - **roving tab index** — pattern in which only the selected tab has `tabindex="0"` and arrow keys move selection
 - **error summary** — `hm-error-summary` listing "Fix {n} thing(s) to continue" with links to fields
 
+Journey 02 covers L2-048 AC1 (skip link), AC3 (current nav link) and AC4 (labelled, keyboard-operable shell and player controls). AC2 (form error summary) lands with the forms of journey 07, and AC5 (tab lists) with Search (journey 05) and Library (journey 09).
+
 ## Description
 
 The patterns are built into the component library so features inherit them.

@@ -45,6 +45,8 @@ State lives in one browser-side store shared by every feature library. The backe
 - **`Hummi database`** — Azure SQL. Tracks and play events
 - **`media volume`** — Docker volume /data/media (`MediaStorage:RootPath`). Holds encoded audio files at `tracks/{trackId}.wav`; `IMediaStore` resolves them
 
+`PlayerStore.playFrom(tracks, index)` replaces the queue with the list the track was played from; Next and Previous move through it and the next track starts when one ends. The browser `error` event, or `stalled` before enough data has arrived, sets `PlayState.Stalled`; Play then reloads the stream.
+
 Out of scope here and covered by later journeys: the Queue drawer, Now playing and Expand (journey 06), the like button's effect (journey 09) and Share (journey 11). Their buttons render in the player bar now.
 
 ## Requirements

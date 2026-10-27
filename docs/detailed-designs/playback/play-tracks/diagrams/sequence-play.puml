@@ -16,11 +16,10 @@ skinparam package {
 }
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
-  participant "PlayerBarComponent" as bar
+  participant "HomeComponent" as bar
   participant "PlayerStore" as player
   participant "HTMLAudioElement" as audio
   participant "PlaybackApi" as client
-  participant "SessionStore" as session
 end box
 box "Backend — Hummi.Api application" #D1FADF
   participant "MediaController" as mctl
@@ -35,9 +34,7 @@ box "Backend — Hummi Infrastructure" #FFF4E5
   database "media volume" as media
 end box
 u -> bar : Activate Play on a track row (signed out)
-bar -> player : playList(tracks, i)
-player -> session : isSignedIn()
-session --> player : false, no prompt (L2-014)
+bar -> player : playFrom(tracks, i), no sign-in check (L2-014)
 player -> audio : src = /media/tracks/{id}; play()
 audio -> mctl : GET /media/tracks/{id} Range: bytes=0-
 mctl -> media : Open file stream

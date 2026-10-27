@@ -70,20 +70,27 @@ npm run verify
    dotnet run --project src/backend/Hummi.Migrator
    ```
 
-3. Start the API.
+3. Seed the demo catalogue: 18 tracks with generated audio written under `MediaStorage__RootPath` (default: a `media` folder next to the CLI).
+
+   ```powershell
+   $env:DOTNET_ENVIRONMENT = 'Development'
+   dotnet run --project src/backend/Hummi.Cli -- seed
+   ```
+
+4. Start the API.
 
    ```powershell
    dotnet run --project src/backend/Hummi.Api --launch-profile http
    ```
 
-4. In a second terminal, start the Angular app.
+5. In a second terminal, start the Angular app.
 
    ```powershell
    cd src/frontend
    npm start
    ```
 
-5. Open [http://localhost:4200](http://localhost:4200). The development server proxies `/api` and `/media` to the API.
+6. Open [http://localhost:4200](http://localhost:4200). The development server proxies `/api` and `/media` to the API.
 
 To check that the API is up, send `GET /api/health`. It returns `200`.
 
@@ -95,6 +102,7 @@ The API reads standard ASP.NET Core configuration: `appsettings.json`, `appsetti
 | ------------------------ | ------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `ConnectionStrings:Hummi` | `ConnectionStrings__Hummi` | SQL Server connection string. Required to run the API and the migrator.                                   |
 | `Auth:SigningKey`        | `Auth__SigningKey`        | Key that signs access tokens. The development value in `appsettings.Development.json` is for local use only. |
+| `MediaStorage:RootPath`  | `MediaStorage__RootPath`  | Folder holding track audio at `tracks/{trackId}.wav`. The API and `Hummi.Cli seed` read it; production mounts the media volume at `/data/media`. |
 | `App:BaseUrl`            | `App__BaseUrl`            | Public URL of the frontend, used in links such as email verification.                                     |
 
 ## Testing

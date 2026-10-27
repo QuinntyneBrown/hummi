@@ -25,7 +25,9 @@ The slice is frontend-only apart from the `Liked` flag, which every track-return
 
 **Backend — Hummi Application and Domain**
 
-- **`LikedTrackProjection`** — EF Core query extension in Application. `ProjectToSummary(listenerId)` adds `Liked = Likes.Any(l => l.ListenerId == listenerId)` to every track query
+- **`LikedTrackProjection`** — EF Core query extension in Application. `ProjectToSummary(listenerId)` adds `Liked = Likes.Any(l => l.ListenerId == listenerId)` to every track query. Until likes exist (journey 09), `TrackSummaryProjection.ToSummaries()` sets `Liked` to false
+
+As built in journey 02: the row's position cell is a "Play {title}" button, and `hm-track-list` emits `playTrack` with the row index so the host can call `PlayerStore.playFrom(tracks, index)`. The like and More actions buttons render and emit; liking (journey 09) and the track menu (journey 06) act on them later.
 
 ## Requirements
 

@@ -11,18 +11,25 @@ Container_Boundary(spa, "Hummi web application") {
   Component(session, "SessionStore", "Signal store in @hummi/api", "Holds the signed-in listener, the access\ntoken and the signed-in/signed-out state the\nshell reads")
 }
 Container_Boundary(api, "Hummi.Api") {
+  Component(hctl, "HomeController", "ASP.NET Core controller", "GET /api/home through GetHomeQuery")
   Component(mctl, "MediaController", "ASP.NET Core controller", "GET /media/tracks/{id} streams with\nenableRangeProcessing; anonymous access\nallowed; 410 for a withdrawn track")
   Component(pctl, "PlaysController", "ASP.NET Core controller", "POST /api/plays accepts anonymous and\nsigned-in callers")
+  Component(stream, "GetTrackStreamQueryHandler", "MediatR query handler", "Opens a playable track's audio through
+IMediaStore; 404 or 410 otherwise")
   Component(rec, "RecordPlayCommandHandler", "MediatR command handler", "Stores a PlayEvent and increments\nTrack.PlayCount")
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
 }
 ContainerDb(db, "Hummi database", "Azure SQL", "Tracks and play events")
 ContainerDb(media, "media volume", "Docker volume /data/media", "Holds encoded audio files")
-Rel(bar, player, "playList(tracks, i)")
-Rel(player, session, "isSignedIn()")
+Rel(home, player, "playFrom(tracks, i)")
+Rel(home, client, "home()")
+Rel(client, hctl, "GET /api/home")
+Rel(hctl, ctx, "GetHomeQuery")
+Rel(bar, player, "toggle(), next(), previous()")
 Rel(player, audio, "src = /media/tracks/{id}; play()")
 Rel(audio, mctl, "GET /media/tracks/{id} Range:\nbytes=0-")
-Rel(mctl, media, "Open file stream")
+Rel(mctl, stream, "Send GetTrackStreamQuery")
+Rel(stream, media, "IMediaStore.Open(tracks/{id}.wav)")
 Rel(player, client, "recordPlay(trackId)")
 Rel(client, pctl, "POST /api/plays")
 Rel(pctl, rec, "Send RecordPlayCommand")

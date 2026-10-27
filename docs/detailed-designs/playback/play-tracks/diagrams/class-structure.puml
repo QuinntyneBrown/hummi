@@ -21,23 +21,23 @@ enum PlayState {
 }
 class PlayerStore {
   +queue: Signal<TrackSummaryDto[]>
-  +index: Signal<number>
   +state: Signal<PlayState>
-  +positionSeconds: Signal<number>
-  +currentTrack: Computed<TrackSummaryDto | null>
-  +playList(tracks, start, shuffle?): void
+  +position: Signal<number>
+  +duration: Signal<number | null>
+  +current: Computed<TrackSummaryDto | null>
+  +playFrom(tracks, index): void
   +toggle(): void
   +next(): void
   +previous(): void
-  +seek(seconds: number): void
 }
 class PlayerBarComponent <<hm-player-bar>> {
-  +metaLine(): string
+  +track: input<TrackItem>
+  +playing: input<boolean>
+  +stalled: input<boolean>
 }
 class RecordPlayCommand {
   +Guid TrackId
   +Guid? ListenerId
-  +string AnonymousSessionId
 }
 class RecordPlayCommandHandler {
   +Handle(c: RecordPlayCommand): Task<Result>
