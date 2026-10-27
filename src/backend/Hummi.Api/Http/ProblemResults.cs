@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
-using Microsoft.AspNetCore.Mvc;
 using Hummi.Application.Common;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Hummi.Api.Http;
 
