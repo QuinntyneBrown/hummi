@@ -1,0 +1,94 @@
+@let state = track.state();
+@if (notFound()) {
+  <hm-catalogue-not-found />
+} @else {
+  @switch (state.status) {
+    @case ('loading') {
+      <hm-page-header heading="Track" />
+      <div class="stack" aria-busy="true" aria-label="Loading track">
+        <hm-skeleton shape="rect" width="100%" height="14rem" />
+        <ol class="track-list" aria-hidden="true">
+          @for (row of rows; track row) {
+            <li class="track">
+              <span></span>
+              <hm-skeleton shape="rect" width="3rem" height="3rem" />
+              <div><hm-skeleton width="50%" /><hm-skeleton width="30%" /></div>
+              <span></span>
+            </li>
+          }
+        </ol>
+      </div>
+    }
+    @case ('error') {
+      <hm-page-header heading="Track" />
+      <hm-error-block heading="This track didn’t load" (retry)="track.reload()" />
+    }
+    @case ('ready') {
+      @if (state.status === 'ready') {
+        @let t = state.value;
+        <hm-page-header [heading]="t.title">
+          <p subtitle class="subtitle">
+            <a [routerLink]="['/artists', t.artist.slug]">{{ t.artist.name }}</a>
+            @if (t.album) {
+              · {{ t.album.title }}
+            }
+          </p>
+        </hm-page-header>
+        @if (t.playable) {
+          <hm-hero label="Track" [coverUrl]="t.coverUrl">
+            <span class="overline">{{ overline(t) }}</span>
+            <div class="cluster">
+              <button hmButton="primary" type="button" (click)="play(t)"><hm-icon name="play" />Play</button>
+              <button
+                hmButton="ghost"
+                class="btn--icon"
+                type="button"
+                [pressed]="t.liked"
+                [attr.aria-label]="'Like ' + t.title"
+              >
+                <hm-icon name="heart" [fill]="t.liked" />
+              </button>
+              <button hmButton type="button"><hm-icon name="plus" />Add to playlist</button>
+              <button hmButton type="button"><hm-icon name="share" />Share</button>
+              <button hmButton="ghost" class="btn--icon" type="button" aria-label="Report this track">
+                <hm-icon name="flag" />
+              </button>
+            </div>
+            <hm-waveform [peaks]="t.waveform" [played]="played()" />
+          </hm-hero>
+          <section class="section">
+            <h2 class="section-title">Details</h2>
+            <hm-description-list [items]="details(t)" />
+          </section>
+          @if (t.moreFromArtist.length) {
+            <hm-shelf [heading]="'More from ' + t.artist.name">
+              <hm-track-list
+                [tracks]="t.moreFromArtist"
+                [label]="'More from ' + t.artist.name"
+                [currentTrackId]="player.current()?.id ?? null"
+                [playing]="player.playing()"
+                (playTrack)="player.playFrom(t.moreFromArtist, $event)"
+              />
+            </hm-shelf>
+          }
+        } @else {
+          <hm-alert tone="warning" heading="This track is no longer available">
+            <p>
+              Its creator withdrew it, so we can’t play it. It was licensed {{ t.licenceLabel }}; copies already shared
+              keep that licence.
+            </p>
+          </hm-alert>
+          <hm-shelf heading="Similar tracks">
+            <hm-track-list
+              [tracks]="t.similar"
+              label="Similar tracks"
+              [currentTrackId]="player.current()?.id ?? null"
+              [playing]="player.playing()"
+              (playTrack)="player.playFrom(t.similar, $event)"
+            />
+          </hm-shelf>
+        }
+      }
+    }
+  }
+}

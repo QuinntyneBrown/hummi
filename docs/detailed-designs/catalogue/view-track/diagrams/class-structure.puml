@@ -12,10 +12,6 @@ skinparam class {
 hide empty members
 title Class structure — View a track
 
-enum TrackStatus {
-  Published
-  Withdrawn
-}
 enum Licence {
   Cc0
   CcBy4
@@ -26,36 +22,44 @@ class Track {
   +string Slug
   +string Title
   +Guid ArtistId
-  +Guid AlbumId
-  +Guid GenreId
+  +Guid? AlbumId
+  +Guid? GenreId
   +int DurationSeconds
   +Licence Licence
-  +string ModelName
+  +int AlbumPosition
   +long PlayCount
-  +TrackStatus Status
-  +string WaveformPeaksUrl
-  +IsPlayable(): bool
+  +bool Withdrawn
+  +byte[] Waveform
+  +bool IsPlayable
 }
-Track --> TrackStatus
+class Artist {
+  +string Slug
+  +string Name
+  +string ModelName
+}
 Track --> Licence
+Track --> Artist
 
 class GetTrackQuery {
   +string Slug
-  +Guid? ListenerId
 }
 class GetTrackQueryHandler {
   +Handle(q: GetTrackQuery): Task<Result<TrackDetailDto>>
 }
 class TrackDetailDto {
+  +string Slug
   +string Title
+  +int DurationSeconds
   +ArtistRefDto Artist
   +AlbumRefDto Album
   +string Genre
   +string GeneratedWith
+  +Licence Licence
   +string LicenceLabel
   +long Plays
   +bool Playable
   +bool Liked
+  +IReadOnlyList<int> Waveform
   +IReadOnlyList<TrackSummaryDto> MoreFromArtist
   +IReadOnlyList<TrackSummaryDto> Similar
 }

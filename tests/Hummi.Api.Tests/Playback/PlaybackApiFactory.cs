@@ -64,6 +64,24 @@ public sealed class PlaybackApiFactory : WebApplicationFactory<Program>
         return tracks;
     }
 
+    /// <summary>Adds an artist with one published 2026 album of CC0 tracks, 3:42 then 3:58 long.</summary>
+    public async Task<Track[]> SeedAlbumAsync(string artistName, string albumTitle, params string[] titles)
+    {
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<HummiDbContext>();
+        var artist = Artist.Create(artistName, "openmusic-3b", "A soca band.");
+        var album = Album.Create(albumTitle, artist.Id, 2026);
+        var tracks = titles
+            .Select((title, i) => Track.Create(title, artist.Id, 222 + (16 * i), null, DateTimeOffset.UnixEpoch.AddDays(i), albumId: album.Id, albumPosition: i + 1))
+            .ToArray();
+        album.Publish(tracks);
+        db.Artists.Add(artist);
+        db.Albums.Add(album);
+        db.Tracks.AddRange(tracks);
+        await db.SaveChangesAsync();
+        return tracks;
+    }
+
     public async Task WithdrawAsync(Guid trackId)
     {
         using var scope = Services.CreateScope();

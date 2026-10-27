@@ -30,9 +30,9 @@ box "Backend — Hummi Infrastructure" #FFF4E5
   participant "HummiDbContext" as ctx
   database "Hummi database" as db
 end box
-u -> page : Open /tracks/slow-orbit/licence
-page -> client : get("slow-orbit")
-client -> ctl : GET /api/tracks/slow-orbit
+u -> page : Open /tracks/feathers-up/licence
+page -> client : get("feathers-up")
+client -> ctl : GET /api/tracks/feathers-up
 ctl -> q : Send GetTrackQuery
 q -> ctx : Load track
 ctx -> db : SELECT
@@ -43,5 +43,5 @@ ctl --> client : 200
 client --> page : Track
 page -> terms : Lookup Cc0
 terms --> page : Label and terms
-page --> u : Alert "Slow Orbit is CC0" with credit line, licence table, Back to Slow Orbit (L2-012)
+page --> u : Alert "Feathers Up is CC0" with credit line, licence table, Back to Feathers Up (L2-012)
 @enduml

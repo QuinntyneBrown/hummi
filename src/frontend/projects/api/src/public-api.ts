@@ -12,3 +12,15 @@ export {
   type GenreTrackSort,
   type GenreTracksDto,
 } from './lib/discovery/genres-api';
+export {
+  AlbumsApi,
+  ArtistsApi,
+  TracksApi,
+  type AlbumDetailDto,
+  type AlbumRefDto,
+  type AlbumTileDto,
+  type ArtistDetailDto,
+  type ArtistRefDto,
+  type Licence,
+  type TrackDetailDto,
+} from './lib/catalogue/catalogue-api';

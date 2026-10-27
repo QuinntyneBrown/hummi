@@ -182,6 +182,26 @@
           "defaultConfiguration": "production"
         }
       }
+    },
+    "catalogue": {
+      "projectType": "library",
+      "root": "projects/catalogue",
+      "sourceRoot": "projects/catalogue/src",
+      "prefix": "hm",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/catalogue/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/catalogue/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
     }
   }
 }

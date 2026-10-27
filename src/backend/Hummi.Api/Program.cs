@@ -1,10 +1,14 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Hummi.Api.Auth;
 using Hummi.Application;
 using Hummi.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+// Enums travel as camelCase strings, e.g. the licence "ccBySa4".
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)));
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHummiAuth(builder.Configuration);

@@ -40,6 +40,7 @@ export async function fakeSignedInVisitor(page: Page, user: { displayName: strin
 
 export interface FakeTrack {
   id: string;
+  slug: string;
   title: string;
   artistName: string;
   durationSeconds: number;
@@ -49,6 +50,7 @@ export interface FakeTrack {
 
 const track = (id: string, title: string, artistName: string, durationSeconds: number, liked = false): FakeTrack => ({
   id,
+  slug: id,
   title,
   artistName,
   durationSeconds,
@@ -59,6 +61,8 @@ const track = (id: string, title: string, artistName: string, durationSeconds: n
 /** The demo catalogue, as Hummi.Cli seed writes it. */
 export const TRACKS = {
   feathersUp: track('feathers-up', 'Feathers Up', 'Kaiso Collective', 222),
+  jouvert: track('jouvert-morning', 'J’ouvert Morning', 'Kaiso Collective', 238),
+  roadMarch: track('road-march-riddim', 'Road March Riddim', 'Lady Tamboo', 245),
   bigTruck: track('big-truck-energy', 'Big Truck Energy', 'Lady Tamboo', 201),
   panyard: track('panyard-nights', 'Panyard Nights', 'Laventille Steel Orchestra', 400),
   redLight: track('red-light-riddim', 'Red Light Riddim', 'Shanique', 182, true),
@@ -166,6 +170,122 @@ export async function fakeGenreTracks(
     });
   });
   return { sorts };
+}
+
+/** Answers a GET with the body, or with problem details when status is not 200; returns how many times it was asked. */
+async function fakeGet(
+  page: Page,
+  url: string | RegExp,
+  body: unknown,
+  options: { status?: number; code?: string; delayMs?: number } = {},
+): Promise<{ calls: () => number }> {
+  let calls = 0;
+  await page.route(url, async (route) => {
+    calls++;
+    if (options.delayMs) await new Promise((resolve) => setTimeout(resolve, options.delayMs));
+    const status = options.status ?? 200;
+    await route.fulfill(
+      status === 200
+        ? { status, contentType: 'application/json', body: JSON.stringify(body) }
+        : {
+            status,
+            contentType: 'application/problem+json',
+            body: JSON.stringify({
+              title: status === 404 ? 'Not found' : 'Server error',
+              status,
+              code: options.code ?? (status === 404 ? 'NOT_FOUND' : 'UNEXPECTED'),
+            }),
+          },
+    );
+  });
+  return { calls: () => calls };
+}
+
+/** 64 waveform peaks from 25 to 95, the shape the track page mock draws. */
+export const PEAKS = Array.from({ length: 64 }, (_, i) =>
+  Math.round(25 + 70 * Math.abs(Math.sin(i * 0.7) * Math.cos(i * 0.21))),
+);
+
+/** GET /api/tracks/feathers-up as the demo catalogue answers it. */
+export const FEATHERS_UP_DETAIL = {
+  id: TRACKS.feathersUp.id,
+  slug: 'feathers-up',
+  title: 'Feathers Up',
+  durationSeconds: 222,
+  coverUrl: null,
+  artist: { slug: 'kaiso-collective', name: 'Kaiso Collective' },
+  album: { slug: 'mas-on-the-avenue', title: 'Mas on the Avenue' },
+  genre: 'Soca',
+  generatedWith: 'openmusic-3b',
+  licence: 'cc0',
+  licenceLabel: 'CC0 1.0 (public domain)',
+  plays: 128904,
+  playable: true,
+  liked: false,
+  waveform: PEAKS,
+  moreFromArtist: [TRACKS.jouvert],
+  similar: [],
+};
+
+/** Feathers Up after its creator withdrew it: not playable, with Similar tracks instead of More from. */
+export const WITHDRAWN_DETAIL = {
+  ...FEATHERS_UP_DETAIL,
+  playable: false,
+  moreFromArtist: [],
+  similar: [TRACKS.roadMarch, TRACKS.panyard],
+};
+
+/** Answers GET /api/tracks/{slug} with the detail (Feathers Up by default); every slug gets the same answer. */
+export async function fakeTrack(
+  page: Page,
+  options: { detail?: unknown; status?: number; delayMs?: number } = {},
+): Promise<{ calls: () => number }> {
+  return fakeGet(page, /\/api\/tracks\/[^/?]+$/, options.detail ?? FEATHERS_UP_DETAIL, {
+    ...options,
+    code: 'TRACK_NOT_FOUND',
+  });
+}
+
+export const KAISO_DETAIL = {
+  slug: 'kaiso-collective',
+  name: 'Kaiso Collective',
+  modelName: 'openmusic-3b',
+  description:
+    'A soca band generated with an open-weights model. Brass sections, iron rhythm and road-march hooks, recorded live on the Avenue.',
+  monthlyListeners: 48210,
+  coverUrl: null,
+  following: false,
+  popular: [TRACKS.feathersUp, TRACKS.jouvert],
+  releases: [{ slug: 'mas-on-the-avenue', title: 'Mas on the Avenue', year: 2026, trackCount: 2, coverUrl: null }],
+};
+
+/** Answers GET /api/artists/{slug} (Kaiso Collective by default). */
+export async function fakeArtist(
+  page: Page,
+  options: { detail?: unknown; status?: number; delayMs?: number } = {},
+): Promise<{ calls: () => number }> {
+  return fakeGet(page, /\/api\/artists\/[^/?]+$/, options.detail ?? KAISO_DETAIL, {
+    ...options,
+    code: 'ARTIST_NOT_FOUND',
+  });
+}
+
+export const MAS_DETAIL = {
+  slug: 'mas-on-the-avenue',
+  title: 'Mas on the Avenue',
+  year: 2026,
+  artist: { slug: 'kaiso-collective', name: 'Kaiso Collective' },
+  coverUrl: null,
+  summary: '2026 · 2 tracks · 8 min · CC0 1.0 (public domain)',
+  tracks: [TRACKS.feathersUp, TRACKS.jouvert],
+};
+
+/** Answers GET /api/albums/{slug} (Mas on the Avenue by default). */
+export async function fakeAlbum(
+  page: Page,
+  options: { detail?: unknown; status?: number; delayMs?: number } = {},
+): Promise<{ calls: () => number }> {
+  return fakeGet(page, /\/api\/albums\/[^/?]+$/, options.detail ?? MAS_DETAIL, { ...options, code: 'ALBUM_NOT_FOUND' });
 }
 
 /** A quiet 8 kHz, 8-bit mono WAV of the given length, so the browser really plays something. */

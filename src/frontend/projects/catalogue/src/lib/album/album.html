@@ -1,0 +1,51 @@
+@let state = album.state();
+@if (isNotFound(state)) {
+  <hm-catalogue-not-found />
+} @else {
+  @switch (state.status) {
+    @case ('loading') {
+      <hm-page-header heading="Album" />
+      <div aria-busy="true" aria-label="Loading album">
+        <ol class="track-list" aria-hidden="true">
+          @for (row of rows; track row) {
+            <li class="track">
+              <span></span>
+              <hm-skeleton shape="rect" width="3rem" height="3rem" />
+              <div><hm-skeleton width="50%" /><hm-skeleton width="30%" /></div>
+              <span></span>
+            </li>
+          }
+        </ol>
+      </div>
+    }
+    @case ('error') {
+      <hm-page-header heading="Album" />
+      <hm-error-block heading="This album didn’t load" (retry)="album.reload()" />
+    }
+    @case ('ready') {
+      @if (state.status === 'ready') {
+        @let a = state.value;
+        <hm-page-header [heading]="a.title">
+          <p subtitle class="subtitle">
+            <a [routerLink]="['/artists', a.artist.slug]">{{ a.artist.name }}</a> · Album
+          </p>
+        </hm-page-header>
+        <div class="cluster album-actions">
+          <button hmButton="primary" type="button" (click)="player.playFrom(a.tracks, 0)">
+            <hm-icon name="play" />Play
+          </button>
+          <button hmButton type="button"><hm-icon name="plus" />Add to playlist</button>
+          <button hmButton type="button"><hm-icon name="share" />Share</button>
+        </div>
+        <hm-track-list
+          [tracks]="a.tracks"
+          [label]="a.title + ' tracks'"
+          [currentTrackId]="player.current()?.id ?? null"
+          [playing]="player.playing()"
+          (playTrack)="player.playFrom(a.tracks, $event)"
+        />
+        <p class="text-caption album-summary">{{ a.summary }}</p>
+      }
+    }
+  }
+}

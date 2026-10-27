@@ -10,12 +10,12 @@ Container_Boundary(spa, "Hummi web application") {
 }
 Container_Boundary(api, "Hummi.Api") {
   Component(ctl, "AlbumsController", "ASP.NET Core controller", "Returns 200 AlbumDetailDto or 404")
-  Component(q, "GetAlbumQueryHandler", "MediatR query handler", "Loads the album with ordered tracks and\nbuilds the summary; total minutes round up\n<TO SUPPLY: rounding rule>")
+  Component(q, "GetAlbumQueryHandler", "MediatR query handler", "Loads the published album with its tracks\nin order and builds the summary; minutes\nround up from the total seconds")
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
 }
 ContainerDb(db, "Hummi database", "Azure SQL", "Albums and tracks")
-Rel(page, client, "get('night-garden')")
-Rel(client, ctl, "GET /api/albums/night-garden")
+Rel(page, client, "get('mas-on-the-avenue')")
+Rel(client, ctl, "GET /api/albums/mas-on-the-avenue")
 Rel(ctl, q, "Send GetAlbumQuery")
 Rel(q, ctx, "Album with tracks by Position")
 Rel(ctx, db, "SELECT")

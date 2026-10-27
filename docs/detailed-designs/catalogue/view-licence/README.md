@@ -18,8 +18,8 @@ The slice reuses the track query and keeps the licence table as typed constants 
 
 **Frontend — Hummi web application (Angular)**
 
-- **`LicencePage`** — Routed component in @hummi/catalogue. Renders the header, the info `hm-alert` with the credit line, the Licences on Hummi `hm-table` and the Back to {title} link
-- **`LICENCE_TERMS`** — Constant in @hummi/catalogue. Maps each `Licence` to its label, permissions and conditions
+- **`LicencePage`** — Routed component in @hummi/catalogue. Renders the header, the info `hm-alert` with the credit line, the Licences on Hummi `hm-table` and the Back to {title} link. An unknown slug shows Not found
+- **`LICENCE_TERMS`** — Constant in @hummi/catalogue. Maps each `Licence` to its table name, the short name of the alert heading, permissions, conditions and the alert's terms (CC0: credit appreciated but not required; CC BY and CC BY-SA: credit required)
 - **`TracksApi`** — Typed HTTP service in @hummi/api. Calls `GET /api/tracks/{slug}`
 
 **Backend — Hummi.Api application**
@@ -41,7 +41,7 @@ The feature realizes the following level-2 (L2) requirements. Each L2 requiremen
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-012` | `L1-003` | **Licence and credit page.** 1. Given Slow Orbit, when a listener opens `/tracks/slow-orbit/licence`, then the heading is "Licence and credit" with "How you can reuse what you hear on Hummi" and an info alert "Slow Orbit is CC0" with "Lumen Fox released it into the public domain. Credit is appreciated but not required: “Slow Orbit by Lumen Fox, generated with openmusic-3b.”"<br>2. Given the licence page, when it loads, then a "Licences on Hummi" table lists: CC0 1.0 — "Use, remix and share for any purpose" — "Nothing"; CC BY 4.0 — "Use, remix and share, including commercially" — "Credit the artist and model"; CC BY-SA 4.0 — "Use, remix and share, including commercially" — "Credit, and share changes under the same licence".<br>3. Given the licence page, when it loads, then a "Back to {title}" link returns to the track page.<br>4. Given any track, when it is published, then it has exactly one of the three licences; the licence page has no empty state. |
+| `L2-012` | `L1-003` | **Licence and credit page.** 1. Given Feathers Up, when a listener opens `/tracks/feathers-up/licence`, then the heading is "Licence and credit" with "How you can reuse what you hear on Hummi" and an info alert "Feathers Up is CC0" with "Kaiso Collective released it into the public domain. Credit is appreciated but not required: “Feathers Up by Kaiso Collective, generated with openmusic-3b.”"<br>2. Given the licence page, when it loads, then a "Licences on Hummi" table lists: CC0 1.0 — "Use, remix and share for any purpose" — "Nothing"; CC BY 4.0 — "Use, remix and share, including commercially" — "Credit the artist and model"; CC BY-SA 4.0 — "Use, remix and share, including commercially" — "Credit, and share changes under the same licence".<br>3. Given the licence page, when it loads, then a "Back to {title}" link returns to the track page.<br>4. Given any track, when it is published, then it has exactly one of the three licences; the licence page has no empty state. |
 
 ## Diagrams
 

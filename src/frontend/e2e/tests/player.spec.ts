@@ -158,7 +158,7 @@ test('the player bar stays across pages and hides on pages whose route says so (
   await expect(player.title).toHaveText('Feathers Up');
 
   await shell.navLink('Your library').click();
-  await expect(page.getByRole('heading', { name: 'Page not found' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'We couldn’t find that page' })).toBeVisible();
   await expect(player.region).toHaveCount(0);
 
   await shell.navLink('Home').click();

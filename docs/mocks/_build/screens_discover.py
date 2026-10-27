@@ -97,7 +97,7 @@ def track(state):
           f'<dt>Generated with</dt><dd>{a["model"]} (open weights)</dd><dt>Licence</dt><dd><a href="{P("licence")}">{LICENCES[t["licence"]]}</a></dd><dt>Plays</dt><dd>{t["plays"]}</dd></dl>')
     default = (f'<section class="hero" aria-label="Track">{cover(a["cover"])}<div class="stack"><span class="overline">Track · {t["dur"]}</span>'
                f'<div class="cluster">{acts}</div>{wave()}</div></section><section class="section"><h2 style="font:var(--text-h3);margin-bottom:var(--space-3)">Details</h2>{dl}</section>'
-               + shelf("More from Kaiso Collective", track_list(["road-march-riddim"], label="More from Kaiso Collective")))
+               + shelf("More from Kaiso Collective", track_list(["jouvert-morning"], label="More from Kaiso Collective")))
     sk = '<div class="skeleton skeleton--rect" style="height:14rem"></div>' + skel_rows(3)
     gone = alert("warning", "This track is no longer available", "Its creator withdrew it, so we can’t play it. It was licensed {0}; copies already shared keep that licence.".format(LICENCES["CC0"])) + shelf("Similar tracks", track_list(["road-march-riddim", "panyard-nights"], label="Similar tracks"))
     c = {"default": default, "loading": sk, "error": err("This track didn’t load"), "unavailable": gone}
@@ -109,7 +109,7 @@ def artist(state):
     default = (f'<section class="hero">{cover(a["cover"]).replace("cover ", "cover round ", 1)}<div class="stack"><span class="overline">Artist · {a["model"]}</span>'
                f'<p class="text-muted">A soca band generated with an open-weights model. Brass sections, iron rhythm and road-march hooks, recorded live on the Avenue.</p>'
                f'<div class="cluster">{btn("Play", "primary", "play")}{btn("Follow", "", "plus", " aria-pressed=\"false\"")}{btn("Share", "", "share", href=D("share"))}</div></div></section>'
-               + shelf("Popular", track_list(["feathers-up", "road-march-riddim"], playing="feathers-up", label="Popular tracks"))
+               + shelf("Popular", track_list(["feathers-up", "jouvert-morning"], playing="feathers-up", label="Popular tracks"))
                + shelf("Releases", f'<div class="card-grid"><a class="card-track" href="{P("album")}"><span class="card-track__art">{cover(a["cover"])}</span><span class="card-track__title"><span>Mas on the Avenue</span></span><span class="card-track__meta">2026 · 2 tracks</span></a></div>'))
     c = {"default": default, "loading": '<div class="skeleton skeleton--rect" style="height:12rem"></div>' + skel_rows(4), "error": err("This artist didn’t load"),
          "empty": empty("music", "No tracks released yet", "Kaiso Collective hasn’t published anything. Follow to hear when they do.", btn("Follow", "primary", "plus"))}
@@ -117,7 +117,7 @@ def artist(state):
 
 
 def album(state):
-    c = {"default": f'<div class="cluster" style="margin-bottom:var(--space-4)">{btn("Play", "primary", "play")}{btn("Add to playlist", "", "plus", href=D("add-to-playlist"))}{btn("Share", "", "share", href=D("share"))}</div>' + track_list(["feathers-up", "road-march-riddim"], playing="feathers-up", label="Mas on the Avenue tracks") + '<p class="text-caption" style="margin-top:var(--space-4)">2026 · 2 tracks · 8 min · CC0 1.0 (public domain)</p>',
+    c = {"default": f'<div class="cluster" style="margin-bottom:var(--space-4)">{btn("Play", "primary", "play")}{btn("Add to playlist", "", "plus", href=D("add-to-playlist"))}{btn("Share", "", "share", href=D("share"))}</div>' + track_list(["feathers-up", "jouvert-morning"], playing="feathers-up", label="Mas on the Avenue tracks") + '<p class="text-caption" style="margin-top:var(--space-4)">2026 · 2 tracks · 8 min · CC0 1.0 (public domain)</p>',
          "loading": skel_rows(4), "error": err("This album didn’t load")}
     return frame(state, "browse", "Mas on the Avenue", f'<a href="{P("artist")}">Kaiso Collective</a> · Album', c)
 

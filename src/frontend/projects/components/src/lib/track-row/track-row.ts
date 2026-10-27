@@ -35,7 +35,7 @@ import { TrackItem, formatDuration } from '../track/track-item';
       </div>
       <div class="track__text">
         <div class="track__title">
-          <a [routerLink]="['/tracks', track().id]">{{ track().title }}</a>
+          <a [routerLink]="['/tracks', track().slug]">{{ track().title }}</a>
         </div>
         <div class="track__meta">{{ meta() }}</div>
       </div>

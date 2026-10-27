@@ -1,6 +1,8 @@
 /** What a track row, card or the player bar needs to show one track. */
 export interface TrackItem {
   id: string;
+  /** The track's segment of /tracks/{slug}. */
+  slug: string;
   title: string;
   artistName: string;
   /** Length in whole seconds. */
