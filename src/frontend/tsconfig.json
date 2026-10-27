@@ -1,0 +1,31 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "paths": {
+      "@hummi/api": ["./projects/api/src/public-api.ts"],
+      "@hummi/components": ["./projects/components/src/public-api.ts"]
+    },
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve",
+    "strict": true
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true
+  },
+  "files": [],
+  "references": [
+    { "path": "./projects/hummi/tsconfig.app.json" },
+    { "path": "./projects/api/tsconfig.lib.json" },
+    { "path": "./projects/components/tsconfig.lib.json" }
+  ]
+}

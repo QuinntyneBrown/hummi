@@ -1,0 +1,57 @@
+/* Hummi brand tokens. Palette and type from docs/design-system/assets/README.md (logo v1). */
+:root {
+  color-scheme: light dark;
+
+  --font-family-base: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-size-base: 1rem;
+  --line-height-base: 1.5;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2.5rem;
+
+  --radius-md: 0.75rem;
+  --radius-lg: 1.75rem;
+  --container-max: 80rem;
+
+  /* Brand constants: the same in both schemes. */
+  --color-brand: #f0533a;
+  --color-brand-deep: #d9432c;
+  --color-cream: #fbf3e4;
+  --color-ink: #24182b;
+
+  /* Light scheme: plum ink on cream. */
+  --color-bg: #fbf3e4;
+  --color-surface: #f3e7d1;
+  --color-text: #24182b;
+  --color-text-muted: #6f6159;
+  --color-border: #e3d8c4;
+  --color-logo: #f0533a;
+  --color-accent: #c4381f; /* coral deepened to reach 4.5:1 on cream for text and focus rings */
+  --color-accent-contrast: #fbf3e4;
+  --color-info: #1b5f9e;
+  --color-success: #1e6b40;
+  --color-warning: #8a4f00;
+  --color-danger: #a8231c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark scheme: cream on plum ink; the mark is cream with a coral dot. */
+    --color-bg: #24182b;
+    --color-surface: #34263c;
+    --color-text: #fbf3e4;
+    --color-text-muted: #c9bdb0;
+    --color-border: #4a3a52;
+    --color-logo: #fbf3e4;
+    --color-accent: #f0533a;
+    --color-accent-contrast: #24182b;
+    --color-info: #7fbcff;
+    --color-success: #6fd597;
+    --color-warning: #f2b85f;
+    --color-danger: #ff8f85;
+  }
+}

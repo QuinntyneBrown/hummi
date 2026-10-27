@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="6 6 552 168" role="img" aria-label="hummi">
+  <g fill="none" stroke="#FBF3E4" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M30 30 V150 M30 106 A26 26 0 0 1 82 106 V150"/>
+    <path d="M128 80 V124 A26 26 0 0 0 180 124 V80 V150"/>
+    <path d="M226 150 V106 A26 26 0 0 1 278 106 V150 M278 106 A26 26 0 0 1 330 106 V124 A26 26 0 0 0 382 124 V106 A26 26 0 0 1 434 106 V150 M434 106 A26 26 0 0 1 486 106 V150"/>
+    <path d="M532 80 V150"/>
+  </g>
+  <circle cx="536" cy="34" r="15" fill="#F0533A"/>
+</svg>

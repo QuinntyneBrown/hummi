@@ -1,0 +1,29 @@
+# Serves the single-page Angular build.
+(spa) {
+	# index.html and SPA routes must revalidate so a deploy shows up at once; hashed assets can be cached.
+	@entry not path *.js *.css *.png *.jpg *.svg *.ico *.webp *.mp3 *.ogg *.flac *.woff2
+	header @entry Cache-Control "no-cache"
+	root * {args[0]}
+	try_files {path} /index.html
+	file_server
+}
+
+{$SITE_ADDRESS:localhost} {
+	encode zstd gzip
+
+	# The bare domain redirects to the canonical www host (both must be in SITE_ADDRESS so Caddy holds a certificate for each).
+	@apex host {$APEX_HOST:hummi.example}
+	redir @apex https://{$CANONICAL_HOST:www.hummi.example}{uri} permanent
+
+	handle /api/* {
+		reverse_proxy api:8080
+	}
+
+	handle /media/* {
+		reverse_proxy api:8080
+	}
+
+	handle {
+		import spa /srv/app
+	}
+}

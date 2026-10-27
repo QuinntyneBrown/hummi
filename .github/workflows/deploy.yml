@@ -1,0 +1,128 @@
+name: Deploy
+
+# Deploys every push to main once CI (npm run verify) has passed on it.
+# Run by hand with an older commit SHA to roll back (L2-086).
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Full commit SHA to deploy (empty for the head of the chosen branch)
+        required: false
+        default: ""
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions: {}
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ghcr.io/quinntynebrown
+  DEPLOY_SHA: ${{ inputs.ref || github.event.workflow_run.head_sha || github.sha }}
+
+jobs:
+  build:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: api
+            file: deploy/backend.Dockerfile
+            context: src/backend
+            target: api
+          - name: worker
+            file: deploy/backend.Dockerfile
+            context: src/backend
+            target: worker
+          - name: migrator
+            file: deploy/backend.Dockerfile
+            context: src/backend
+            target: migrator
+          - name: web
+            file: deploy/web/Dockerfile
+            context: .
+            target: ""
+    steps:
+      - name: Check deploy SHA
+        run: '[[ "$DEPLOY_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "ref must be a full commit SHA"; exit 1; }'
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          target: ${{ matrix.target }}
+          push: true
+          tags: |
+            ${{ env.IMAGE_PREFIX }}/hummi-${{ matrix.name }}:${{ env.DEPLOY_SHA }}
+            ${{ env.IMAGE_PREFIX }}/hummi-${{ matrix.name }}:latest
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      packages: read
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      SITE_HOST: ${{ secrets.SITE_HOST }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+      - name: Install SSH key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+      - name: Copy compose file
+        run: scp deploy/docker-compose.yml "azureuser@${DEPLOY_HOST}:/opt/hummi/docker-compose.yml"
+      - name: Log in to the registry
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: printf '%s' "$GHCR_TOKEN" | ssh "azureuser@${DEPLOY_HOST}" docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+      - name: Migrate and restart
+        run: |
+          ssh "azureuser@${DEPLOY_HOST}" bash -s <<'REMOTE'
+            set -euo pipefail
+            cd /opt/hummi
+            trap 'docker logout ghcr.io >/dev/null' EXIT
+            sed -i '/^IMAGE_TAG=/d' .env && echo "IMAGE_TAG=${{ env.DEPLOY_SHA }}" >> .env
+            sed -i '/^SITE_ADDRESS=/d' .env && printf 'SITE_ADDRESS=%s, www.%s\n' "${{ env.SITE_HOST }}" "${{ env.SITE_HOST }}" >> .env
+            docker compose pull --quiet
+            docker compose run --rm -T migrator < /dev/null
+            docker compose up -d --remove-orphans
+            docker image prune -af --filter "until=72h" >/dev/null
+          REMOTE
+      - name: Smoke test
+        run: |
+          for i in $(seq 1 20); do
+            curl -fsS "https://${SITE_HOST}/api/health" && exit 0
+            sleep 6
+          done
+          echo "health check failed" && exit 1
