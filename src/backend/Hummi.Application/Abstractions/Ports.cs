@@ -84,4 +84,6 @@ public sealed class EmailNotSentException(Exception innerException)
 public interface IAppLinks
 {
     Uri VerifyEmail(string token);
+
+    Uri NewPassword(string token);
 }

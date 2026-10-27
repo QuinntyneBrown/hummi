@@ -213,6 +213,23 @@
       }
     },
     {
+      "id": "new-password",
+      "kind": "page",
+      "title": "New password",
+      "states": [
+        "default",
+        "invalid",
+        "submitting",
+        "error",
+        "success"
+      ],
+      "route": "/new-password",
+      "not_applicable": {
+        "loading": "Static form; nothing is fetched before it is shown.",
+        "empty": "A form has no collection that could be empty."
+      }
+    },
+    {
       "id": "verify-email",
       "kind": "page",
       "title": "Verify email",

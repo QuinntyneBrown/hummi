@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace Hummi.Api.Controllers;
 
 /// <summary>
-/// Sign up, email confirmation, sign in, refresh, sign out and the current listener (L2-027 to L2-031).
+/// Sign up, email confirmation, sign in, refresh, sign out, password reset and the current listener (L2-027 to L2-031, L2-055).
 /// The session lives in HttpOnly cookies written by <see cref="SessionCookies"/>; rate limited per client (ADR 0010).
 /// </summary>
 [ApiController]
@@ -79,6 +79,23 @@ public sealed class AuthController(ISender sender, SessionCookies cookies) : Con
         return NoContent();
     }
 
+    /// <summary>202 whether or not the account exists (L2-030 AC4); 503 only when the email cannot be sent.</summary>
+    [AllowAnonymous]
+    [HttpPost("password-reset")]
+    public async Task<IActionResult> RequestPasswordReset(PasswordResetRequest request, CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new RequestPasswordResetCommand(request.Email ?? string.Empty), cancellationToken);
+        return result.IsSuccess ? Accepted() : this.ToProblem(result.Error!);
+    }
+
+    [AllowAnonymous]
+    [HttpPost("password-reset/confirm")]
+    public async Task<IActionResult> ConfirmPasswordReset(NewPasswordRequest request, CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new ResetPasswordCommand(request.Token ?? string.Empty, request.Password ?? string.Empty), cancellationToken);
+        return result.IsSuccess ? NoContent() : this.ToProblem(result.Error!);
+    }
+
     [Authorize]
     [HttpGet("me")]
     public async Task<IActionResult> Me(CancellationToken cancellationToken)
@@ -99,3 +116,7 @@ public sealed record SignUpRequest(string? DisplayName, string? Email, string? P
 public sealed record TokenRequest(string? Token);
 
 public sealed record SignInRequest(string? Email, string? Password, bool KeepSignedIn);
+
+public sealed record PasswordResetRequest(string? Email);
+
+public sealed record NewPasswordRequest(string? Token, string? Password);

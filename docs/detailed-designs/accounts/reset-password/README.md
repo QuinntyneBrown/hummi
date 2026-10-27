@@ -14,7 +14,8 @@ Two commands: request a link, and redeem it with a new password.
 
 **Frontend — Hummi web application (Angular)**
 
-- **`ResetPasswordPage`** — Routed component in @hummi/accounts. Renders the request form, Check your inbox state and danger alert; a choose-new-password form handles the link <TO SUPPLY: mock for that form>
+- **`ResetPasswordPage`** — Routed component in @hummi/accounts. Renders the request form, Check your inbox state and danger alert; `NewPasswordPage` handles the link (L2-055, ADR 0011)
+- **`NewPasswordPage`** — Routed component in @hummi/accounts at `/new-password?token=`. Choose a new password, Password changed and This link has expired
 - **`AuthApi`** — Typed HTTP service in @hummi/api. Calls the anonymous `/api/auth/*` endpoints
 
 **Backend — Hummi.Api application**
@@ -26,7 +27,7 @@ Two commands: request a link, and redeem it with a new password.
 - **`RequestPasswordResetCommandHandler`** — MediatR command handler. Issues a 1-hour token and sends the email only when the account exists; always returns success unless sending fails
 - **`ResetPasswordCommandHandler`** — MediatR command handler. Redeems the token, sets the new hash and revokes all refresh tokens
 - **`IEmailSender`** — Application port. `SendAsync(EmailMessage)`; implemented by an SMTP adapter in Infrastructure
-- **`IClock`** — Application port. Supplies the current UTC time so time rules are testable
+- **`TimeProvider`** — .NET clock (ADR 0010). Supplies the current UTC time so time rules are testable
 
 **Backend — Hummi Infrastructure**
 
@@ -40,6 +41,7 @@ The feature realizes the following level-2 (L2) requirements. Each L2 requiremen
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
 | `L2-030` | `L1-007` | **Reset password.** 1. Given a visitor, when they open `/reset-password`, then it shows "Reset your password" with "Enter your email and we’ll send a link to choose a new one.", a required "Email" field, "Send reset link" and "Back to sign in".<br>2. Given an empty email, when they submit, then the summary and field show "Enter the email you signed up with".<br>3. Given submission in progress, when the form renders, then the field is read-only and the button reads "Send reset link…" and is disabled.<br>4. Given any email, when they submit, then the page shows "Check your inbox" with "If an account exists for {email}, a reset link is on its way. It works for 1 hour." whether or not an account exists, and "Back to sign in".<br>5. Given a sent reset link, when more than 1 hour has passed, then it no longer resets the password.<br>6. Given the email cannot be sent, when they submit, then a danger alert reads "We couldn’t send the email" with "Try again in a minute. If it keeps happening, contact support." |
+| `L2-055` | `L1-007` | **Choose a new password.** 1. Given a reset link (L2-030), when the listener opens `/new-password?token={token}`, then it shows "Choose a new password" with "Pick a new password for your Hummi account.", a required "New password" field with the help "At least 10 characters", "Change password" and "Back to sign in".<br>2. Given a new password shorter than 10 characters, when they submit, then the summary and field show "Use at least 10 characters" and nothing is changed.<br>3. Given submission in progress, when the form renders, then the field is read-only and the button reads "Change password…" and is disabled.<br>4. Given a reset link less than 1 hour old and not used, when they submit a valid password, then the password is changed, every session of the account is signed out, the link cannot be used again, and the page shows "Password changed" with "Sign in with your new password." and "Sign in".<br>5. Given an unknown, used or expired reset link, when they submit, then the page shows "This link has expired" with "Reset links work for 1 hour. Request a new one to choose a password.", "Request a new link" and "Back to sign in". |
 
 ## Diagrams
 
@@ -69,6 +71,6 @@ A listener resets a forgotten password in Hummi; the reset link travels through 
 
 ### Behaviour — request and redeem a reset link
 
-The request returns 202 whether or not the account exists. Only an email-delivery failure changes the response. Redemption checks the 1-hour expiry against `IClock`.
+The request returns 202 whether or not the account exists. Only an email-delivery failure changes the response. Redemption checks the 1-hour expiry against `TimeProvider`.
 
 ![Sequence diagram for request and redeem a reset link](diagrams/sequence-reset.png)

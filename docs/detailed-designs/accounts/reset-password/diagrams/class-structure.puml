@@ -18,10 +18,10 @@ class Listener {
   +string Email
   +string PasswordHash
   +DateTimeOffset? EmailConfirmedAt
-  +bool IsEmailConfirmed
-  +{static} Register(name, email, hash, now): Listener
+  +bool EmailConfirmed
+  +{static} Create(name, email, hash, now): Listener
   +ConfirmEmail(now): void
-  +ChangePassword(hash): void
+  +ChangePassword(hash, now): void
 }
 
 class RequestPasswordResetCommand {
@@ -29,12 +29,13 @@ class RequestPasswordResetCommand {
 }
 class ResetPasswordCommand {
   +string Token
-  +string NewPassword
+  +string Password
 }
 class EmailToken {
-  +TokenPurpose Purpose
+  +EmailTokenPurpose Purpose
+  +{static} LifetimeOf(purpose): TimeSpan
   +DateTimeOffset ExpiresAt
-  +Redeem(now): Result
+  +Redeem(now): TokenRedemption
 }
 RequestPasswordResetCommandHandler ..> EmailToken : creates (1 h)
 ResetPasswordCommandHandler --> EmailToken : Redeem

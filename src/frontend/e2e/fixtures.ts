@@ -62,7 +62,16 @@ export interface AuthAnswer {
 export async function fakeAuth(
   page: Page,
   answers: Partial<
-    Record<'sign-up' | 'verify-email' | 'resend-confirmation' | 'sign-in' | 'sign-out', AuthAnswer>
+    Record<
+      | 'sign-up'
+      | 'verify-email'
+      | 'resend-confirmation'
+      | 'sign-in'
+      | 'sign-out'
+      | 'password-reset'
+      | 'password-reset/confirm',
+      AuthAnswer
+    >
   > = {},
 ): Promise<Record<string, unknown[]>> {
   const sent: Record<string, unknown[]> = {};
@@ -72,6 +81,8 @@ export async function fakeAuth(
     'resend-confirmation': { status: 202 },
     'sign-in': { status: 200, body: NADIA },
     'sign-out': { status: 204 },
+    'password-reset': { status: 202 },
+    'password-reset/confirm': { status: 204 },
   };
   for (const endpoint of Object.keys(defaults)) {
     sent[endpoint] = [];

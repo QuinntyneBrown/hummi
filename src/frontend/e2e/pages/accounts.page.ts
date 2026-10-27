@@ -93,6 +93,28 @@ export class VerifyEmailPage extends AuthCard {
   }
 }
 
+/** Page object for Reset password (`/reset-password`). */
+export class ResetPasswordPage extends AuthCard {
+  async goto(): Promise<void> {
+    await this.page.goto('/reset-password');
+  }
+
+  async submit(): Promise<void> {
+    await this.button('Send reset link').click();
+  }
+}
+
+/** Page object for New password (`/new-password?token=`). */
+export class NewPasswordPage extends AuthCard {
+  async goto(token: string): Promise<void> {
+    await this.page.goto(`/new-password?token=${token}`);
+  }
+
+  async submit(): Promise<void> {
+    await this.button('Change password').click();
+  }
+}
+
 /** The account menu, the Sign out dialog, the Sign in to save this prompt and the confirmation banner. */
 export class AccountShell {
   readonly avatar: Locator;

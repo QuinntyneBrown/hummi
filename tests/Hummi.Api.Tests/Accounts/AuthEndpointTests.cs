@@ -194,6 +194,61 @@ public sealed class AuthEndpointTests : IDisposable
         Assert.Equal(1, factory.Query(db => db.Listeners.Count()));
     }
 
+    [Theory]
+    [InlineData("nadia@example.com", 1)]
+    [InlineData("nobody@example.com", 0)]
+    public async Task L2_030_AC4_a_reset_request_answers_202_whether_or_not_the_account_exists(string email, int sent)
+    {
+        using var client = await SignedUpClient();
+        factory.Email.Sent.Clear();
+
+        using var response = await client.PostAsJsonAsync("/api/auth/password-reset", new { email });
+
+        Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
+        Assert.Equal(sent, factory.Email.Sent.Count);
+    }
+
+    [Fact]
+    public async Task L2_030_AC6_an_email_failure_answers_503()
+    {
+        using var client = await SignedUpClient();
+        factory.Email.Fail = true;
+
+        using var response = await client.PostAsJsonAsync("/api/auth/password-reset", new { email = "nadia@example.com" });
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Contains("EMAIL_UNAVAILABLE", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task L2_055_AC4_confirm_changes_the_password_and_ends_every_session()
+    {
+        using var client = await SignedUpClient();
+        (await SignIn(client)).EnsureSuccessStatusCode();
+        (await client.PostAsJsonAsync("/api/auth/password-reset", new { email = "nadia@example.com" })).EnsureSuccessStatusCode();
+        Assert.Contains("http://localhost:4200/new-password?token=", factory.Email.Sent[^1].Body, StringComparison.Ordinal);
+        var token = factory.Email.LastToken();
+
+        using var response = await client.PostAsJsonAsync("/api/auth/password-reset/confirm", new { token, password = "a-new-long-password" });
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, (await client.PostAsync("/api/auth/refresh", null)).StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, (await SignIn(client)).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await SignIn(client, password: "a-new-long-password")).StatusCode);
+        using var again = await client.PostAsJsonAsync("/api/auth/password-reset/confirm", new { token, password = "another-long-password" });
+        Assert.Equal(HttpStatusCode.Gone, again.StatusCode);
+    }
+
+    [Fact]
+    public async Task L2_055_AC2_a_short_password_answers_422()
+    {
+        using var client = factory.CreateHttpsClient();
+
+        using var response = await client.PostAsJsonAsync("/api/auth/password-reset/confirm", new { token = "nope", password = "short" });
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+    }
+
     [Fact]
     public async Task Auth_endpoints_are_rate_limited_per_client()
     {

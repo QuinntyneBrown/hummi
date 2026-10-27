@@ -274,4 +274,6 @@ internal sealed class FakePasswordHasher : IPasswordHasher
 internal sealed class FakeLinks : IAppLinks
 {
     public Uri VerifyEmail(string token) => new($"https://hummi.test/verify-email?token={token}");
+
+    public Uri NewPassword(string token) => new($"https://hummi.test/new-password?token={token}");
 }

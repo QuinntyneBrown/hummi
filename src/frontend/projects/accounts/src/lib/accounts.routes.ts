@@ -23,4 +23,16 @@ export const routes: Routes = [
     data: { bare: true, hidePlayer: true },
     loadComponent: () => import('./verify-email/verify-email').then((m) => m.VerifyEmailComponent),
   },
+  {
+    path: 'reset-password',
+    title: 'Reset your password · Hummi',
+    data: { bare: true, hidePlayer: true },
+    loadComponent: () => import('./reset-password/reset-password').then((m) => m.ResetPasswordComponent),
+  },
+  {
+    path: 'new-password',
+    title: 'Choose a new password · Hummi',
+    data: { bare: true, hidePlayer: true },
+    loadComponent: () => import('./new-password/new-password').then((m) => m.NewPasswordComponent),
+  },
 ];

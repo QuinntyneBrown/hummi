@@ -15,6 +15,7 @@ public static class SecretToken
 public enum EmailTokenPurpose
 {
     ConfirmEmail = 1,
+    ResetPassword = 2,
 }
 
 public enum TokenRedemption
@@ -24,10 +25,11 @@ public enum TokenRedemption
     AlreadyUsed,
 }
 
-/// <summary>A single-use emailed link, valid for 24 hours (L2-028).</summary>
+/// <summary>A single-use emailed link: 24 hours to confirm an email (L2-028), 1 hour to reset a password (L2-030).</summary>
 public sealed class EmailToken
 {
-    public static readonly TimeSpan Lifetime = TimeSpan.FromHours(24);
+    public static TimeSpan LifetimeOf(EmailTokenPurpose purpose) =>
+        purpose == EmailTokenPurpose.ResetPassword ? TimeSpan.FromHours(1) : TimeSpan.FromHours(24);
 
     private EmailToken(Guid id, Guid listenerId, EmailTokenPurpose purpose, string tokenHash, DateTimeOffset expiresAt)
     {
@@ -54,7 +56,7 @@ public sealed class EmailToken
     public static (EmailToken Token, string Secret) Issue(Guid listenerId, EmailTokenPurpose purpose, DateTimeOffset now)
     {
         var secret = SecretToken.New();
-        return (new EmailToken(Guid.NewGuid(), listenerId, purpose, SecretToken.Hash(secret), now + Lifetime), secret);
+        return (new EmailToken(Guid.NewGuid(), listenerId, purpose, SecretToken.Hash(secret), now + LifetimeOf(purpose)), secret);
     }
 
     public TokenRedemption Redeem(DateTimeOffset now)
