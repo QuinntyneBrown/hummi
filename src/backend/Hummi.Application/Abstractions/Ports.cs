@@ -39,6 +39,8 @@ public interface IHummiDbContext
 
     DbSet<SavedPlaylist> SavedPlaylists { get; }
 
+    DbSet<Notification> Notifications { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 

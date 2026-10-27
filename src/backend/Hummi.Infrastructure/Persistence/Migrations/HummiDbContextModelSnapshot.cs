@@ -454,6 +454,61 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                     b.ToTable("ArtistFollows", (string)null);
                 });
 
+            modelBuilder.Entity("Hummi.Domain.Library.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ActorLink")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("ActorName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ItemLink")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("ItemName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ListenerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long?>("Plays")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("ReadAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Text")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ListenerId", "Key")
+                        .IsUnique();
+
+                    b.HasIndex("ListenerId", "ReadAt");
+
+                    b.ToTable("Notifications", (string)null);
+                });
+
             modelBuilder.Entity("Hummi.Domain.Library.Playlist", b =>
                 {
                     b.Property<Guid>("Id")
@@ -639,6 +694,15 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Hummi.Domain.Accounts.Listener", null)
+                        .WithMany()
+                        .HasForeignKey("ListenerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Hummi.Domain.Library.Notification", b =>
+                {
                     b.HasOne("Hummi.Domain.Accounts.Listener", null)
                         .WithMany()
                         .HasForeignKey("ListenerId")

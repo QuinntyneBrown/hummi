@@ -25,6 +25,7 @@ import {
   SettingsStore,
   ShareDialogs,
   SignInGate,
+  UnreadStore,
 } from '@hummi/api';
 import { PlaylistDialogHostComponent } from '@hummi/library';
 import { ShareDialogHostComponent } from '@hummi/sharing';
@@ -33,6 +34,7 @@ import {
   AccountMenuComponent,
   AlertComponent,
   ButtonDirective,
+  IconComponent,
   NavLink,
   PlayerBarComponent,
   SearchPillComponent,
@@ -73,6 +75,7 @@ import { ShortcutService } from '../shortcuts/shortcuts';
     AccountMenuComponent,
     AlertComponent,
     ButtonDirective,
+    IconComponent,
     SignOutDialogComponent,
     SignInPromptDialogComponent,
     PlaylistDialogHostComponent,
@@ -119,6 +122,8 @@ export class AppShellComponent {
   readonly signOutOpen = this.accountDialogs.signOutOpen;
   /** Applies the theme and the Playback settings from the start (L2-034, L2-049). */
   private readonly settings = inject(SettingsStore);
+  /** The header bell's unread count (L2-037 AC1). */
+  readonly unread = inject(UnreadStore);
   private readonly avatar = viewChild<ElementRef<HTMLElement>>('avatar');
   readonly inert = computed(() =>
     this.shortcuts.dialogOpen() ||

@@ -41,6 +41,21 @@ public sealed class MonthlyListenersJobTests
         Assert.IsType<Hummi.Application.Accounts.SendReleaseDigestsCommand>(first);
     }
 
+    [Fact]
+    public async Task L2_036_the_notifications_job_sweeps_every_15_minutes_from_the_start()
+    {
+        var sender = new RecordingSender();
+        using var services = new ServiceCollection().AddSingleton<ISender>(sender).BuildServiceProvider();
+        using var job = new NotificationsJob(services.GetRequiredService<IServiceScopeFactory>());
+
+        await job.StartAsync(CancellationToken.None);
+        var first = await sender.FirstRequest.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        await job.StopAsync(CancellationToken.None);
+
+        Assert.Equal(TimeSpan.FromMinutes(15), NotificationsJob.Interval);
+        Assert.IsType<Hummi.Application.Library.CreateDueNotificationsCommand>(first);
+    }
+
     /// <summary>A fake mediator that keeps the first request it is sent.</summary>
     private sealed class RecordingSender : ISender
     {

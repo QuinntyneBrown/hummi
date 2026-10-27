@@ -41,11 +41,11 @@ class TrackPublished <<domain event>> {
   +Guid TrackId
   +Guid ArtistId
 }
-class NotificationEventHandlers {
+class Notification producers {
   +Handle(e: TrackPublished): Task
   +Handle(e: PlaylistShared): Task
 }
-NotificationEventHandlers ..> TrackPublished : handles
-NotificationEventHandlers ..> Notification : creates
+Notification producers ..> TrackPublished : handles
+Notification producers ..> Notification : creates
 GetNotificationsQueryHandler ..> NotificationDto : returns
 @enduml

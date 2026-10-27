@@ -29,7 +29,17 @@ public sealed class PlaylistsController(ISender sender) : ControllerBase
     {
         Guid? listenerId = User.Identity?.IsAuthenticated == true ? User.UserId() : null;
         var result = await sender.Send(new GetPlaylistQuery(listenerId, id, share), cancellationToken);
-        return result.IsSuccess ? Ok(result.Value) : this.ToProblem(result.Error!);
+        if (!result.IsSuccess)
+        {
+            return this.ToProblem(result.Error!);
+        }
+
+        if (listenerId is not null && !string.IsNullOrEmpty(share) && !result.Value!.IsOwner)
+        {
+            await sender.Send(new RecordPlaylistShareCommand(listenerId.Value, id, share), cancellationToken);
+        }
+
+        return Ok(result.Value);
     }
 
     [HttpPut("{id}")]

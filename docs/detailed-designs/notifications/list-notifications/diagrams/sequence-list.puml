@@ -23,11 +23,11 @@ box "Backend — Hummi.Api application" #D1FADF
   participant "NotificationsController" as ctl
 end box
 box "Backend — Hummi.Worker application" #D1FADF
-  participant "PlayMilestoneJob" as job
+  participant "NotificationsJob" as job
 end box
 box "Backend — Hummi Application and Domain" #ECFDF3
   participant "GetNotificationsQueryHandler" as q
-  participant "NotificationEventHandlers" as evt
+  participant "Notification producers" as evt
 end box
 box "Backend — Hummi Infrastructure" #FFF4E5
   participant "HummiDbContext" as ctx

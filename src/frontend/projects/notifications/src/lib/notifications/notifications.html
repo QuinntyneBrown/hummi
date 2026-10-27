@@ -1,0 +1,78 @@
+@let state = notifications.state();
+@switch (state.status) {
+  @case ('loading') {
+    <hm-page-header heading="Notifications" />
+    <ul class="list" style="list-style: none; padding: 0" aria-busy="true" aria-label="Loading notifications">
+      @for (row of rows; track row) {
+        <li class="notif" aria-hidden="true"><hm-skeleton width="70%" /></li>
+      }
+    </ul>
+  }
+  @case ('error') {
+    <hm-page-header heading="Notifications" />
+    @if (state.problem.status === 401) {
+      <hm-empty-state
+        icon="lock"
+        heading="Sign in to see your notifications"
+        text="New releases and shares are saved to your account."
+      >
+        <a hmButton="primary" routerLink="/sign-in" [queryParams]="{ returnUrl: '/notifications' }">Sign in</a>
+      </hm-empty-state>
+    } @else {
+      <hm-error-block heading="Notifications didn’t load" (retry)="notifications.reload()" />
+    }
+  }
+  @case ('ready') {
+    @if (value(); as v) {
+      <hm-page-header heading="Notifications" [subtitle]="v.unread ? v.unread + ' unread' : ''">
+        @if (v.unread) {
+          <button hmButton type="button" (click)="markAllRead()">Mark all as read</button>
+        }
+      </hm-page-header>
+      @if (!v.items.length) {
+        <hm-empty-state
+          icon="bell"
+          heading="You’re all caught up"
+          text="New releases from artists you follow and playlist shares show up here."
+        >
+          <a hmButton="primary" routerLink="/browse">Find artists to follow</a>
+        </hm-empty-state>
+      } @else {
+        <ul class="list" style="list-style: none; padding: 0">
+          @for (n of v.items; track n.id) {
+            <li>
+              <hm-notification-item [icon]="icon(n)" [time]="time(n)" [unread]="n.unread">
+                @switch (n.kind) {
+                  @case ('release') {
+                    <a [routerLink]="n.actorLink">{{ n.actorName }}</a> released
+                    <a [routerLink]="n.itemLink"
+                      ><strong>{{ n.itemName }}</strong></a
+                    >.
+                  }
+                  @case ('share') {
+                    <strong>{{ n.actorName }}</strong> shared the playlist
+                    <a
+                      [routerLink]="n.itemLink?.split('?')?.[0]"
+                      [queryParams]="{ share: n.itemLink?.split('share=')?.[1] }"
+                      >{{ n.itemName }}</a
+                    >
+                    with you.
+                  }
+                  @case ('milestone') {
+                    <a [routerLink]="n.itemLink"
+                      ><strong>{{ n.itemName }}</strong></a
+                    >
+                    passed {{ n.plays?.toLocaleString('en-US') }} plays.
+                  }
+                  @default {
+                    {{ n.text }}
+                  }
+                }
+              </hm-notification-item>
+            </li>
+          }
+        </ul>
+      }
+    }
+  }
+}

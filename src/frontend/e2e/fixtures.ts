@@ -861,6 +861,86 @@ export async function fakeSettings(
   return { saved, current: () => current };
 }
 
+const hoursAgo = (h: number) => new Date(Date.now() - h * 3_600_000).toISOString();
+
+/** The four kinds of the mocks, newest first; the first three unread (L2-036 AC2). */
+export const NOTIFICATIONS = [
+  {
+    id: 'n1',
+    kind: 'release',
+    actorName: 'Kaiso Collective',
+    actorLink: '/artists/kaiso-collective',
+    itemName: 'Road March Riddim',
+    itemLink: '/tracks/road-march-riddim',
+    plays: null,
+    text: null,
+    createdAt: hoursAgo(2),
+    unread: true,
+  },
+  {
+    id: 'n2',
+    kind: 'share',
+    actorName: 'Mei Rodríguez',
+    actorLink: null,
+    itemName: 'Sunday kitchen',
+    itemLink: '/playlists/p3?share=abcd2345',
+    plays: null,
+    text: null,
+    createdAt: hoursAgo(30),
+    unread: true,
+  },
+  {
+    id: 'n3',
+    kind: 'milestone',
+    actorName: null,
+    actorLink: null,
+    itemName: 'Tidewater Waltz',
+    itemLink: '/tracks/tidewater-waltz',
+    plays: 25000,
+    text: null,
+    createdAt: new Date(2026, 9, 24, 12).toISOString(),
+    unread: true,
+  },
+  {
+    id: 'n4',
+    kind: 'product',
+    actorName: null,
+    actorLink: null,
+    itemName: null,
+    itemLink: null,
+    plays: null,
+    text: 'Hummi now shows the model that generated each track.',
+    createdAt: new Date(2026, 9, 19, 12).toISOString(),
+    unread: false,
+  },
+];
+
+/** GET /api/me/notifications and /unread-count over the given items; POST read-all clears them. */
+export async function fakeNotifications(
+  page: Page,
+  items: typeof NOTIFICATIONS = NOTIFICATIONS,
+): Promise<{ markedAll: () => number }> {
+  let current = items.map((n) => ({ ...n }));
+  let markedAll = 0;
+  const unread = () => current.filter((n) => n.unread).length;
+  await page.route('**/api/me/notifications', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ unread: unread(), items: current }),
+    }),
+  );
+  await page.route('**/api/me/notifications/unread-count', (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ unread: unread() }) }),
+  );
+  await page.route('**/api/me/notifications/read-all', (route) => {
+    markedAll++;
+    current = current.map((n) => ({ ...n, unread: false }));
+    return route.fulfill({ status: 204, body: '' });
+  });
+  return { markedAll: () => markedAll };
+}
+
 export const test = base.extend<{ visitor: void }>({
   visitor: [
     async ({ page }, use) => {

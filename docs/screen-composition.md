@@ -10,7 +10,7 @@ Mock: every page under `docs/mocks/pages/` (header, main, player bar). Routes wi
 |---|---|---|
 | Skip link | `hm-skip-link` | None |
 | Confirmation banner | `hm-alert` (warning, `banner`, "Confirm your email") above the header with an `hmButton="link"` "Resend the email", while the signed-in listener's email is unconfirmed | Resend call and its toast |
-| Header | `hm-top-nav` with the brand (`hm-logo`), links Home, Soca, Kids, Steelpan, Your library and the "Open navigation" toggle | End slot: `hm-search-pill` ("Search songs and artists", opens the search layer); signed out, "Sign in" and "Sign up" links styled with `hmButton`; signed in, the `.avatar.avatar--nav` button "Account: {name}" (`aria-haspopup="menu"`, `aria-expanded`) that opens the account menu |
+| Header | `hm-top-nav` with the brand (`hm-logo`), links Home, Soca, Kids, Steelpan, Your library and the "Open navigation" toggle | End slot: `hm-search-pill` ("Search songs and artists", opens the search layer); signed out, "Sign in" and "Sign up" links styled with `hmButton`; signed in, the bell link `.ibtn.ibtn--count` "Notifications, {n} unread" with a `.badge--count` "{n}" labelled "{n} unread" from `UnreadStore`, then the `.avatar.avatar--nav` button "Account: {name}" (`aria-haspopup="menu"`, `aria-expanded`) that opens the account menu |
 | Main | None | `main#main.container.app-main` wrapping the router outlet |
 | Footer | None | `footer.site-footer` with the two taglines |
 | Search layer | `hm-search-overlay` from `@hummi/search`, rendered while `SearchStore.open()` | None |
@@ -226,6 +226,16 @@ Mock: the layer over Home in every state. Rendered by the shell from `@hummi/sea
 | Loading | `hm-skeleton` rects | None |
 | Error | `hm-error-block` ("Settings didn’t load") | None |
 | Signed out | `hm-empty-state` (lock, "Sign in to change your settings"), Sign in and Create account | ADR 0016 |
+
+## Notifications (`pages/notifications`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Header | `hm-page-header` ("Notifications", subtitle "{n} unread"), `hmButton` "Mark all as read" while any are unread | `NotificationsComponent` in `@hummi/notifications` |
+| Items | `hm-notification-item` per notification (kind icon, linked text, time, Unread dot) in a `.list` | Wording per kind and relative times |
+| Loading | `hm-skeleton` lines in `.notif` rows | None |
+| Empty | `hm-empty-state` (bell, "You’re all caught up"), `hmButton="primary"` link "Find artists to follow" | None |
+| Error | `hm-error-block` ("Notifications didn’t load"); a visitor sees "Sign in to see your notifications" | None |
 
 ## Now playing (`pages/now-playing`)
 
