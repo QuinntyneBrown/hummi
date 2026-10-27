@@ -1,3 +1,20 @@
+/* The shell fills the window at every size: full width, at least full height, footer at the bottom.
+   main#main keeps the container's max width and centres inside it. */
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+/* main#main grows to fill the space under the header; the first section starts clear of the header. */
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--space-6);
+}
+
+/* The routed page takes the spare height, so the footer keeps its margin and sits at the bottom. */
+.app-main > router-outlet + * {
+  flex: 1 0 auto;
 }

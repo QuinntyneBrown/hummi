@@ -8,7 +8,7 @@ import { AppShellComponent } from './app-shell/app-shell';
   selector: 'hm-root',
   imports: [SkipLinkComponent, AppShellComponent],
   template: '<hm-skip-link /><hm-app-shell />',
-  styles: ':host { display: block; }',
+  styles: ':host { display: block; min-height: 100dvh; }',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {}

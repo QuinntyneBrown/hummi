@@ -10,32 +10,32 @@ let nextId = 0;
 @Component({
   selector: 'hm-shelf',
   imports: [NgTemplateOutlet],
+  host: { class: 'shelf', role: 'region', '[attr.aria-labelledby]': 'headingId' },
+  styles: ':host { display: block; }',
   template: `
-    <section class="shelf" [attr.aria-labelledby]="headingId">
-      <div class="shelf__head">
-        <h2 class="shelf__title" [id]="headingId">{{ heading() }}</h2>
-        @if (note()) {
-          <span class="shelf__note">{{ note() }}</span>
-        }
-      </div>
-      @if (rail()) {
-        <div class="shelf__rail">
-          <div
-            class="shelf__track"
-            tabindex="0"
-            role="group"
-            [attr.aria-label]="regionLabel()"
-            [attr.aria-busy]="busy() || null"
-          >
-            <ng-container [ngTemplateOutlet]="content" />
-          </div>
-        </div>
-      } @else {
-        <div [attr.aria-busy]="busy() || null" [attr.aria-label]="busy() ? regionLabel() : null">
+    <div class="shelf__head">
+      <h2 class="shelf__title" [id]="headingId">{{ heading() }}</h2>
+      @if (note()) {
+        <span class="shelf__note">{{ note() }}</span>
+      }
+    </div>
+    @if (rail()) {
+      <div class="shelf__rail">
+        <div
+          class="shelf__track"
+          tabindex="0"
+          role="group"
+          [attr.aria-label]="regionLabel()"
+          [attr.aria-busy]="busy() || null"
+        >
           <ng-container [ngTemplateOutlet]="content" />
         </div>
-      }
-    </section>
+      </div>
+    } @else {
+      <div [attr.aria-busy]="busy() || null" [attr.aria-label]="busy() ? regionLabel() : null">
+        <ng-container [ngTemplateOutlet]="content" />
+      </div>
+    }
     <ng-template #content><ng-content /></ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
