@@ -10,6 +10,16 @@
   <hm-top-nav [attr.inert]="inert()" [links]="links" [open]="navOpen()" (menuToggle)="toggleNav()">
     <hm-search-pill (activate)="search.openWith()" />
     @if (session.user(); as user) {
+      <a
+        class="ibtn ibtn--count"
+        routerLink="/notifications"
+        [attr.aria-label]="unread.unread() ? 'Notifications, ' + unread.unread() + ' unread' : 'Notifications'"
+      >
+        <hm-icon name="bell" />
+        @if (unread.unread()) {
+          <span class="badge badge--count" [attr.aria-label]="unread.unread() + ' unread'">{{ unread.unread() }}</span>
+        }
+      </a>
       <button
         #avatar
         class="avatar avatar--nav"

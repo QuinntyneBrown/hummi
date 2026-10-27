@@ -14,8 +14,8 @@ A count endpoint feeds the shell; a command marks all as read.
 
 **Frontend — Hummi web application (Angular)**
 
-- **`ShellComponent`** — Shell component in the hummi application. Shows `hm-badge` "3" labelled "3 unread" and the bell label "Notifications, 3 unread"
-- **`UnreadStore`** — Signal store in @hummi/api. Holds the unread count; refreshes on navigation <TO SUPPLY: polling interval>
+- **`ShellComponent`** — Shell component in the hummi application. Shows the bell link with `.badge--count` "3" labelled "3 unread" and the label "Notifications, 3 unread"
+- **`UnreadStore`** — Signal store in @hummi/api. Holds the unread count; refreshes at sign-in and after every navigation; no polling (ADR 0017)
 - **`NotificationsPage`** — Routed component in @hummi/notifications. Shows unread dots, the "3 unread" subtitle and Mark all as read
 - **`NotificationsApi`** — Typed HTTP service in @hummi/api. Calls `/api/me/notifications`
 

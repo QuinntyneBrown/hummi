@@ -12,7 +12,7 @@ namespace Hummi.Cli;
 /// published albums, tracks with their licences and waveforms, plays that order the Top 10, and a
 /// generated WAV per track on the media volume. There is no upload tooling; this is how a local
 /// install gets music. It also adds the confirmed demo listener Nadia Charles with a few likes, follows and a playlist,
-/// and Mei Rodríguez with a public playlist.
+/// and Mei Rodríguez with a public playlist; Nadia has one notification of each kind.
 /// </summary>
 public static class DemoSeeder
 {
@@ -175,6 +175,17 @@ public static class DemoSeeder
         }
 
         db.Playlists.Add(kitchen);
+
+        // One of each kind for Nadia, the newest three unread (L2-036, L2-037).
+        var roadMarch = db.Tracks.Local.First();
+        var kaiso = artists.Values.Single(a => a.Id == roadMarch.ArtistId);
+        var product = Notification.Product(listener.Id, "models", "Hummi now shows the model that generated each track.", now.AddDays(-8));
+        product.MarkRead(now);
+        db.Notifications.AddRange(
+            Notification.Release(listener.Id, kaiso.Name, kaiso.Slug, roadMarch.Id, roadMarch.Title, roadMarch.Slug, now.AddHours(-2)),
+            Notification.Share(listener.Id, mei.DisplayName, kitchen.Id, kitchen.Name, $"/playlists/{kitchen.Id}", now.AddDays(-1)),
+            Notification.Milestone(listener.Id, roadMarch.Id, roadMarch.Title, roadMarch.Slug, 1_000, now.AddDays(-3)),
+            product);
 
         await db.SaveChangesAsync(cancellationToken);
         return Tracks.Count;

@@ -5,7 +5,7 @@ title Components — Track unread notifications
 
 Container_Boundary(spa, "Hummi web application") {
   Component(shell, "ShellComponent", "Shell component in the hummi application", "Shows hm-badge "3" labelled "3 unread" and\nthe bell label "Notifications, 3 unread"")
-  Component(store, "UnreadStore", "Signal store in @hummi/api", "Holds the unread count; refreshes on\nnavigation <TO SUPPLY: polling interval>")
+  Component(store, "UnreadStore", "Signal store in @hummi/api", "Holds the unread count; refreshes on\nnavigation no polling")
   Component(page, "NotificationsPage", "Routed component in @hummi/notifications", "Shows unread dots, the "3 unread" subtitle\nand Mark all as read")
   Component(client, "NotificationsApi", "Typed HTTP service in @hummi/api", "Calls /api/me/notifications")
 }

@@ -8,6 +8,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddHostedService<Worker>();
 builder.Services.AddHostedService<MonthlyListenersJob>();
 builder.Services.AddHostedService<ReleaseDigestJob>();
+builder.Services.AddHostedService<NotificationsJob>();
 
 var host = builder.Build();
 host.Run();

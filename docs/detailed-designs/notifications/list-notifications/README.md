@@ -7,7 +7,7 @@ kinds exist: a followed artist released a track, someone shared a playlist with 
 passed a play milestone, and a product change.
 
 - **notification** — stored event addressed to one listener, with kind, payload, creation time and read time
-- **play milestone** — play count threshold a track crosses <TO SUPPLY: thresholds; mock shows 25,000>
+- **play milestone** — play count threshold a track crosses: 1,000, 10,000, 25,000, 50,000, 100,000, 250,000, 500,000 and 1,000,000 plays (ADR 0017)
 
 Notifications are created on the server by domain events and a worker job; the page only reads them.
 
@@ -26,12 +26,12 @@ Domain events create notifications; the page reads a paged list.
 
 **Backend — Hummi.Worker application**
 
-- **`PlayMilestoneJob`** — Hosted background job. Detects tracks whose play count crossed a milestone and notifies <TO SUPPLY: recipients>
+- **`NotificationsJob`** — Hosted background job. Every 15 minutes, notifies the artist's followers of new tracks and of tracks whose plays passed 1,000, 10,000, 25,000, 50,000, 100,000, 250,000, 500,000 or 1,000,000 (ADR 0017)
 
 **Backend — Hummi Application and Domain**
 
 - **`GetNotificationsQueryHandler`** — MediatR query handler. Returns the listener's notifications newest first
-- **`NotificationEventHandlers`** — MediatR notification handlers. On `TrackPublished`, `PlaylistShared` and `ProductChangeAnnounced` create one `Notification` per recipient
+- **`Notification producers`** — MediatR commands. `CreateDueNotificationsCommand` (releases and milestones), `RecordPlaylistShareCommand` (a share link opened) and `AnnounceProductChangeCommand` create one `Notification` per recipient, once per fact
 
 **Backend — Hummi Infrastructure**
 
@@ -62,13 +62,13 @@ A signed-in listener reads notifications in Hummi. No external system takes part
 
 ### Components
 
-`NotificationsPage` calls `NotificationsApi`; `NotificationsController` sends `GetNotificationsQuery`. Domain event handlers and `PlayMilestoneJob` write rows.
+`NotificationsPage` calls `NotificationsApi`; `NotificationsController` sends `GetNotificationsQuery`. Domain event handlers and `NotificationsJob` write rows.
 
 ![C4 component view for list notifications](diagrams/c4-component.png)
 
 ### Class structure
 
-`Notification` has a `NotificationKind`. `NotificationEventHandlers` create notifications from domain events such as `TrackPublished`.
+`Notification` has a `NotificationKind`. `Notification producers` create notifications from domain events such as `TrackPublished`.
 
 ![Class diagram for list notifications](diagrams/class-structure.png)
 

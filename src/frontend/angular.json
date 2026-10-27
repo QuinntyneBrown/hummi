@@ -302,6 +302,26 @@
           "defaultConfiguration": "production"
         }
       }
+    },
+    "notifications": {
+      "projectType": "notifications",
+      "root": "projects/notifications",
+      "sourceRoot": "projects/notifications/src",
+      "prefix": "hm",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/notifications/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/notifications/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
     }
   }
 }

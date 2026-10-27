@@ -10,11 +10,11 @@ Container_Boundary(spa, "Hummi web application") {
 Container_Boundary(api, "Hummi.Api") {
   Component(ctl, "NotificationsController", "ASP.NET Core controller", "/api/me/notifications; [Authorize]")
   Component(q, "GetNotificationsQueryHandler", "MediatR query handler", "Returns the listener's notifications newest\nfirst")
-  Component(evt, "NotificationEventHandlers", "MediatR notification handlers", "On TrackPublished, PlaylistShared and\nProductChangeAnnounced create one\nNotification per recipient")
+  Component(evt, "Notification producers", "MediatR notification handlers", "On TrackPublished, PlaylistShared and\nProductChangeAnnounced create one\nNotification per recipient")
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
 }
 Container_Boundary(wk, "Hummi.Worker") {
-  Component(job, "PlayMilestoneJob", "Hosted background job", "Detects tracks whose play count crossed a\nmilestone and notifies <TO SUPPLY:\nrecipients>")
+  Component(job, "NotificationsJob", "Hosted background job", "Every 15 minutes notifies an artist's\nfollowers of new tracks and passed\nplay milestones")
 }
 ContainerDb(db, "Hummi database", "Azure SQL", "Notifications")
 Rel(evt, ctx, "On TrackPublished, add\nNotification(NewRelease) per\nfollower")

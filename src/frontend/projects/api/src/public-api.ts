@@ -45,3 +45,10 @@ export { ShareDialogs, SharesApi, type SharedItemDto, type ShareSubject } from '
 export { HomeApi, type FeaturedAlbumDto, type HomeShelfDto, type HomeSummaryDto } from './lib/discovery/home-api';
 export { SettingsStore, type SettingsDto, type Theme } from './lib/settings/settings-store';
 export { AccountDialogs } from './lib/auth/account-dialogs';
+export {
+  NotificationsApi,
+  UnreadStore,
+  type NotificationDto,
+  type NotificationKind,
+  type NotificationsDto,
+} from './lib/notifications/notifications';

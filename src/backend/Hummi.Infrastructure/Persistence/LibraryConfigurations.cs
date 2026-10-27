@@ -75,3 +75,21 @@ internal sealed class SavedPlaylistConfiguration : IEntityTypeConfiguration<Save
         builder.HasOne<Playlist>().WithMany().HasForeignKey(s => s.PlaylistId).OnDelete(DeleteBehavior.NoAction);
     }
 }
+
+internal sealed class NotificationConfiguration : IEntityTypeConfiguration<Notification>
+{
+    public void Configure(EntityTypeBuilder<Notification> builder)
+    {
+        builder.ToTable("Notifications");
+        builder.Property(n => n.Id).ValueGeneratedNever();
+        builder.Property(n => n.Key).HasMaxLength(120).IsRequired();
+        builder.Property(n => n.ActorName).HasMaxLength(200);
+        builder.Property(n => n.ActorLink).HasMaxLength(300);
+        builder.Property(n => n.ItemName).HasMaxLength(200);
+        builder.Property(n => n.ItemLink).HasMaxLength(300);
+        builder.Property(n => n.Text).HasMaxLength(500);
+        builder.HasIndex(n => new { n.ListenerId, n.Key }).IsUnique();
+        builder.HasIndex(n => new { n.ListenerId, n.ReadAt });
+        builder.HasOne<Listener>().WithMany().HasForeignKey(n => n.ListenerId).OnDelete(DeleteBehavior.Cascade);
+    }
+}

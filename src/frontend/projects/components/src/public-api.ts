@@ -61,3 +61,4 @@ export { AccountMenuComponent } from './lib/account-menu/account-menu';
 export { TabsComponent } from './lib/tabs/tabs';
 export { COPIED_MS, ShareSheetComponent, type ShareTarget } from './lib/share-sheet/share-sheet';
 export { BillboardComponent } from './lib/billboard/billboard';
+export { NotificationItemComponent } from './lib/notification-item/notification-item';
