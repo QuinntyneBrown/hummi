@@ -30,12 +30,23 @@
   @case ('ready') {
     @if (state.status === 'ready') {
       <hm-shelf heading="Recently added" note="Fresh this week" [rail]="true">
-        @for (track of state.value.recentlyAdded; track track.id) {
-          <hm-track-card [track]="track" />
+        @for (track of state.value.recentlyAdded; track track.id; let i = $index) {
+          <hm-track-card
+            [track]="track"
+            [current]="track.id === player.current()?.id"
+            [playing]="player.playing()"
+            (playTrack)="player.playFrom(state.value.recentlyAdded, i)"
+          />
         }
       </hm-shelf>
       <hm-shelf heading="Top 10 on Hummi this week" note="Most played across the islands">
-        <hm-track-list [tracks]="state.value.topTen" label="Top 10 on Hummi this week" />
+        <hm-track-list
+          [tracks]="state.value.topTen"
+          label="Top 10 on Hummi this week"
+          [currentTrackId]="player.current()?.id ?? null"
+          [playing]="player.playing()"
+          (playTrack)="player.playFrom(state.value.topTen, $event)"
+        />
       </hm-shelf>
     }
   }

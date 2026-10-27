@@ -4,3 +4,4 @@ export { SessionStore, type CurrentUser } from './lib/auth/session-store';
 export { provideApi } from './lib/provide-api';
 export { apiResource, REQUEST_TIMEOUT_MS, type ApiResource, type ResourceState } from './lib/resource/api-resource';
 export { PlaybackApi, type HomeDto, type TrackSummaryDto } from './lib/playback/playback-api';
+export { PlayerStore, type PlayState } from './lib/playback/player-store';

@@ -16,7 +16,7 @@ shelf. L2-005 says track lists appear on Home, but the Home mock showed the Top 
 - The Home mock renders the Top 10 as a track list (`hm-track-list`), so Home exercises L2-005.
 - A play counts as soon as playback starts; the browser posts `POST /api/plays` once per track start,
   signed in or not.
-- Audio is read from the media volume (`Media:Root`, `tracks/{trackId}.{ext}`) behind the `IMediaStore` port
+- Audio is read from the media volume (`MediaStorage:RootPath`, `tracks/{trackId}.wav`) behind the `IMediaStore` port
   and streamed by byte range.
 
 ## Consequences

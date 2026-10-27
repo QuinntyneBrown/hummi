@@ -15,3 +15,17 @@
     <span>hummi.fm — free music, made in the open.</span>
   </footer>
 </main>
+@if (showPlayer()) {
+  @if (player.current(); as track) {
+    <hm-player-bar
+      [track]="track"
+      [playing]="player.playing()"
+      [stalled]="player.stalled()"
+      [position]="player.position()"
+      [duration]="player.duration()"
+      (togglePlay)="player.toggle()"
+      (previous)="player.previous()"
+      (next)="player.next()"
+    />
+  }
+}

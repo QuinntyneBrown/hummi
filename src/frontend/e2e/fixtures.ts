@@ -98,6 +98,67 @@ export async function fakeHome(
   return { calls: () => calls };
 }
 
+/** A quiet 8 kHz, 8-bit mono WAV of the given length, so the browser really plays something. */
+function wav(seconds: number): Buffer {
+  const rate = 8000;
+  const samples = rate * seconds;
+  const out = Buffer.alloc(44 + samples);
+  out.write('RIFF', 0);
+  out.writeUInt32LE(36 + samples, 4);
+  out.write('WAVEfmt ', 8);
+  out.writeUInt32LE(16, 16);
+  out.writeUInt16LE(1, 20);
+  out.writeUInt16LE(1, 22);
+  out.writeUInt32LE(rate, 24);
+  out.writeUInt32LE(rate, 28);
+  out.writeUInt16LE(1, 32);
+  out.writeUInt16LE(8, 34);
+  out.write('data', 36);
+  out.writeUInt32LE(samples, 40);
+  for (let n = 0; n < samples; n++) out[44 + n] = 128 + Math.round(20 * Math.sin((2 * Math.PI * 330 * n) / rate));
+  return out;
+}
+
+/**
+ * Answers GET /media/tracks/{id} with a WAV as long as the track, honouring byte ranges.
+ * With dropConnection, every request fails as if the network went away.
+ */
+export async function fakeMedia(
+  page: Page,
+  options: { dropConnection?: boolean } = {},
+): Promise<{ requested: string[] }> {
+  const requested: string[] = [];
+  const durations = new Map(Object.values(TRACKS).map((t) => [t.id, t.durationSeconds]));
+  await page.route('**/media/tracks/*', async (route) => {
+    const id = decodeURIComponent(new URL(route.request().url()).pathname.split('/').pop() ?? '');
+    requested.push(id);
+    if (options.dropConnection) return route.abort('internetdisconnected');
+    const body = wav(durations.get(id) ?? 30);
+    const range = /bytes=(\d+)-(\d*)/.exec(route.request().headers()['range'] ?? '');
+    if (!range)
+      return route.fulfill({ status: 200, contentType: 'audio/wav', headers: { 'Accept-Ranges': 'bytes' }, body });
+    const start = Number(range[1]);
+    const end = range[2] ? Math.min(Number(range[2]), body.length - 1) : body.length - 1;
+    return route.fulfill({
+      status: 206,
+      contentType: 'audio/wav',
+      headers: { 'Accept-Ranges': 'bytes', 'Content-Range': `bytes ${start}-${end}/${body.length}` },
+      body: body.subarray(start, end + 1),
+    });
+  });
+  return { requested };
+}
+
+/** Answers POST /api/plays with 204 and keeps each posted body. */
+export async function fakePlays(page: Page): Promise<{ posted: { trackId: string }[] }> {
+  const posted: { trackId: string }[] = [];
+  await page.route('**/api/plays', async (route) => {
+    posted.push(route.request().postDataJSON());
+    await route.fulfill({ status: 204 });
+  });
+  return { posted };
+}
+
 export const test = base.extend<{ visitor: void }>({
   visitor: [
     async ({ page }, use) => {

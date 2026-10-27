@@ -11,7 +11,9 @@ public sealed record Error(int Status, string Code, string Title, IReadOnlyDicti
     public static Error Invalid(string code, IReadOnlyDictionary<string, FieldError> errors, string title = "Check the highlighted fields") =>
         new(422, code, title, errors);
 
-    public static Error NotFound(string code = "NOT_FOUND") => new(404, code, "Not found");
+    public static Error NotFound(string code = "NOT_FOUND", string title = "Not found") => new(404, code, title);
+
+    public static Error Gone(string code, string title) => new(410, code, title);
 
     public static Error TooManyRequests(TimeSpan retryAfter, string title = "Too many requests") =>
         new(429, "RATE_LIMITED", title) { RetryAfter = retryAfter };
