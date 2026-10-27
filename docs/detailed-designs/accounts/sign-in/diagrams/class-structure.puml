@@ -18,10 +18,9 @@ class Listener {
   +string Email
   +string PasswordHash
   +DateTimeOffset? EmailConfirmedAt
-  +bool IsEmailConfirmed
-  +{static} Register(name, email, hash, now): Listener
+  +bool EmailConfirmed
+  +{static} Create(name, email, hash, now): Listener
   +ConfirmEmail(now): void
-  +ChangePassword(hash): void
 }
 
 class SignInCommand {
@@ -30,7 +29,7 @@ class SignInCommand {
   +bool KeepSignedIn
 }
 class SignInCommandHandler {
-  +Handle(c): Task<Result<SessionDto>>
+  +Handle(c): Task<Result<SessionGrant>>
 }
 class RefreshToken {
   +string TokenHash
@@ -38,13 +37,16 @@ class RefreshToken {
   +DateTimeOffset ExpiresAt
   +bool Persistent
   +DateTimeOffset? RevokedAt
+  +{static} Issue(listenerId, persistent, now): (RefreshToken, secret)
+  +IsActive(now): bool
+  +Revoke(now): void
 }
-interface ITokenService {
-  +IssueAccess(listener): string
-  +IssueRefresh(listener, persistent): RefreshToken
+class SessionCookies {
+  +Write(response, SignedIn): void
+  +{static} Clear(response): void
 }
 SignInCommandHandler ..> SignInCommand : handles
 SignInCommandHandler --> Listener : verifies
-SignInCommandHandler --> ITokenService : uses
-ITokenService ..> RefreshToken : creates
+SignInCommandHandler ..> RefreshToken : issues
+SessionCookies ..> RefreshToken : writes the secret as hm_refresh
 @enduml

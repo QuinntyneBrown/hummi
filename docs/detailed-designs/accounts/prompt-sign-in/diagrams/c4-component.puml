@@ -6,12 +6,12 @@ title Components — Prompt to sign in
 Container_Boundary(spa, "Hummi web application") {
   Component(gate, "SignInGate", "Service in @hummi/api", "Checks SessionStore before a save action and\nopens the Sign in to save this dialog when\nsigned out (L2-032)")
   Component(session, "SessionStore", "Signal store in @hummi/api", "Holds the signed-in listener, the access\ntoken and the signed-in/signed-out state the\nshell reads")
-  Component(dialogs, "DialogService", "Service in @hummi/components", "Opens hm-dialog components as modal overlays\nand returns a typed close result (L2-047)")
-  Component(dlg, "SignInPromptDialog", "Dialog component in @hummi/components", "Renders "Sign in to save this" with Not now,\nCreate account and Sign in")
+  Component(dialogs, "AppShell", "Shell component in the hummi application", "Renders the prompt while\nSignInGate.promptOpen() and makes the page inert")
+  Component(dlg, "SignInPromptDialog", "Dialog component in @hummi/accounts", "Renders "Sign in to save this" with Not now,\nCreate account and Sign in")
   Component(router, "Router", "Angular router", "Navigates to /sign-in or /sign-up with a\nreturnUrl")
 }
 Rel(gate, session, "isSignedIn()")
-Rel(gate, dialogs, "open(SignInPromptDialog)")
+Rel(dialogs, gate, "reads promptOpen()")
 Rel(dialogs, dlg, "Render 'Sign in to save this'\n(L2-032)")
 Rel(dlg, router, "/sign-in or /sign-up?returnUrl=\n(L2-032)")
 @enduml

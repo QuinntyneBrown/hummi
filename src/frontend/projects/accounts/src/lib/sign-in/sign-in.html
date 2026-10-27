@@ -1,0 +1,57 @@
+<hm-auth-card heading="Welcome back">
+  <span intro>Sign in to pick up where you left off.</span>
+  <form class="stack" novalidate (submit)="submit($event)">
+    @for (n of [attempt()]; track n) {
+      @if (summary().length) {
+        <hm-error-summary [errors]="summary()" />
+      }
+    }
+    @switch (problem()) {
+      @case ('mismatch') {
+        <hm-alert tone="danger" heading="That email and password don’t match">
+          Check both and try again, or <a routerLink="/reset-password">reset your password</a>.
+        </hm-alert>
+      }
+      @case ('failed') {
+        <hm-alert tone="danger" heading="Sign in isn’t working right now">
+          Something went wrong on our side. Try again in a moment.
+        </hm-alert>
+      }
+    }
+    <hm-text-field
+      label="Email"
+      [fieldId]="ids.email"
+      type="email"
+      autocomplete="email"
+      [required]="true"
+      [readonly]="busy()"
+      [error]="errors()['email'] ?? ''"
+      [(value)]="email"
+    />
+    <hm-text-field
+      label="Password"
+      [fieldId]="ids.password"
+      type="password"
+      autocomplete="current-password"
+      [required]="true"
+      [readonly]="busy()"
+      [error]="errors()['password'] ?? ''"
+      [(value)]="password"
+    />
+    <div class="cluster cluster--between">
+      <hm-checkbox label="Keep me signed in" fieldId="keep" [disabled]="busy()" [(checked)]="keepSignedIn" />
+      <a routerLink="/reset-password">Forgot password?</a>
+    </div>
+    <button hmButton="primary" [block]="true" [large]="true" type="submit" [busy]="busy()" [disabled]="busy()">
+      @if (busy()) {
+        <span class="spinner" aria-hidden="true"></span>Sign in…
+      } @else {
+        Sign in
+      }
+    </button>
+  </form>
+  <p footer class="text-muted" style="margin-top: var(--space-4); text-align: center">
+    New to Hummi?
+    <a routerLink="/sign-up" [queryParams]="returnUrl() ? { returnUrl: returnUrl() } : {}">Create a free account</a>
+  </p>
+</hm-auth-card>

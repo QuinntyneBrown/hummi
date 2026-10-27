@@ -8,6 +8,8 @@ import { ApiResult, toResult } from '../api-result';
 export interface CurrentUser {
   displayName: string;
   email: string;
+  /** False until the listener opens their confirmation link (L2-028 AC4). */
+  emailConfirmed: boolean;
 }
 
 /**
@@ -44,8 +46,11 @@ export class SessionStore {
     return this.load();
   }
 
-  async signIn(email: string, password: string): Promise<ApiResult<CurrentUser>> {
-    const result = await toResult(this.http.post<CurrentUser>(`${this.baseUrl}/auth/sign-in`, { email, password }));
+  /** Starts a session (L2-029); with keepSignedIn the session outlives the browser. */
+  async signIn(email: string, password: string, keepSignedIn: boolean): Promise<ApiResult<CurrentUser>> {
+    const result = await toResult(
+      this.http.post<CurrentUser>(`${this.baseUrl}/auth/sign-in`, { email, password, keepSignedIn }),
+    );
     if (result.ok) {
       this.current.set(result.value);
       this.loaded.set(true);
@@ -54,9 +59,11 @@ export class SessionStore {
     return result;
   }
 
-  async signOut(): Promise<void> {
-    await toResult(this.http.post(`${this.baseUrl}/auth/sign-out`, null));
-    this.current.set(null);
+  /** Ends the session on this device (L2-031); on failure the listener stays signed in. */
+  async signOut(): Promise<ApiResult<unknown>> {
+    const result = await toResult(this.http.post(`${this.baseUrl}/auth/sign-out`, null));
+    if (result.ok) this.current.set(null);
+    return result;
   }
 
   /** Called by the interceptor when the session could not be renewed. */

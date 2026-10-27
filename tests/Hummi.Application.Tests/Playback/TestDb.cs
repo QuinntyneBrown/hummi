@@ -1,4 +1,5 @@
 using Hummi.Application.Abstractions;
+using Hummi.Domain.Accounts;
 using Hummi.Domain.Catalogue;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +22,12 @@ internal sealed class TestDb : DbContext, IHummiDbContext
     public DbSet<Genre> Genres => Set<Genre>();
 
     public DbSet<PlayEvent> PlayEvents => Set<PlayEvent>();
+
+    public DbSet<Listener> Listeners => Set<Listener>();
+
+    public DbSet<EmailToken> EmailTokens => Set<EmailToken>();
+
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     public static readonly DateTimeOffset Now = new(2026, 10, 27, 9, 0, 0, TimeSpan.Zero);
 

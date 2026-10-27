@@ -32,10 +32,66 @@ export async function fakeSignedOutVisitor(page: Page): Promise<void> {
 }
 
 /** A signed-in listener: GET /api/auth/me answers 200 with this user. Registered later, so it wins. */
-export async function fakeSignedInVisitor(page: Page, user: { displayName: string; email: string }): Promise<void> {
+export async function fakeSignedInVisitor(
+  page: Page,
+  user: { displayName: string; email: string; emailConfirmed?: boolean },
+): Promise<void> {
   await page.route('**/api/auth/me', (route) =>
-    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(user) }),
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ emailConfirmed: true, ...user }),
+    }),
   );
+}
+
+/** The demo listener of the mocks. */
+export const NADIA = { displayName: 'Nadia Charles', email: 'nadia@hummi.fm', emailConfirmed: true };
+
+/** How one faked /api/auth endpoint answers: a status (200 by default), a delay and a body. */
+export interface AuthAnswer {
+  status?: number;
+  delayMs?: number;
+  body?: unknown;
+}
+
+/**
+ * Answers POST /api/auth/{endpoint} for sign-up, verify-email, resend-confirmation, sign-in and sign-out.
+ * Each endpoint keeps the JSON bodies it was sent. Failures answer problem details with the given body.
+ */
+export async function fakeAuth(
+  page: Page,
+  answers: Partial<
+    Record<'sign-up' | 'verify-email' | 'resend-confirmation' | 'sign-in' | 'sign-out', AuthAnswer>
+  > = {},
+): Promise<Record<string, unknown[]>> {
+  const sent: Record<string, unknown[]> = {};
+  const defaults: Record<string, AuthAnswer> = {
+    'sign-up': { status: 202 },
+    'verify-email': { status: 200, body: { displayName: 'Nadia', email: 'nadia@example.com', emailConfirmed: true } },
+    'resend-confirmation': { status: 202 },
+    'sign-in': { status: 200, body: NADIA },
+    'sign-out': { status: 204 },
+  };
+  for (const endpoint of Object.keys(defaults)) {
+    sent[endpoint] = [];
+    await page.route(`**/api/auth/${endpoint}`, async (route) => {
+      const answer = { ...defaults[endpoint], ...answers[endpoint as keyof typeof answers] };
+      sent[endpoint].push(route.request().postDataJSON());
+      if (answer.delayMs) await new Promise((resolve) => setTimeout(resolve, answer.delayMs));
+      const status = answer.status ?? 200;
+      const problem = status >= 400;
+      await route.fulfill({
+        status,
+        contentType: problem ? 'application/problem+json' : 'application/json',
+        body:
+          status === 202 || status === 204
+            ? ''
+            : JSON.stringify(answer.body ?? { title: 'Server error', code: 'UNEXPECTED' }),
+      });
+    });
+  }
+  return sent;
 }
 
 export interface FakeTrack {

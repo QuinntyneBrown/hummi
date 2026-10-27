@@ -22,6 +22,104 @@ namespace Hummi.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Hummi.Domain.Accounts.EmailToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("ListenerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Purpose")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTimeOffset?>("UsedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ListenerId");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.ToTable("EmailTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Hummi.Domain.Accounts.Listener", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<DateTimeOffset?>("EmailConfirmedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Listeners", (string)null);
+                });
+
+            modelBuilder.Entity("Hummi.Domain.Accounts.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("ListenerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Persistent")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("RevokedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ListenerId");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.ToTable("RefreshTokens", (string)null);
+                });
+
             modelBuilder.Entity("Hummi.Domain.Catalogue.Album", b =>
                 {
                     b.Property<Guid>("Id")
@@ -312,6 +410,24 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                     b.ToTable("Tracks", (string)null);
                 });
 
+            modelBuilder.Entity("Hummi.Domain.Accounts.EmailToken", b =>
+                {
+                    b.HasOne("Hummi.Domain.Accounts.Listener", null)
+                        .WithMany()
+                        .HasForeignKey("ListenerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Hummi.Domain.Accounts.RefreshToken", b =>
+                {
+                    b.HasOne("Hummi.Domain.Accounts.Listener", null)
+                        .WithMany()
+                        .HasForeignKey("ListenerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Hummi.Domain.Catalogue.Album", b =>
                 {
                     b.HasOne("Hummi.Domain.Catalogue.Artist", null)
@@ -343,12 +459,14 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Hummi.Domain.Catalogue.Genre", null)
+                    b.HasOne("Hummi.Domain.Catalogue.Genre", "Genre")
                         .WithMany()
                         .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Artist");
+
+                    b.Navigation("Genre");
                 });
 #pragma warning restore 612, 618
         }

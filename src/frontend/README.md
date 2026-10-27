@@ -4,15 +4,16 @@ The Angular workspace for Hummi. See [AGENTS.md](../../AGENTS.md#frontend-worksp
 
 ## Projects
 
-| Project               | Kind        | Purpose                                                                |
-| --------------------- | ----------- | ---------------------------------------------------------------------- |
-| `projects/hummi`      | application | Shell, routes and app config; owns no feature screens                  |
-| `projects/api`        | library     | `@hummi/api`: the only code that calls the Hummi API                   |
-| `projects/components` | library     | `@hummi/components`: design-system components and token styles         |
-| `projects/player`     | library     | `@hummi/player`: listening screens; Home until journey 12 (ADR 0005)   |
-| `projects/discovery`  | library     | `@hummi/discovery`: Browse and the genre pages (ADR 0006)              |
-| `projects/catalogue`  | library     | `@hummi/catalogue`: track, licence, artist and album pages (ADR 0007)  |
-| `projects/search`     | library     | `@hummi/search`: the search overlay and its `/search` route (ADR 0008) |
+| Project               | Kind        | Purpose                                                                      |
+| --------------------- | ----------- | ---------------------------------------------------------------------------- |
+| `projects/hummi`      | application | Shell, routes and app config; owns no feature screens                        |
+| `projects/api`        | library     | `@hummi/api`: the only code that calls the Hummi API                         |
+| `projects/components` | library     | `@hummi/components`: design-system components and token styles               |
+| `projects/player`     | library     | `@hummi/player`: listening screens; Home until journey 12 (ADR 0005)         |
+| `projects/discovery`  | library     | `@hummi/discovery`: Browse and the genre pages (ADR 0006)                    |
+| `projects/catalogue`  | library     | `@hummi/catalogue`: track, licence, artist and album pages (ADR 0007)        |
+| `projects/search`     | library     | `@hummi/search`: the search overlay and its `/search` route (ADR 0008)       |
+| `projects/accounts`   | library     | `@hummi/accounts`: sign up, verify email, sign in and the dialogs (ADR 0010) |
 
 Each feature library (`projects/<area>`) has a `@hummi/<area>` alias in `tsconfig.json` and builds against the packaged `api` and `components` libraries (its `tsconfig.lib.json` maps them to `dist/`), so `npm run build:libs` builds those first.
 

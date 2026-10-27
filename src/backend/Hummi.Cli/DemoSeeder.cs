@@ -1,5 +1,7 @@
 using Hummi.Application.Abstractions;
+using Hummi.Domain.Accounts;
 using Hummi.Domain.Catalogue;
+using Hummi.Infrastructure.Accounts;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hummi.Cli;
@@ -8,7 +10,7 @@ namespace Hummi.Cli;
 /// Writes the demo catalogue of the mocks (docs/mocks/_build/kit.py) into a local install: artists,
 /// published albums, tracks with their licences and waveforms, plays that order the Top 10, and a
 /// generated WAV per track on the media volume. There is no upload tooling; this is how a local
-/// install gets music.
+/// install gets music. It also adds the confirmed demo listener Nadia Charles.
 /// </summary>
 public static class DemoSeeder
 {
@@ -70,6 +72,11 @@ public static class DemoSeeder
         "Road March Riddim", "Fisherman Dawn", "Sound System Sunday", "Hummi Sings Hello", "Wine Slow",
     ];
 
+    /// <summary>The confirmed demo listener of the mocks, for signing in to a local install.</summary>
+    public const string DemoEmail = "nadia@hummi.fm";
+
+    public const string DemoPassword = "hummi-demo-password";
+
     /// <summary>Adds the catalogue unless tracks already exist; returns how many tracks it added.</summary>
     public static async Task<int> SeedAsync(IHummiDbContext db, string mediaRoot, TimeProvider clock, CancellationToken cancellationToken = default)
     {
@@ -118,6 +125,10 @@ public static class DemoSeeder
         {
             album.Publish(albumTracks[key]);
         }
+
+        var listener = Listener.Create("Nadia Charles", DemoEmail, new IdentityPasswordHasher().Hash(DemoPassword), now);
+        listener.ConfirmEmail(now);
+        db.Listeners.Add(listener);
 
         await db.SaveChangesAsync(cancellationToken);
         return Tracks.Count;

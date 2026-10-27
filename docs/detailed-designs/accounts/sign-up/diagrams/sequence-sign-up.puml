@@ -23,7 +23,6 @@ box "Backend — Hummi.Api application" #D1FADF
   participant "AuthController" as ctl
 end box
 box "Backend — Hummi Application and Domain" #ECFDF3
-  participant "RegisterListenerValidator" as val
   participant "RegisterListenerCommandHandler" as cmd
   participant "IPasswordHasher" as hash
   participant "IEmailSender" as mail
@@ -36,23 +35,25 @@ participant "Email provider" as email
 u -> page : Submit the form
 page -> page : Client checks; summary "Fix {n} things to continue" (L2-027)
 page -> page : Fields read-only, "Create account…" disabled (L2-027)
-page -> client : register(dto)
-client -> ctl : POST /api/auth/register
-ctl -> val : Validate
+page -> client : signUp(request)
+client -> ctl : POST /api/auth/sign-up
+ctl -> cmd : Send RegisterListenerCommand
+cmd -> cmd : Validate with the same rules
 alt invalid
-  val --> ctl : Errors
-  ctl --> client : 400 ValidationProblemDetails (L2-027)
+  ctl --> client : 422 with field errors (L2-027)
+else address already registered
+  ctl --> client : 202, nothing sent (ADR 0010)
 else valid
-  ctl -> cmd : Send RegisterListenerCommand
   cmd -> hash : Hash(password)
   cmd -> ctx : Add Listener and EmailToken
-  ctx -> db : INSERT in one transaction
+  ctx -> db : INSERT listener and token in one SaveChanges
   cmd -> mail : Send confirmation link
   mail -> email : SMTP
   ctl --> client : 202
   page --> u : "Check your inbox" "...It works for 24 hours." (L2-027)
-else server failure
-  ctl --> client : 500, transaction rolled back
+else email provider fails
+  cmd -> ctx : Remove listener and token
+  ctl --> client : 503 EMAIL_UNAVAILABLE
   page --> u : "We couldn’t create your account", nothing saved (L2-027)
 end
 @enduml

@@ -1,4 +1,5 @@
 using Hummi.Application.Abstractions;
+using Hummi.Domain.Accounts;
 using Hummi.Domain.Catalogue;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,12 @@ public sealed class HummiDbContext(DbContextOptions<HummiDbContext> options) : D
     public DbSet<Album> Albums => Set<Album>();
 
     public DbSet<PlayEvent> PlayEvents => Set<PlayEvent>();
+
+    public DbSet<Listener> Listeners => Set<Listener>();
+
+    public DbSet<EmailToken> EmailTokens => Set<EmailToken>();
+
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HummiDbContext).Assembly);

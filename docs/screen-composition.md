@@ -4,18 +4,22 @@ Describes how each screen is composed from design-system components. Generated w
 
 ## Shell
 
-Mock: every page under `docs/mocks/pages/` (header, main, player bar).
+Mock: every page under `docs/mocks/pages/` (header, main, player bar). Routes with `data.bare` (Sign up, Sign in, Verify email) render only main, without the header, banner and footer (ADR 0010).
 
 | Part | Library components | Local UI |
 |---|---|---|
 | Skip link | `hm-skip-link` | None |
-| Header | `hm-top-nav` with the brand (`hm-logo`), links Home, Soca, Kids, Steelpan, Your library and the "Open navigation" toggle | End slot: `hm-search-pill` ("Search songs and artists", opens the search layer); signed out, "Sign in" and "Sign up" links styled with `hmButton`; signed in, the display name |
+| Confirmation banner | `hm-alert` (warning, `banner`, "Confirm your email") above the header with an `hmButton="link"` "Resend the email", while the signed-in listener's email is unconfirmed | Resend call and its toast |
+| Header | `hm-top-nav` with the brand (`hm-logo`), links Home, Soca, Kids, Steelpan, Your library and the "Open navigation" toggle | End slot: `hm-search-pill` ("Search songs and artists", opens the search layer); signed out, "Sign in" and "Sign up" links styled with `hmButton`; signed in, the `.avatar.avatar--nav` button "Account: {name}" (`aria-haspopup="menu"`, `aria-expanded`) that opens the account menu |
 | Main | None | `main#main.container.app-main` wrapping the router outlet |
 | Footer | None | `footer.site-footer` with the two taglines |
 | Search layer | `hm-search-overlay` from `@hummi/search`, rendered while `SearchStore.open()` | None |
 | Player bar | `hm-player-bar` (uses `hm-icon`, `hm-equalizer`, `hm-scrubber`) | Shown only when a track is loaded and the route has no `data.hidePlayer`; More actions, Queue and Expand open the track menu, the queue drawer and Now playing |
 | Queue drawer | `hm-queue-panel` from `@hummi/player`, rendered while `PlayerOverlays.queueOpen()` | None |
 | Track menu | `hm-track-menu-host` from `@hummi/player` | None |
+| Account menu | `hm-account-menu` (name, email, Sign out) | Open state; focus returns to the avatar |
+| Sign out | `hm-sign-out-dialog` from `@hummi/accounts`; page behind it `inert` | None |
+| Sign in to save this | `hm-sign-in-prompt-dialog` from `@hummi/accounts`, rendered while `SignInGate.promptOpen()`; page behind it `inert` | None |
 | Toasts | `hm-toast-region` | None |
 | Keyboard shortcuts | `hm-dialog` through `ShortcutsDialogComponent`; header, main and player bar `inert` behind it | `ShortcutService` keydown handling |
 
@@ -174,3 +178,64 @@ Rendered by the shell from `@hummi/player` (`hm-track-menu-host`) for `PlayerOve
 |---|---|---|
 | Region | `hm-toast-region` (polite live region, `toast-region--noplayer` without the player bar) | Rendered once by the shell |
 | Pill | `hm-toast-region` pill: track cover or coral dot, message, optional Undo; dismissed after 4 seconds | None |
+
+## Sign up (`pages/sign-up`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Card | `hm-auth-card` ("Create your free account", intro) | None |
+| Fields | `hm-text-field` Display name, Email, Password (help "At least 10 characters"); `hm-checkbox` terms with its hint | Client checks in `SignUpComponent` |
+| Invalid | `hm-error-summary` ("Fix {n} things to continue") and each field's error | None |
+| Submitting | Read-only `hm-text-field`s; `hmButton="primary"` `large` `block` `busy` "Create account…" with `.spinner` | None |
+| Error | `hm-alert` (danger, "We couldn’t create your account") | None |
+| Success | `hm-auth-card` ("Check your inbox"), `hm-alert` (success, "Account created", Start again), `hmButton` link "I’ve confirmed my email" | None |
+| Footer | None | "Already have an account? Sign in" paragraph |
+
+## Sign in (`pages/sign-in`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Card | `hm-auth-card` ("Welcome back", intro) | None |
+| Fields | `hm-text-field` Email, Password; `hm-checkbox` "Keep me signed in" (checked); "Forgot password?" link | `.cluster.cluster--between` row |
+| Invalid | `hm-error-summary` ("Fix 2 things to continue") and each field's error | None |
+| Submitting | Read-only fields; `hmButton="primary"` `busy` "Sign in…" with `.spinner` | None |
+| Error | `hm-alert` (danger, "That email and password don’t match", reset link); other failures "Sign in isn’t working right now" | None |
+| Footer | None | "New to Hummi? Create a free account" paragraph |
+
+## Verify email (`pages/verify-email`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Default (confirming) | `hm-auth-card` ("Confirming your email…") with `hm-progress` (indeterminate, "Confirming email") | None |
+| Success | `hm-auth-card` ("Email confirmed"), `hmButton` link "Start listening" | None |
+| Error (expired) | `hm-auth-card` ("This link has expired"), `hmButton="primary"` "Send a new link", ghost `hmButton` link "Back to sign in" | Resend toast through `ToastService` |
+
+## Sign out (`dialogs/sign-out`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Dialog | `hm-dialog` ("Sign out of Hummi?", logout icon, description) | `SignOutDialogComponent` in `@hummi/accounts` |
+| Footer | `hmButton` Cancel, `hmButton="primary"` Sign out (`hm-icon` logout) | None |
+| Busy | Cancel disabled; `busy` "Signing out…" with `.spinner` | None |
+| Failed | `hm-alert` (danger, "That didn’t work") in the dialog body | None |
+
+## Sign in required (`dialogs/sign-in-required`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Dialog | `hm-dialog` ("Sign in to save this", lock icon, description) | `SignInPromptDialogComponent` in `@hummi/accounts` |
+| Footer | `hmButton` Not now and Create account, `hmButton="primary"` Sign in | Navigation with `returnUrl` |
+
+## Account menu (`dialogs/account-menu`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Menu | `hm-account-menu` (scrim, `role="menu"` "Account", identity, divider, Sign out) | Rendered by the shell |
+| Items | Projected `.mi` items | None yet: Kids mode and the destinations join with their journeys (ADR 0010) |
+
+## Banner (`notifications/banner`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Persistent | `hm-alert` (warning, `banner`) "Confirm your email. Check your inbox to keep saving playlists. Resend the email." | Rendered by the shell |
+| Info, success, warning, danger | `hm-alert` with `banner` | Built with journey 16 |

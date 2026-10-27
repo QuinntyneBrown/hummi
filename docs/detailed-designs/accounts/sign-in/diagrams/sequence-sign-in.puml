@@ -17,15 +17,14 @@ skinparam package {
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
   participant "SignInPage" as page
-  participant "AuthApi" as client
   participant "SessionStore" as session
 end box
 box "Backend — Hummi.Api application" #D1FADF
   participant "AuthController" as ctl
+  participant "SessionCookies" as tok
 end box
 box "Backend — Hummi Application and Domain" #ECFDF3
   participant "SignInCommandHandler" as cmd
-  participant "ITokenService" as tok
   participant "IPasswordHasher" as hash
 end box
 box "Backend — Hummi Infrastructure" #FFF4E5
@@ -36,20 +35,19 @@ u -> page : Submit empty form
 page --> u : "Fix 2 things to continue" (L2-029)
 u -> page : Submit email and password
 page -> page : Read-only fields, "Sign in…" disabled (L2-029)
-page -> client : signIn(email, password, keep)
-client -> ctl : POST /api/auth/sign-in
+page -> session : signIn(email, password, keep)
+session -> ctl : POST /api/auth/sign-in
 ctl -> cmd : Send SignInCommand
 cmd -> ctx : Listener by email
 cmd -> hash : Verify(hash, password)
 alt mismatch or unknown email
-  ctl --> client : 401 ProblemDetails
+  ctl --> session : 401 INVALID_CREDENTIALS
   page --> u : "That email and password don’t match" (L2-029)
 else match
-  cmd -> tok : IssueAccess, IssueRefresh(persistent = keep)
-  cmd -> ctx : Store RefreshToken hash
+  cmd -> ctx : Store RefreshToken hash (30 days if keep, else 1 day)
   ctx -> db : INSERT
-  ctl --> client : 200 access token, Set-Cookie refresh (Expires only if keep, L2-029)
-  client -> session : setSession(listener, token)
+  ctl -> tok : Write(SignedIn)
+  ctl --> session : 200 listener; HttpOnly hm_access and hm_refresh cookies (Expires only if keep, L2-029)
   page --> u : Navigate to return URL or Home
 end
 @enduml

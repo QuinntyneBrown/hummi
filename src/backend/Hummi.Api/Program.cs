@@ -15,6 +15,7 @@ builder.Services.AddHummiAuth(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

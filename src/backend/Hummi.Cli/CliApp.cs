@@ -55,7 +55,7 @@ public static class CliApp
         var mediaRoot = configuration["MediaStorage:RootPath"] is { Length: > 0 } root ? root : Path.Combine(AppContext.BaseDirectory, "media");
         using var db = new HummiDbContext(new DbContextOptionsBuilder<HummiDbContext>().UseSqlServer(connectionString).Options);
         var added = DemoSeeder.SeedAsync(db, mediaRoot, TimeProvider.System).GetAwaiter().GetResult();
-        output.WriteLine(added == 0 ? "The catalogue is already seeded." : $"Seeded {added} tracks; audio written to {mediaRoot}.");
+        output.WriteLine(added == 0 ? "The catalogue is already seeded." : $"Seeded {added} tracks; audio written to {mediaRoot}. Sign in as {DemoSeeder.DemoEmail} with {DemoSeeder.DemoPassword}.");
         return ExitCodes.Success;
     }
 }

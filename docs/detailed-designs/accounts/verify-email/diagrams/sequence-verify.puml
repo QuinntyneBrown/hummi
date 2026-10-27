@@ -17,7 +17,7 @@ skinparam package {
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
   participant "VerifyEmailPage" as page
-  participant "ShellBannerHost" as banner
+  participant "AppShell" as banner
   participant "AuthApi" as client
 end box
 box "Backend — Hummi.Api application" #D1FADF
@@ -26,7 +26,7 @@ end box
 box "Backend — Hummi Application and Domain" #ECFDF3
   participant "ConfirmEmailCommandHandler" as cmd
   participant "ResendConfirmationCommandHandler" as resend
-  participant "IClock" as clock
+  participant "TimeProvider" as clock
   participant "IEmailSender" as mail
 end box
 box "Backend — Hummi Infrastructure" #FFF4E5

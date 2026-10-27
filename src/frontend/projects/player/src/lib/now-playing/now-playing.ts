@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { PlayerOverlays, PlayerStore } from '@hummi/api';
+import { PlayerOverlays, PlayerStore, SignInGate } from '@hummi/api';
 import { ButtonDirective, PlayerLayerComponent } from '@hummi/components';
 
 /**
  * Now playing (`/now-playing`, L2-015): hm-player-layer over the page for the current track, or
  * "Nothing is playing" with Browse genres. Close and Escape go back to the page it was opened from (Home
  * when opened directly). Queue closes the layer and opens the queue drawer; More actions opens the track
- * menu. Save and Share are wired by the library and sharing journeys.
+ * menu. Save asks SignInGate first (L2-032); saving itself and Share come with the library and sharing journeys.
  */
 @Component({
   selector: 'hm-now-playing',
@@ -30,6 +30,7 @@ import { ButtonDirective, PlayerLayerComponent } from '@hummi/components';
       (toggleRepeat)="player.toggleRepeat()"
       (queue)="openQueue()"
       (more)="openMenu()"
+      (save)="gate.allow()"
     >
       <a hmButton="primary" routerLink="/browse">Browse genres</a>
     </hm-player-layer>
@@ -38,6 +39,7 @@ import { ButtonDirective, PlayerLayerComponent } from '@hummi/components';
 })
 export class NowPlayingComponent {
   readonly player = inject(PlayerStore);
+  readonly gate = inject(SignInGate);
   private readonly overlays = inject(PlayerOverlays);
   private readonly router = inject(Router);
   /** True when the app navigated here from another of its pages, so Back returns there. */

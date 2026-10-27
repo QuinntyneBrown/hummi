@@ -45,10 +45,11 @@
                 type="button"
                 [pressed]="t.liked"
                 [attr.aria-label]="'Like ' + t.title"
+                (click)="gate.allow()"
               >
                 <hm-icon name="heart" [fill]="t.liked" />
               </button>
-              <button hmButton type="button"><hm-icon name="plus" />Add to playlist</button>
+              <button hmButton type="button" (click)="gate.allow()"><hm-icon name="plus" />Add to playlist</button>
               <button hmButton type="button"><hm-icon name="share" />Share</button>
               <button hmButton="ghost" class="btn--icon" type="button" aria-label="Report this track">
                 <hm-icon name="flag" />
@@ -63,6 +64,7 @@
           @if (t.moreFromArtist.length) {
             <hm-shelf [heading]="'More from ' + t.artist.name">
               <hm-track-list
+                (like)="gate.allow()"
                 [tracks]="t.moreFromArtist"
                 [label]="'More from ' + t.artist.name"
                 [currentTrackId]="player.current()?.id ?? null"
@@ -81,6 +83,7 @@
           </hm-alert>
           <hm-shelf heading="Similar tracks">
             <hm-track-list
+              (like)="gate.allow()"
               [tracks]="t.similar"
               label="Similar tracks"
               [currentTrackId]="player.current()?.id ?? null"

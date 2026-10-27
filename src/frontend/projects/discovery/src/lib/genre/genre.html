@@ -44,6 +44,7 @@
           </button>
         </div>
         <hm-track-list
+          (like)="gate.allow()"
           [tracks]="page.tracks"
           [label]="page.name + ' tracks'"
           [currentTrackId]="player.current()?.id ?? null"

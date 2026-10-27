@@ -118,7 +118,7 @@ test('L2-012 AC1: the licence page heads "Licence and credit" with the credit al
   await expect(licence.heading).toHaveText('Licence and credit');
   await expect(licence.subtitle).toHaveText('How you can reuse what you hear on Hummi');
   await expect(licence.alert).toHaveClass(/alert--info/);
-  await expect(licence.alert.locator('strong')).toHaveText('Feathers Up is CC0');
+  await expect(licence.alert.locator('.alert__title')).toHaveText('Feathers Up is CC0');
   await expect(licence.alert).toContainText(
     'Kaiso Collective released it into the public domain. Credit is appreciated but not required: “Feathers Up by Kaiso Collective, generated with openmusic-3b.”',
   );
@@ -130,7 +130,7 @@ test('L2-012 AC1: a CC BY track’s licence page says credit is required', async
   const licence = new LicencePage(page);
   await licence.goto('feathers-up');
 
-  await expect(licence.alert.locator('strong')).toHaveText('Feathers Up is CC BY 4.0');
+  await expect(licence.alert.locator('.alert__title')).toHaveText('Feathers Up is CC BY 4.0');
   await expect(licence.alert).toContainText(
     'Credit is required: “Feathers Up by Kaiso Collective, generated with openmusic-3b.”',
   );

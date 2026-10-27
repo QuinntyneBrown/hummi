@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { GenreTrackSort, GenresApi, PlayerOverlays, PlayerStore, apiResource } from '@hummi/api';
+import { GenreTrackSort, GenresApi, PlayerOverlays, PlayerStore, apiResource, SignInGate } from '@hummi/api';
 import {
   ButtonDirective,
   ChipDirective,
@@ -38,6 +38,7 @@ export class GenreComponent {
   private readonly api = inject(GenresApi);
   readonly player = inject(PlayerStore);
   readonly overlays = inject(PlayerOverlays);
+  readonly gate = inject(SignInGate);
   readonly sort = signal<GenreTrackSort>('newest');
   private readonly slug = toSignal(inject(ActivatedRoute).paramMap.pipe(map((params) => params.get('slug') ?? '')), {
     initialValue: '',

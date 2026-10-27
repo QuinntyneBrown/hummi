@@ -18,6 +18,10 @@ export const routes: Routes = [
     loadChildren: () => import('@hummi/search').then((m) => m.routes),
   },
   {
+    path: '',
+    loadChildren: () => import('@hummi/accounts').then((m) => m.routes),
+  },
+  {
     path: '**',
     title: 'Page not found',
     data: { hidePlayer: true },

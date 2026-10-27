@@ -6,10 +6,10 @@ Sign in (`/sign-in`) starts a session from an email and password. "Keep me signe
 default) keeps the session after the browser closes. A wrong email or password gives one message that
 does not say which value was wrong.
 
-- **session** — pair of a short-lived access token (JWT) held in memory and a refresh token in an `HttpOnly`, `Secure`, `SameSite=Strict` cookie
+- **session** — pair of a short-lived access token (JWT) and a refresh token, each in an `HttpOnly`, `Secure`, `SameSite=Strict` cookie (`hm_access`, `hm_refresh`); no token reaches script or web storage
 - **persistent session** — session whose refresh cookie has an expiry date; otherwise the cookie lasts until the browser closes
 
-Access token lifetime: <TO SUPPLY>. Persistent refresh lifetime: <TO SUPPLY>.
+Access token lifetime: 15 minutes. Persistent refresh lifetime: 30 days; without Keep me signed in the refresh token lasts 1 day on the server and its cookie ends with the browser. Refresh rotates the token; sign-out revokes it (ADR 0010).
 
 ## Description
 
@@ -18,17 +18,16 @@ Sign in is a command that verifies credentials and issues tokens.
 **Frontend — Hummi web application (Angular)**
 
 - **`SignInPage`** — Routed component in @hummi/accounts. Renders the form, `hm-error-summary`, danger `hm-alert` and busy state; renders immediately without loading state (`L2-039`)
-- **`AuthApi`** — Typed HTTP service in @hummi/api. Calls the anonymous `/api/auth/*` endpoints
 - **`SessionStore`** — Signal store in @hummi/api. Holds the signed-in listener, the access token and the signed-in/signed-out state the shell reads
 
 **Backend — Hummi.Api application**
 
-- **`AuthController`** — ASP.NET Core controller. `/api/auth/*` endpoints; rate limited per IP <TO SUPPLY: limits>
+- **`AuthController`** — ASP.NET Core controller. `/api/auth/*` endpoints; rate limited per IP 20 requests a minute per client IP (ADR 0010)
 
 **Backend — Hummi Application and Domain**
 
 - **`SignInCommandHandler`** — MediatR command handler. Verifies the password with `IPasswordHasher`; returns one `InvalidCredentials` error for any mismatch
-- **`ITokenService`** — Application port. Issues JWT access tokens and rotating refresh tokens
+- **`SessionCookies`** — Hummi.Api service. Issues the 15-minute JWT access cookie and writes the refresh cookie; `RefreshToken.Issue` in the domain creates the secret and stores only its hash
 - **`IPasswordHasher`** — Application port. Hashes and verifies passwords; implemented with ASP.NET Core Identity's `PasswordHasher<T>`
 
 **Backend — Hummi Infrastructure**
@@ -60,18 +59,18 @@ The Angular application is delivered by the `web` container, which also proxies 
 
 ### Components
 
-`SignInPage` calls `AuthApi`; `AuthController` sends `SignInCommand`, whose handler uses `IPasswordHasher` and `ITokenService`.
+`SignInPage` calls `SessionStore.signIn`; `AuthController` sends `SignInCommand`, whose handler uses `IPasswordHasher`, and writes the cookies with `SessionCookies`.
 
 ![C4 component view for sign in](diagrams/c4-component.png)
 
 ### Class structure
 
-`SignInCommandHandler` verifies a `Listener` and asks `ITokenService` for tokens, persisting a hashed `RefreshToken`.
+`SignInCommandHandler` verifies a `Listener` and issues a `RefreshToken`, persisting only its hash; `SessionCookies` writes the secret to the browser.
 
 ![Class diagram for sign in](diagrams/class-structure.png)
 
 ### Behaviour — sign in
 
-Both an unknown email and a wrong password return the same 401 so the response does not reveal which was wrong. The refresh cookie carries an expiry only when Keep me signed in is checked.
+Both an unknown email and a wrong password return the same 401 `INVALID_CREDENTIALS` so the response does not reveal which was wrong. Any other failure shows "Sign in isn’t working right now". Success opens the `returnUrl` from the Sign in to save this prompt, or Home. The refresh cookie carries an expiry only when Keep me signed in is checked.
 
 ![Sequence diagram for sign in](diagrams/sequence-sign-in.png)

@@ -8,8 +8,8 @@ Container_Boundary(spa, "Hummi web application") {
   Component(client, "AuthApi", "Typed HTTP service in @hummi/api", "Calls the anonymous /api/auth/* endpoints")
 }
 Container_Boundary(api, "Hummi.Api") {
-  Component(ctl, "AuthController", "ASP.NET Core controller", "/api/auth/* endpoints; rate limited per IP\n<TO SUPPLY: limits>")
-  Component(val, "RegisterListenerValidator", "FluentValidation validator", "Display name required; email well formed;\npassword at least 10 characters; terms\naccepted")
+  Component(ctl, "AuthController", "ASP.NET Core controller", "/api/auth/* endpoints; rate limited per IP\n20 requests a minute per client IP (ADR 0010)")
+  Component(val, "Sign-up rules", "Inside RegisterListenerCommandHandler", "Display name required; email well formed;\npassword at least 10 characters; terms\naccepted")
   Component(cmd, "RegisterListenerCommandHandler", "MediatR command handler", "Hashes the password, creates Listener and\nEmailToken(Purpose = ConfirmEmail, 24 h),\nsaves, then sends the email")
   Component(hash, "IPasswordHasher", "Application port", "Hashes and verifies passwords; implemented\nwith ASP.NET Core Identity's\nPasswordHasher<T>")
   Component(mail, "IEmailSender", "Application port", "SendAsync(EmailMessage); implemented by an\nSMTP adapter in Infrastructure")
