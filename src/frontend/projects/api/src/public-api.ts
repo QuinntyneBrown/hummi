@@ -52,3 +52,4 @@ export {
   type NotificationKind,
   type NotificationsDto,
 } from './lib/notifications/notifications';
+export { ReportDialogs, ReportsApi, type ReportReason, type ReportSubject } from './lib/reporting/reports';

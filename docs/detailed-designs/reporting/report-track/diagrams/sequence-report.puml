@@ -23,7 +23,7 @@ box "Backend — Hummi.Api application" #D1FADF
   participant "ReportsController" as ctl
 end box
 box "Backend — Hummi Application and Domain" #ECFDF3
-  participant "ReportTrackValidator" as val
+  participant "ReportTrackCommandHandler checks" as val
   participant "ReportTrackCommandHandler" as cmd
   participant "ResolveReportCommandHandler" as res
   participant "IEmailSender" as mail

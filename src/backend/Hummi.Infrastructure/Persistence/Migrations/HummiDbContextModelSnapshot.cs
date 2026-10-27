@@ -436,6 +436,48 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                     b.ToTable("Tracks", (string)null);
                 });
 
+            modelBuilder.Entity("Hummi.Domain.Catalogue.TrackReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Details")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Outcome")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("Reason")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ReporterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("ResolvedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TrackId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReporterId");
+
+                    b.HasIndex("TrackId");
+
+                    b.HasIndex("Status", "CreatedAt");
+
+                    b.ToTable("TrackReports", (string)null);
+                });
+
             modelBuilder.Entity("Hummi.Domain.Library.ArtistFollow", b =>
                 {
                     b.Property<Guid>("ListenerId")
@@ -684,6 +726,21 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                     b.Navigation("Artist");
 
                     b.Navigation("Genre");
+                });
+
+            modelBuilder.Entity("Hummi.Domain.Catalogue.TrackReport", b =>
+                {
+                    b.HasOne("Hummi.Domain.Accounts.Listener", null)
+                        .WithMany()
+                        .HasForeignKey("ReporterId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Hummi.Domain.Catalogue.Track", null)
+                        .WithMany()
+                        .HasForeignKey("TrackId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Hummi.Domain.Library.ArtistFollow", b =>

@@ -322,6 +322,26 @@
           "defaultConfiguration": "production"
         }
       }
+    },
+    "reporting": {
+      "projectType": "reporting",
+      "root": "projects/reporting",
+      "sourceRoot": "projects/reporting/src",
+      "prefix": "hm",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/reporting/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/reporting/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
     }
   }
 }

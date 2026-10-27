@@ -20,6 +20,7 @@ import {
   PlayerOverlays,
   PlayerStore,
   PlaylistDialogs,
+  ReportDialogs,
   SearchStore,
   SessionStore,
   SettingsStore,
@@ -28,6 +29,7 @@ import {
   UnreadStore,
 } from '@hummi/api';
 import { PlaylistDialogHostComponent } from '@hummi/library';
+import { ReportDialogHostComponent } from '@hummi/reporting';
 import { ShareDialogHostComponent } from '@hummi/sharing';
 import { SignInPromptDialogComponent, SignOutDialogComponent } from '@hummi/accounts';
 import {
@@ -80,6 +82,7 @@ import { ShortcutService } from '../shortcuts/shortcuts';
     SignInPromptDialogComponent,
     PlaylistDialogHostComponent,
     ShareDialogHostComponent,
+    ReportDialogHostComponent,
   ],
   host: {
     '[class.has-player]': 'showPlayer() && !!player.current()',
@@ -109,6 +112,7 @@ export class AppShellComponent {
   readonly library = inject(LibraryStore);
   private readonly playlistDialogs = inject(PlaylistDialogs);
   private readonly shareDialogs = inject(ShareDialogs);
+  private readonly reportDialogs = inject(ReportDialogs);
   /** The playing track with the listener's like (L2-018). */
   readonly currentTrack = computed(() => {
     const track = this.player.current();
@@ -130,7 +134,8 @@ export class AppShellComponent {
     this.signOutOpen() ||
     this.gate.promptOpen() ||
     !!this.playlistDialogs.open() ||
-    !!this.shareDialogs.open()
+    !!this.shareDialogs.open() ||
+    !!this.reportDialogs.open()
       ? ''
       : null,
   );
@@ -165,7 +170,14 @@ export class AppShellComponent {
 
   /** Shortcuts stay off while a dialog makes the page inert. */
   shortcut(event: KeyboardEvent): void {
-    if (this.signOutOpen() || this.gate.promptOpen() || this.playlistDialogs.open() || this.shareDialogs.open()) return;
+    if (
+      this.signOutOpen() ||
+      this.gate.promptOpen() ||
+      this.playlistDialogs.open() ||
+      this.shareDialogs.open() ||
+      this.reportDialogs.open()
+    )
+      return;
     this.shortcuts.handle(event);
   }
 

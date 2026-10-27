@@ -9,7 +9,7 @@ Container_Boundary(spa, "Hummi web application") {
 }
 Container_Boundary(api, "Hummi.Api") {
   Component(ctl, "ReportsController", "ASP.NET Core controller", "POST /api/tracks/{id}/reports")
-  Component(val, "ReportTrackValidator", "FluentValidation validator", "Reason required; details at most <TO SUPPLY>\ncharacters")
+  Component(val, "ReportTrackCommandHandler checks", "Handler checks", "Reason required; details at most 1,000\ncharacters")
   Component(cmd, "ReportTrackCommandHandler", "MediatR command handler", "Stores TrackReport with status Open")
   Component(res, "ResolveReportCommandHandler", "MediatR command handler", "Records the outcome and emails the reporter")
   Component(mail, "IEmailSender", "Application port", "Sends the outcome email")

@@ -44,6 +44,8 @@ internal sealed class TestDb : DbContext, IHummiDbContext
 
     public DbSet<Notification> Notifications => Set<Notification>();
 
+    public DbSet<TrackReport> TrackReports => Set<TrackReport>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<TrackLike>().HasKey(l => new { l.ListenerId, l.TrackId });
@@ -54,6 +56,7 @@ internal sealed class TestDb : DbContext, IHummiDbContext
         modelBuilder.Entity<ShareLink>().Property(l => l.Id).ValueGeneratedNever();
         modelBuilder.Entity<SavedPlaylist>().HasKey(s => new { s.ListenerId, s.PlaylistId });
         modelBuilder.Entity<Notification>().Property(n => n.Id).ValueGeneratedNever();
+        modelBuilder.Entity<TrackReport>().Property(r => r.Id).ValueGeneratedNever();
     }
 
     public static readonly DateTimeOffset Now = new(2026, 10, 27, 9, 0, 0, TimeSpan.Zero);

@@ -2,4 +2,4 @@
 
 | Design | Effort | Complete |
 |---|---|---|
-| report-track | 3 days | 0% |
+| report-track | 3 days | 100% |

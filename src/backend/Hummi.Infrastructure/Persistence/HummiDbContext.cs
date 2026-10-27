@@ -39,6 +39,8 @@ public sealed class HummiDbContext(DbContextOptions<HummiDbContext> options) : D
 
     public DbSet<Notification> Notifications => Set<Notification>();
 
+    public DbSet<TrackReport> TrackReports => Set<TrackReport>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HummiDbContext).Assembly);
 }

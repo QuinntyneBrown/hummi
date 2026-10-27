@@ -41,6 +41,8 @@ public interface IHummiDbContext
 
     DbSet<Notification> Notifications { get; }
 
+    DbSet<TrackReport> TrackReports { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 
