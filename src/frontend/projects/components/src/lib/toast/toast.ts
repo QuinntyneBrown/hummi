@@ -13,9 +13,11 @@ export interface Toast {
   /** True for the cover of a track without artwork; false shows the dot. */
   cover: boolean;
   undo?: () => void;
+  /** A danger toast (L2-018 AC4): title, text and an optional action; it stays until dismissed. */
+  danger?: { title: string; text: string; action?: { label: string; run: () => void } };
 }
 
-/** Queues toasts for hm-toast-region; each dismisses itself after TOAST_MS. */
+/** Queues toasts for hm-toast-region; pills dismiss themselves after TOAST_MS, danger toasts stay. */
 @Injectable({ providedIn: 'root' })
 export class ToastService {
   private nextId = 1;
@@ -35,6 +37,18 @@ export class ToastService {
     setTimeout(() => this.dismiss(toast.id), TOAST_MS);
   }
 
+  /** Shows a danger toast that stays until the listener dismisses it or runs its action. */
+  showDanger(title: string, text: string, action?: { label: string; run: () => void }): void {
+    const toast: Toast = {
+      id: this.nextId++,
+      message: title,
+      coverUrl: null,
+      cover: false,
+      danger: { title, text, action },
+    };
+    this.items.update((list) => [...list, toast]);
+  }
+
   dismiss(id: number): void {
     this.items.update((list) => list.filter((t) => t.id !== id));
   }
@@ -50,22 +64,40 @@ export class ToastService {
   template: `
     <div class="toast-region" [class.toast-region--noplayer]="noPlayer()" role="status" aria-live="polite">
       @for (toast of service.toasts(); track toast.id) {
-        <div class="toast" [class.toast--undo]="!!toast.undo">
-          @if (toast.cover) {
-            <div class="cover cover--c1 cover--sm" [class.cover--art]="!!toast.coverUrl" aria-hidden="true">
-              @if (toast.coverUrl; as url) {
-                <img [src]="url" alt="" />
+        @if (toast.danger; as d) {
+          <div class="toast toast--danger" role="alert">
+            <hm-icon name="alert" />
+            <div class="toast__body">
+              <div class="toast__title">{{ d.title }}</div>
+              <div class="toast__text">{{ d.text }}</div>
+              @if (d.action; as action) {
+                <button class="toast__action" type="button" (click)="service.dismiss(toast.id); action.run()">
+                  {{ action.label }}
+                </button>
               }
-              <hm-icon name="music" />
             </div>
-          } @else {
-            <span class="toast__dot" aria-hidden="true"></span>
-          }
-          <span class="toast__msg">{{ toast.message }}</span>
-          @if (toast.undo; as undo) {
-            <button class="toast__undo" type="button" (click)="undo(); service.dismiss(toast.id)">Undo</button>
-          }
-        </div>
+            <button class="close" type="button" aria-label="Dismiss" (click)="service.dismiss(toast.id)">
+              <hm-icon name="close" />
+            </button>
+          </div>
+        } @else {
+          <div class="toast" [class.toast--undo]="!!toast.undo">
+            @if (toast.cover) {
+              <div class="cover cover--c1 cover--sm" [class.cover--art]="!!toast.coverUrl" aria-hidden="true">
+                @if (toast.coverUrl; as url) {
+                  <img [src]="url" alt="" />
+                }
+                <hm-icon name="music" />
+              </div>
+            } @else {
+              <span class="toast__dot" aria-hidden="true"></span>
+            }
+            <span class="toast__msg">{{ toast.message }}</span>
+            @if (toast.undo; as undo) {
+              <button class="toast__undo" type="button" (click)="undo(); service.dismiss(toast.id)">Undo</button>
+            }
+          </div>
+        }
       }
     </div>
   `,

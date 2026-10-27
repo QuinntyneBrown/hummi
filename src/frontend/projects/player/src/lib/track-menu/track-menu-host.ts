@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { PlayerOverlays, PlayerStore, SearchStore, SignInGate, TrackMenuState } from '@hummi/api';
+import { LibraryStore, PlayerOverlays, PlayerStore, SearchStore, SignInGate, TrackMenuState } from '@hummi/api';
 import { ToastService, TrackMenuComponent } from '@hummi/components';
 
 /**
  * The shell's track menu (L2-053) for PlayerOverlays.trackMenu(): Play next and Add to queue line the
  * track up and confirm with a toast (L2-016, L2-041); More from {artist} opens search for the artist;
- * Go to {genre} opens the genre. Save to library asks SignInGate first (L2-032). Save to library and Share close the menu until the library and sharing
- * journeys wire them.
+ * Go to {genre} opens the genre. Save to library likes the track, or removes the like, with an Undo toast; signed out it asks
+ * SignInGate first (L2-018, L2-032). Share closes the menu until the sharing journey wires it.
  */
 @Component({
   selector: 'hm-track-menu-host',
@@ -15,11 +15,11 @@ import { ToastService, TrackMenuComponent } from '@hummi/components';
   template: `
     @if (overlays.trackMenu(); as menu) {
       <hm-track-menu
-        [track]="menu.track"
+        [track]="menuTrack() ?? menu.track"
         [anchor]="menu.anchor"
         (playNext)="playNext(menu)"
         (addToQueue)="addToQueue(menu)"
-        (save)="save()"
+        (save)="save(menu)"
         (share)="overlays.closeTrackMenu()"
         (moreFromArtist)="moreFrom(menu)"
         (goToGenre)="goToGenre(menu)"
@@ -36,6 +36,11 @@ export class TrackMenuHostComponent {
   private readonly toasts = inject(ToastService);
   private readonly router = inject(Router);
   private readonly gate = inject(SignInGate);
+  private readonly library = inject(LibraryStore);
+  readonly menuTrack = computed(() => {
+    const menu = this.overlays.trackMenu();
+    return menu && this.library.withLikes([menu.track])[0];
+  });
 
   playNext({ track }: TrackMenuState): void {
     this.player.playNext(track);
@@ -55,8 +60,16 @@ export class TrackMenuHostComponent {
   }
 
   /** Save to library: signed out, the menu gives way to the Sign in to save this prompt (L2-032). */
-  save(): void {
-    this.overlays.closeTrackMenu(this.gate.allow());
+  save({ track }: TrackMenuState): void {
+    const allowed = this.gate.allow();
+    this.overlays.closeTrackMenu(allowed);
+    if (!allowed) return;
+    const liked = this.library.isLiked(track.id);
+    void this.library.toggleLike(track);
+    this.toasts.show(liked ? `Removed “${track.title}” from your library` : `Saved “${track.title}” to your library`, {
+      track,
+      undo: () => void this.library.toggleLike(track),
+    });
   }
 
   goToGenre({ track }: TrackMenuState): void {

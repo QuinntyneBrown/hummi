@@ -5,13 +5,15 @@ import {
   ElementRef,
   afterNextRender,
   computed,
+  effect,
   inject,
   Injector,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { AuthApi, PlayerOverlays, PlayerStore, SearchStore, SessionStore, SignInGate } from '@hummi/api';
+import { AuthApi, LibraryStore, PlayerOverlays, PlayerStore, SearchStore, SessionStore, SignInGate } from '@hummi/api';
 import { SignInPromptDialogComponent, SignOutDialogComponent } from '@hummi/accounts';
 import {
   AccountMenuComponent,
@@ -85,6 +87,12 @@ export class AppShellComponent {
   readonly shortcuts = inject(ShortcutService);
   private readonly router = inject(Router);
   readonly gate = inject(SignInGate);
+  readonly library = inject(LibraryStore);
+  /** The playing track with the listener's like (L2-018). */
+  readonly currentTrack = computed(() => {
+    const track = this.player.current();
+    return track && this.library.withLikes([track])[0];
+  });
   private readonly auth = inject(AuthApi);
   private readonly toasts = inject(ToastService);
   private readonly injector = inject(Injector);
@@ -110,6 +118,13 @@ export class AppShellComponent {
       this.accountMenuOpen.set(false);
     });
     inject(DestroyRef).onDestroy(() => subscription.unsubscribe());
+    // A failed like or follow becomes the danger toast with Retry (L2-018 AC4).
+    effect(() => {
+      const problem = this.library.problem();
+      if (problem) {
+        untracked(() => this.toasts.showDanger(problem.title, problem.text, { label: 'Retry', run: problem.retry }));
+      }
+    });
   }
 
   toggleNav(): void {

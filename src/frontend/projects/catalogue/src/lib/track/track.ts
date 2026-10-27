@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { PlayerOverlays, PlayerStore, TrackDetailDto, TracksApi, SignInGate } from '@hummi/api';
+import { LibraryStore, PlayerOverlays, PlayerStore, TrackDetailDto, TracksApi, SignInGate } from '@hummi/api';
 import {
   AlertComponent,
   ButtonDirective,
@@ -51,6 +51,7 @@ export class TrackComponent {
   readonly player = inject(PlayerStore);
   readonly overlays = inject(PlayerOverlays);
   readonly gate = inject(SignInGate);
+  readonly library = inject(LibraryStore);
   readonly track = slugResource(
     (slug) => this.api.get(slug),
     (track) => track.title,

@@ -157,7 +157,11 @@ test('the player bar stays across pages and hides on pages whose route says so (
   await expect(page.getByRole('heading', { name: 'Soca', level: 1 })).toBeVisible();
   await expect(player.title).toHaveText('Feathers Up');
 
-  await shell.navLink('Your library').click();
+  // An in-app navigation to an unknown path, so the player keeps its track.
+  await page.evaluate(() => {
+    history.pushState({}, '', '/no-such-page');
+    dispatchEvent(new PopStateEvent('popstate', { state: {} }));
+  });
   await expect(page.getByRole('heading', { name: 'We couldn’t find that page' })).toBeVisible();
   await expect(player.region).toHaveCount(0);
 

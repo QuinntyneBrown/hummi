@@ -126,6 +126,20 @@ Mock: the layer over Home in every state. Rendered by the shell from `@hummi/sea
 | No results | `layer-empty` text block ("Nothing matches “{query}”") | The `layer-empty` block |
 | Error | `hm-error-block` ("Search isn’t working right now") with Try again | None |
 
+## Library (`pages/library`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Header | `hm-page-header` ("Library", subtitle "{n} playlists · {n} liked tracks · {n} artists"), `hmButton="primary"` "New playlist" with `hm-icon` plus | `LibraryComponent` in `@hummi/library`; counts from `GET /api/me/library` |
+| Tabs | `hm-tabs` (Playlists, Liked, Following; label "Library") | Selected tab signal |
+| Playlists | `hm-media-tile` per playlist in `.card-grid` ("{n} tracks · {owner}") | None |
+| Liked | `hm-track-list` "Liked tracks" through `LibraryStore.withLikes` | Like toggles via `LibraryStore` |
+| Following | Round `hm-media-tile` per artist in `.card-grid` ("{n} monthly listeners") | None |
+| Loading | `hm-skeleton` card tiles in `.shelf__track` | None |
+| Empty | `hm-empty-state` ("Your library is empty"), `hmButton="primary"` "Create a playlist", `hmButton` link "Browse genres" | None |
+| Error | `hm-error-block` ("Your library didn’t load", Try again) | None |
+| Signed out | `hm-empty-state` (lock, "Sign in to see your library"), `hmButton` links "Sign in" and "Create account" | None |
+
 ## Now playing (`pages/now-playing`)
 
 Mock: the layer over Home. Routed at `/now-playing` in `@hummi/player`; the player bar is hidden there (ADR 0009).
@@ -178,6 +192,7 @@ Rendered by the shell from `@hummi/player` (`hm-track-menu-host`) for `PlayerOve
 |---|---|---|
 | Region | `hm-toast-region` (polite live region, `toast-region--noplayer` without the player bar) | Rendered once by the shell |
 | Pill | `hm-toast-region` pill: track cover or coral dot, message, optional Undo; dismissed after 4 seconds | None |
+| Danger | `hm-toast-region` danger toast (`ToastService.showDanger`): alert icon, title, text, optional action (Retry), Dismiss; stays until dismissed (ADR 0012) | Shell turns `LibraryStore.problem` into it |
 
 ## Sign up (`pages/sign-up`)
 

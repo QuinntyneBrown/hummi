@@ -479,6 +479,72 @@ export async function fakeSearch(
   return { queries };
 }
 
+export const KAISO_TILE = {
+  slug: 'kaiso-collective',
+  name: 'Kaiso Collective',
+  monthlyListeners: 48210,
+  coverUrl: null,
+};
+
+export const LIBRARY = {
+  playlistCount: 3,
+  likedCount: 2,
+  followingCount: 1,
+  playlists: [
+    { id: 'p1', name: 'Road trip to the north coast', trackCount: 24, ownerName: 'Nadia Charles', coverUrl: null },
+    { id: 'p2', name: 'Rainy-day panyard', trackCount: 18, ownerName: 'Nadia Charles', coverUrl: null },
+    { id: 'p3', name: 'Sunday kitchen', trackCount: 31, ownerName: 'Mei Rodríguez', coverUrl: null },
+  ],
+  liked: [
+    { ...TRACKS.feathersUp, liked: true },
+    { ...TRACKS.panyard, liked: true },
+  ],
+  following: [KAISO_TILE],
+};
+
+export const EMPTY_LIBRARY = {
+  playlistCount: 0,
+  likedCount: 0,
+  followingCount: 0,
+  playlists: [],
+  liked: [],
+  following: [],
+};
+
+/**
+ * GET /api/me/library answers the given library (each call can answer a different one, for the
+ * cross-device test); PUT and DELETE on likes and follows answer writeStatus and are recorded.
+ */
+export async function fakeLibrary(
+  page: Page,
+  options: { body?: unknown | (() => unknown); status?: number; writeStatus?: number } = {},
+): Promise<{ writes: string[]; reads: () => number }> {
+  const writes: string[] = [];
+  let reads = 0;
+  await page.route('**/api/me/library', (route) => {
+    reads++;
+    const status = options.status ?? 200;
+    const body = typeof options.body === 'function' ? (options.body as () => unknown)() : (options.body ?? LIBRARY);
+    return route.fulfill(
+      status === 200
+        ? { status, contentType: 'application/json', body: JSON.stringify(body) }
+        : {
+            status,
+            contentType: 'application/problem+json',
+            body: JSON.stringify({ title: 'Server error', code: 'UNEXPECTED' }),
+          },
+    );
+  });
+  await page.route(/\/api\/me\/(likes|follows)\/[^/?]+$/, (route) => {
+    const url = new URL(route.request().url());
+    writes.push(`${route.request().method()} ${url.pathname}`);
+    const status = options.writeStatus ?? 204;
+    if (status === 0) return route.abort('internetdisconnected');
+    return route.fulfill({ status, body: '' });
+  });
+  return { writes, reads: () => reads };
+}
+
 export const test = base.extend<{ visitor: void }>({
   visitor: [
     async ({ page }, use) => {

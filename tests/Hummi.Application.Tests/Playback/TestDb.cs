@@ -1,6 +1,7 @@
 using Hummi.Application.Abstractions;
 using Hummi.Domain.Accounts;
 using Hummi.Domain.Catalogue;
+using Hummi.Domain.Library;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hummi.Application.Tests.Playback;
@@ -28,6 +29,16 @@ internal sealed class TestDb : DbContext, IHummiDbContext
     public DbSet<EmailToken> EmailTokens => Set<EmailToken>();
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
+    public DbSet<TrackLike> TrackLikes => Set<TrackLike>();
+
+    public DbSet<ArtistFollow> ArtistFollows => Set<ArtistFollow>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<TrackLike>().HasKey(l => new { l.ListenerId, l.TrackId });
+        modelBuilder.Entity<ArtistFollow>().HasKey(f => new { f.ListenerId, f.ArtistId });
+    }
 
     public static readonly DateTimeOffset Now = new(2026, 10, 27, 9, 0, 0, TimeSpan.Zero);
 

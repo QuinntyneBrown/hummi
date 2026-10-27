@@ -50,7 +50,7 @@
   <hm-search-overlay (closed)="searchClosed()" />
 }
 @if (showPlayer()) {
-  @if (player.current(); as track) {
+  @if (currentTrack(); as track) {
     <hm-player-bar
       [attr.inert]="inert()"
       [track]="track"
@@ -61,7 +61,7 @@
       (togglePlay)="player.toggle()"
       (previous)="player.previous()"
       (next)="player.next()"
-      (like)="gate.allow()"
+      (like)="library.toggleLike(track)"
       (more)="overlays.openTrackMenu(track)"
       (queue)="overlays.toggleQueue()"
       (expand)="openNowPlaying()"

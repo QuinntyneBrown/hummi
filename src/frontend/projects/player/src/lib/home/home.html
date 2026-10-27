@@ -42,8 +42,8 @@
       </hm-shelf>
       <hm-shelf heading="Top 10 on Hummi this week" note="Most played across the islands">
         <hm-track-list
-          (like)="gate.allow()"
-          [tracks]="state.value.topTen"
+          (like)="library.toggleLike($event)"
+          [tracks]="library.withLikes(state.value.topTen)"
           label="Top 10 on Hummi this week"
           [currentTrackId]="player.current()?.id ?? null"
           [playing]="player.playing()"

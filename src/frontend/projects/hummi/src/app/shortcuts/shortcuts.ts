@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { PlayerOverlays, PlayerStore, SearchStore, SignInGate } from '@hummi/api';
+import { LibraryStore, PlayerOverlays, PlayerStore, SearchStore } from '@hummi/api';
 
 /** One keyboard shortcut: the keys it answers to, how the dialog shows it and what it does. */
 export interface ShortcutBinding {
@@ -22,7 +22,7 @@ export const SHORTCUTS: readonly ShortcutBinding[] = [
 /**
  * Keyboard shortcuts (L2-017). The shell passes every document keydown to handle(), which ignores keys
  * typed into a text field, keys with Ctrl, Alt or Meta, and Space on a focused control (so the control
- * keeps its own Space, L2-048). L asks SignInGate (L2-032); liking itself comes with journey 09.
+ * keeps its own Space, L2-048). L likes or unlikes the current track (L2-018), asking SignInGate first (L2-032).
  */
 @Injectable({ providedIn: 'root' })
 export class ShortcutService {
@@ -30,7 +30,7 @@ export class ShortcutService {
   private readonly overlays = inject(PlayerOverlays);
   private readonly search = inject(SearchStore);
   private readonly router = inject(Router);
-  private readonly gate = inject(SignInGate);
+  private readonly library = inject(LibraryStore);
   private readonly dialogState = signal(false);
 
   /** The Keyboard shortcuts dialog is open. */
@@ -64,7 +64,7 @@ export class ShortcutService {
         return this.dialogState.set(true);
       case 'l':
       case 'L':
-        if (this.player.current()) this.gate.allow();
+        if (this.player.current()) void this.library.toggleLike(this.player.current()!);
         return;
     }
   }

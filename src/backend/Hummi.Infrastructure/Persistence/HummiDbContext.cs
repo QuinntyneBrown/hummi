@@ -1,6 +1,7 @@
 using Hummi.Application.Abstractions;
 using Hummi.Domain.Accounts;
 using Hummi.Domain.Catalogue;
+using Hummi.Domain.Library;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hummi.Infrastructure.Persistence;
@@ -23,6 +24,10 @@ public sealed class HummiDbContext(DbContextOptions<HummiDbContext> options) : D
     public DbSet<EmailToken> EmailTokens => Set<EmailToken>();
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
+    public DbSet<TrackLike> TrackLikes => Set<TrackLike>();
+
+    public DbSet<ArtistFollow> ArtistFollows => Set<ArtistFollow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HummiDbContext).Assembly);

@@ -1,0 +1,88 @@
+@switch (state()) {
+  @case ('loading') {
+    <hm-page-header heading="Library" />
+    <div class="shelf__track" aria-busy="true" aria-label="Loading">
+      @for (tile of tiles; track tile) {
+        <div class="card-track" aria-hidden="true">
+          <hm-skeleton shape="card" />
+          <hm-skeleton />
+          <hm-skeleton />
+        </div>
+      }
+    </div>
+  }
+  @case ('signed-out') {
+    <hm-page-header heading="Library" />
+    <hm-empty-state
+      icon="lock"
+      heading="Sign in to see your library"
+      text="Playlists and liked tracks are saved to your account."
+    >
+      <a hmButton="primary" routerLink="/sign-in" [queryParams]="{ returnUrl: '/library' }">Sign in</a>
+      <a hmButton routerLink="/sign-up" [queryParams]="{ returnUrl: '/library' }">Create account</a>
+    </hm-empty-state>
+  }
+  @case ('error') {
+    <hm-page-header heading="Library" />
+    <hm-error-block heading="Your library didn’t load" (retry)="reload()" />
+  }
+  @case ('empty') {
+    <hm-page-header heading="Library">
+      <button hmButton="primary" type="button" (click)="gate.allow()"><hm-icon name="plus" />New playlist</button>
+    </hm-page-header>
+    <hm-empty-state
+      heading="Your library is empty"
+      text="Like a track or create a playlist and it will live here, on every device you sign in on."
+    >
+      <button hmButton="primary" type="button" (click)="gate.allow()"><hm-icon name="plus" />Create a playlist</button>
+      <a hmButton routerLink="/browse">Browse genres</a>
+    </hm-empty-state>
+  }
+  @case ('ready') {
+    @if (value(); as v) {
+      <hm-page-header heading="Library" [subtitle]="subtitle()">
+        <button hmButton="primary" type="button" (click)="gate.allow()"><hm-icon name="plus" />New playlist</button>
+      </hm-page-header>
+      <hm-tabs label="Library" idPrefix="library" [tabs]="tabs" [(selected)]="tab">
+        @switch (tab()) {
+          @case ('Playlists') {
+            <div class="card-grid">
+              @for (p of v.playlists; track p.id) {
+                <hm-media-tile
+                  [link]="'/playlists/' + p.id"
+                  [title]="p.name"
+                  [meta]="p.trackCount + ' tracks · ' + p.ownerName"
+                  [coverUrl]="p.coverUrl"
+                />
+              }
+            </div>
+          }
+          @case ('Liked') {
+            <hm-track-list
+              [tracks]="library.withLikes(v.liked)"
+              label="Liked tracks"
+              [currentTrackId]="player.current()?.id ?? null"
+              [playing]="player.playing()"
+              (playTrack)="player.playFrom(v.liked, $event)"
+              (like)="library.toggleLike($event)"
+              (more)="overlays.openTrackMenu($event)"
+            />
+          }
+          @case ('Following') {
+            <div class="card-grid">
+              @for (a of v.following; track a.slug) {
+                <hm-media-tile
+                  [link]="'/artists/' + a.slug"
+                  [title]="a.name"
+                  [meta]="a.monthlyListeners.toLocaleString('en-US') + ' monthly listeners'"
+                  [coverUrl]="a.coverUrl"
+                  [round]="true"
+                />
+              }
+            </div>
+          }
+        }
+      </hm-tabs>
+    }
+  }
+}

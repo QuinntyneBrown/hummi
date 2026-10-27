@@ -19,24 +19,24 @@ Each toggle is a `PUT` or `DELETE` on an idempotent resource, applied optimistic
 
 **Frontend — Hummi web application (Angular)**
 
-- **`Like or Follow button`** — `hm-icon-button` / `hm-toggle-button` in @hummi/components. Reflects `aria-pressed` and the label "Like {title}" or "Remove like from {title}"
-- **`LibraryStore`** — Signal store in @hummi/api. Holds liked track ids and followed artist ids; applies optimistic toggles and reverts on failure
+- **`Like or Follow button`** — `hm-track-row` like button and `hmButton` with `pressed` in @hummi/components. Reflects `aria-pressed` and the label "Like {title}" or "Remove like from {title}"
+- **`LibraryStore`** — Signal store in @hummi/api. Holds liked track ids and followed artist slugs read from `GET /api/me/library`; applies optimistic toggles, reverts on failure and exposes the failure for the danger toast (ADR 0012)
 - **`SignInGate`** — Service in @hummi/api. Checks `SessionStore` before a save action and opens the Sign in to save this dialog when signed out (`L2-032`)
 - **`LibraryApi`** — Typed HTTP service in @hummi/api. Calls the authorized `/api/me/*` library endpoints
-- **`ToastService`** — Service in @hummi/components. Queues `hm-toast` notifications in the toast region (`L2-041`)
+- **`ToastService`** — Service in @hummi/components. Queues toasts in `hm-toast-region`; `showDanger` adds the danger toast with Retry (`L2-018` AC4)
 
 **Backend — Hummi.Api application**
 
-- **`LibraryController`** — ASP.NET Core controller. `PUT`/`DELETE /api/me/likes/{trackId}` and `/api/me/follows/{artistId}`; `[Authorize]`
+- **`LibraryController`** — ASP.NET Core controller. `PUT`/`DELETE /api/me/likes/{trackId}` and `/api/me/follows/{artistSlug}`, 204 and idempotent; `[Authorize]`
 
 **Backend — Hummi Application and Domain**
 
-- **`LikeTrackCommandHandler`** — MediatR command handlers. `LikeTrackCommand`, `UnlikeTrackCommand`, `FollowArtistCommand`, `UnfollowArtistCommand`; each inserts or deletes one row if needed
+- **`SetTrackLikeCommandHandler`** — MediatR command handlers. `SetTrackLikeCommand` and `SetArtistFollowCommand` with an on/off flag; each inserts or deletes one row if needed
 
 **Backend — Hummi Infrastructure**
 
 - **`HummiDbContext`** — EF Core DbContext. Implements the `IHummiDbContext` port from `Application/Abstractions` and maps entities to tables
-- **`Hummi database`** — Azure SQL. Likes and follows, unique on (ListenerId, TargetId)
+- **`Hummi database`** — Azure SQL. `TrackLikes` and `ArtistFollows`, keyed by (ListenerId, TargetId)
 
 ## Requirements
 
@@ -68,12 +68,12 @@ Buttons call `SignInGate` and `LibraryStore`; the store calls `LibraryApi`. `Lib
 
 ### Class structure
 
-`Like` and `Follow` are join entities keyed by listener and target. One handler per command creates or removes a row.
+`TrackLike` and `ArtistFollow` are join entities keyed by listener and target. One handler per command creates or removes a row.
 
 ![Class diagram for like tracks and follow artists](diagrams/class-structure.png)
 
 ### Behaviour — like a track
 
-`SignInGate` blocks signed-out listeners. For signed-in listeners `LibraryStore` flips the button at once, sends an idempotent `PUT`, and reverts with a danger toast if the request fails. Follow follows the same path with `FollowArtistCommand`.
+`SignInGate` blocks signed-out listeners. For signed-in listeners `LibraryStore` flips the button at once, sends an idempotent `PUT`, and reverts with a danger toast if the request fails. Follow follows the same path with `SetArtistFollowCommand`.
 
 ![Sequence diagram for like a track](diagrams/sequence-like.png)

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { PlaybackApi, PlayerOverlays, PlayerStore, apiResource, SignInGate } from '@hummi/api';
+import { PlaybackApi, LibraryStore, PlayerOverlays, PlayerStore, apiResource, SignInGate } from '@hummi/api';
 import {
   ErrorBlockComponent,
   ShelfComponent,
@@ -20,6 +20,7 @@ export class HomeComponent {
   readonly player = inject(PlayerStore);
   readonly overlays = inject(PlayerOverlays);
   readonly gate = inject(SignInGate);
+  readonly library = inject(LibraryStore);
   readonly home = apiResource(() => this.api.home());
   /** Placeholder counts for the loading layout. */
   readonly cards = [1, 2, 3, 4, 5, 6];
