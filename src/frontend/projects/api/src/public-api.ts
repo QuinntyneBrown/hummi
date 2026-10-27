@@ -32,3 +32,12 @@ export { SearchApi, type ArtistHitDto, type SearchResultsDto } from './lib/searc
 export { SearchStore } from './lib/search/search-store';
 export { LibraryApi, type ArtistTileDto, type LibraryDto, type PlaylistTileDto } from './lib/library/library-api';
 export { LibraryStore, type LibraryProblem } from './lib/library/library-store';
+export {
+  PlaylistsApi,
+  type MembershipChangeDto,
+  type PlaylistChoiceDto,
+  type PlaylistDetailDto,
+  type PlaylistEntryDto,
+  type PlaylistPositionDto,
+} from './lib/library/playlists-api';
+export { PlaylistDialogs, type PlaylistDialog, type PlaylistTrack } from './lib/library/playlist-dialogs';

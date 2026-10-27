@@ -10,21 +10,21 @@ the tracks stay on Hummi. Share links to the playlist stop working and listeners
 
 ## Description
 
-Deletion is a single command; share links and saved copies are removed in the same transaction.
+Deletion is a single command; entries go by cascade, and share links and saved copies (journey 11) will go in the same transaction.
 
 **Frontend — Hummi web application (Angular)**
 
-- **`DeletePlaylistDialog`** — Dialog component in @hummi/library. Renders the warning, the confirmation `hm-text-field`, Cancel and a danger `hm-button` enabled only on an exact match
+- **`DeletePlaylistDialog`** — Dialog component in @hummi/library. Renders the warning, the confirmation `hm-text-field`, Cancel and a danger `hmButton` enabled only on an exact match
 - **`PlaylistsApi`** — Typed HTTP service in @hummi/api. Calls the `/api/playlists` endpoints
 
 **Backend — Hummi.Api application**
 
-- **`PlaylistsController`** — ASP.NET Core controller. Authorized `/api/playlists` endpoints; maps results through `ProblemDetailsMapper`
+- **`PlaylistsController`** — ASP.NET Core controller. `/api/playlists` endpoints, every change for the owner only; maps results to ProblemDetails with `ToProblem`
 
 **Backend — Hummi Application and Domain**
 
-- **`DeletePlaylistCommandHandler`** — MediatR command handler. Checks ownership, deletes the playlist, its entries, `SavedPlaylist` rows and `ShareLink` rows
-- **`Playlist`** — Domain aggregate. `Delete(by)` returns Forbidden for a non-owner
+- **`DeletePlaylistCommandHandler`** — MediatR command handler. Checks ownership and deletes the playlist and its entries; `SavedPlaylist` and `ShareLink` rows join with journey 11
+- **`Playlist`** — Domain aggregate. The handler answers 403 for a non-owner
 
 **Backend — Hummi Infrastructure**
 

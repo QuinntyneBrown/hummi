@@ -8,13 +8,29 @@ import { TrackItem, formatDuration } from '../track/track-item';
 /**
  * One row of a track list: position (the equaliser when current), cover, title linking to the
  * track page, "{artist} · {duration}", the like button and More actions. The position cell is a
- * "Play {title}" button; title and meta truncate with an ellipsis.
+ * "Play {title}" button; title and meta truncate with an ellipsis. A selectable row (an owned playlist,
+ * L2-023) starts with a "Select {title}" checkbox.
  */
 @Component({
   selector: 'hm-track-row',
   imports: [RouterLink, EqualizerComponent, IconComponent],
   template: `
-    <li class="track" [attr.aria-current]="current() ? 'true' : null">
+    <li
+      class="track"
+      [class.track--selectable]="selectable()"
+      [class.track--selected]="selected()"
+      [attr.aria-current]="current() ? 'true' : null"
+    >
+      @if (selectable()) {
+        <input
+          #check
+          class="track__check"
+          type="checkbox"
+          [checked]="selected()"
+          [attr.aria-label]="'Select ' + track().title"
+          (change)="selectChange.emit(check.checked)"
+        />
+      }
       <button
         class="track__num track__play"
         type="button"
@@ -71,6 +87,9 @@ export class TrackRowComponent {
   readonly current = input(false);
   /** The loaded track is playing rather than paused. */
   readonly playing = input(false);
+  readonly selectable = input(false);
+  readonly selected = input(false);
+  readonly selectChange = output<boolean>();
   readonly playTrack = output<void>();
   readonly like = output<void>();
   readonly more = output<void>();

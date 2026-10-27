@@ -13,7 +13,17 @@ import {
   viewChild,
 } from '@angular/core';
 import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { AuthApi, LibraryStore, PlayerOverlays, PlayerStore, SearchStore, SessionStore, SignInGate } from '@hummi/api';
+import {
+  AuthApi,
+  LibraryStore,
+  PlayerOverlays,
+  PlayerStore,
+  PlaylistDialogs,
+  SearchStore,
+  SessionStore,
+  SignInGate,
+} from '@hummi/api';
+import { PlaylistDialogHostComponent } from '@hummi/library';
 import { SignInPromptDialogComponent, SignOutDialogComponent } from '@hummi/accounts';
 import {
   AccountMenuComponent,
@@ -61,6 +71,7 @@ import { ShortcutService } from '../shortcuts/shortcuts';
     ButtonDirective,
     SignOutDialogComponent,
     SignInPromptDialogComponent,
+    PlaylistDialogHostComponent,
   ],
   host: {
     '[class.has-player]': 'showPlayer() && !!player.current()',
@@ -88,6 +99,7 @@ export class AppShellComponent {
   private readonly router = inject(Router);
   readonly gate = inject(SignInGate);
   readonly library = inject(LibraryStore);
+  private readonly playlistDialogs = inject(PlaylistDialogs);
   /** The playing track with the listener's like (L2-018). */
   readonly currentTrack = computed(() => {
     const track = this.player.current();
@@ -100,7 +112,9 @@ export class AppShellComponent {
   readonly signOutOpen = signal(false);
   private readonly avatar = viewChild<ElementRef<HTMLElement>>('avatar');
   readonly inert = computed(() =>
-    this.shortcuts.dialogOpen() || this.signOutOpen() || this.gate.promptOpen() ? '' : null,
+    this.shortcuts.dialogOpen() || this.signOutOpen() || this.gate.promptOpen() || !!this.playlistDialogs.open()
+      ? ''
+      : null,
   );
   /** The deepest route sets data.bare: no header, banner or footer. */
   readonly bare = signal(false);
@@ -133,7 +147,7 @@ export class AppShellComponent {
 
   /** Shortcuts stay off while a dialog makes the page inert. */
   shortcut(event: KeyboardEvent): void {
-    if (this.signOutOpen() || this.gate.promptOpen()) return;
+    if (this.signOutOpen() || this.gate.promptOpen() || this.playlistDialogs.open()) return;
     this.shortcuts.handle(event);
   }
 

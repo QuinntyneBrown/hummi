@@ -9,7 +9,7 @@ namespace Hummi.Application.Library;
 /// <summary>The signed-in listener's library (L2-019), read fresh on every load so every device agrees (AC5).</summary>
 public sealed record GetLibraryQuery(Guid ListenerId) : IRequest<Result<LibraryDto>>;
 
-/// <summary>A playlist tile: "{n} tracks · {owner}" (L2-019 AC2). Playlists arrive with journey 10.</summary>
+/// <summary>A playlist tile: "{n} tracks · {owner}" (L2-019 AC2); CoverUrl is the cover of its first track.</summary>
 public sealed record PlaylistTileDto(string Id, string Name, int TrackCount, string OwnerName, string? CoverUrl);
 
 /// <summary>A followed artist tile; CoverUrl is the cover of the artist's most played track.</summary>
@@ -52,6 +52,18 @@ public sealed class GetLibraryQueryHandler(IHummiDbContext db) : IRequestHandler
             .ToListAsync(cancellationToken);
         var following = follows.Select(id => artists.Single(a => a.Id == id).Tile).ToList();
 
-        return new LibraryDto(0, liked.Count, following.Count, [], liked, following);
+        var owner = await db.Listeners.Where(l => l.Id == request.ListenerId).Select(l => l.DisplayName).SingleOrDefaultAsync(cancellationToken) ?? string.Empty;
+        var playlists = await db.Playlists.AsNoTracking()
+            .Where(p => p.OwnerId == request.ListenerId)
+            .OrderByDescending(p => p.CreatedAt).ThenBy(p => p.Name)
+            .Select(p => new PlaylistTileDto(
+                p.Id.ToString(),
+                p.Name,
+                p.Entries.Count,
+                owner,
+                db.Tracks.Where(t => t.Id == p.Entries.OrderBy(e => e.Position).Select(e => e.TrackId).FirstOrDefault()).Select(t => t.CoverUrl).FirstOrDefault()))
+            .ToListAsync(cancellationToken);
+
+        return new LibraryDto(playlists.Count, liked.Count, following.Count, playlists, liked, following);
     }
 }

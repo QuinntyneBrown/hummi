@@ -128,10 +128,10 @@ def playlist(state):
     other = f'{btn("Play", "primary", "play")}{btn("Save to my library", "", "plus")}{btn("Share", "", "share", href=D("share"))}'
     sel = ('<div class="alert alert--info" role="status">' + icon("info") + '<div class="alert__body"><div class="alert__title">2 tracks selected</div></div>'
            + btn("Remove from playlist", "", "trash") + btn("Add to another playlist", "", "plus", href=D("add-to-playlist")) + '</div>')
-    c = {"default": track_list(ids, playing="feathers-up", label="Road trip to the north coast", liked=("jouvert-morning",)),
+    c = {"default": track_list(ids, playing="feathers-up", label="Road trip to the north coast", liked=("jouvert-morning",), selected=()),
          "loading": skel_rows(6), "error": err("This playlist didn’t load"),
          "empty": empty("music", "Nothing here yet", "Add tracks from anywhere with Add to playlist, or start from a genre.", btn("Browse genres", "primary", href=P("browse"))),
-         "selected": sel + track_list(ids, label="Road trip to the north coast"),
+         "selected": sel + track_list(ids, label="Road trip to the north coast", selected=(0, 2)),
          "read-only": alert("info", "This playlist belongs to Mei Rodríguez", "You can listen and save a copy to your library. Only Mei can change the tracks.") + track_list(ids[:3], label="Sunday kitchen")}
     if state == "read-only":
         return frame(state, "library", "Sunday kitchen", "31 tracks · by Mei Rodríguez · public", c, other)

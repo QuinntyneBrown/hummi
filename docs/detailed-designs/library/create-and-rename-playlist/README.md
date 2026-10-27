@@ -11,7 +11,7 @@ and at most 60 characters.
 
 ## Description
 
-Both dialogs share one form component; the name rule lives in the `PlaylistName` value object and is mirrored in the form for immediate feedback.
+Both dialogs share one form component; the name rule lives in `PlaylistName` and is mirrored in the form for immediate feedback.
 
 **Frontend — Hummi web application (Angular)**
 
@@ -21,12 +21,12 @@ Both dialogs share one form component; the name rule lives in the `PlaylistName`
 
 **Backend — Hummi.Api application**
 
-- **`PlaylistsController`** — ASP.NET Core controller. Authorized `/api/playlists` endpoints; maps results through `ProblemDetailsMapper`
+- **`PlaylistsController`** — ASP.NET Core controller. `/api/playlists` endpoints, every change for the owner only; maps results to ProblemDetails with `ToProblem`
 
 **Backend — Hummi Application and Domain**
 
-- **`CreatePlaylistCommandHandler`** — MediatR command handlers. `CreatePlaylistCommand` and `RenamePlaylistCommand`
-- **`PlaylistNameValidator`** — FluentValidation validator. Rejects empty and over-60-character names
+- **`CreatePlaylistCommandHandler`** — MediatR command handlers. `CreatePlaylistCommand` (optionally with tracks) and `UpdatePlaylistCommand` (name and visibility)
+- **`PlaylistName`** — Domain rule. `Parse` trims and rejects empty and over-60-character names; handlers answer 422 (ADR 0013)
 
 **Backend — Hummi Infrastructure**
 

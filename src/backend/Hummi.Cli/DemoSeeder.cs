@@ -20,6 +20,9 @@ public static class DemoSeeder
     /// <summary>What Nadia Charles has liked and follows, so Library has something to show (L2-019).</summary>
     public static readonly IReadOnlyList<string> DemoLikes = ["Feathers Up", "Big Truck Energy", "Panyard Nights"];
 
+    /// <summary>Nadia's private playlist, holding her liked tracks (L2-023).</summary>
+    public const string DemoPlaylist = "Road trip to the north coast";
+
     public static readonly IReadOnlyList<string> DemoFollows = ["Kaiso Collective", "Lady Tamboo"];
 
     /// <summary>A demo track; Genre is the slug of one of the fixed genres and Album the title of the artist's release.</summary>
@@ -144,6 +147,14 @@ public static class DemoSeeder
         {
             db.ArtistFollows.Add(ArtistFollow.Create(listener.Id, artists[name].Id, now));
         }
+
+        var playlist = Playlist.Create(listener.Id, DemoPlaylist, isPublic: false, now);
+        foreach (var title in DemoLikes)
+        {
+            playlist.AddTrack(db.Tracks.Local.Single(t => t.Title == title).Id, now);
+        }
+
+        db.Playlists.Add(playlist);
 
         await db.SaveChangesAsync(cancellationToken);
         return Tracks.Count;

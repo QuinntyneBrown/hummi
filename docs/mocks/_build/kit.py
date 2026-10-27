@@ -176,20 +176,23 @@ def ibtn(label, ic, attrs="", kind="ghost"):
     return f'<button class="btn btn--{kind} btn--icon" type="button" aria-label="{esc(label)}"{attrs}>{icon(ic)}</button>'
 
 
-def track_row(tid, n, playing=False, extra_actions="", liked=False):
+def track_row(tid, n, playing=False, extra_actions="", liked=False, select=None):
+    """select: None for a plain row, else whether the row's selection checkbox is checked (L2-023)."""
     t = T[tid]
     a = A[t["artist"]]
     cur = ' aria-current="true"' if playing else ""
     num = f'<span class="eq" role="img" aria-label="Playing"><span></span><span></span><span></span></span>' if playing else str(n)
     heart = ibtn(("Remove like from " if liked else "Like ") + t["title"], "heart", f' aria-pressed="{"true" if liked else "false"}"')
-    return (f'<li class="track"{cur}><span class="track__num">{num}</span>{cover(a["cover"], "sm")}'
+    check = "" if select is None else f'<input class="track__check" type="checkbox" aria-label="Select {esc(t["title"])}"{" checked" if select else ""}>'
+    cls = "track" + ("" if select is None else " track--selectable") + (" track--selected" if select else "")
+    return (f'<li class="{cls}"{cur}>{check}<span class="track__num">{num}</span>{cover(a["cover"], "sm")}'
             f'<div style="min-width:0"><div class="track__title"><a href="{P("track")}" style="color:inherit;text-decoration:none">{esc(t["title"])}</a></div>'
             f'<div class="track__meta">{esc(a["name"])} · {t["dur"]}</div></div>'
             f'<div class="track__actions">{heart}{extra_actions}{ibtn("More actions for " + t["title"], "more")}</div></li>')
 
 
-def track_list(tids, playing=None, label="Tracks", liked=()):
-    rows = "".join(track_row(t, i + 1, t == playing, liked=t in liked) for i, t in enumerate(tids))
+def track_list(tids, playing=None, label="Tracks", liked=(), selected=None):
+    rows = "".join(track_row(t, i + 1, t == playing, liked=t in liked, select=None if selected is None else i in selected) for i, t in enumerate(tids))
     return f'<ol class="track-list" aria-label="{esc(label)}">{rows}</ol>'
 
 

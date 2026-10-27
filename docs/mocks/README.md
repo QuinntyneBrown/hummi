@@ -74,10 +74,10 @@ Legend: ✅ mock exists · ➖ not applicable (reason in manifest) · ❌ missin
 
 ### Notifications
 
-| Screen | info | success | warning | danger | play-next | removed | album-added | downloads | persistent | Requirements |
-|---|---|---|---|---|---|---|---|---|---|---|
-| Toast (`toast`) | [✅](notifications/toast/info.html) | [✅](notifications/toast/success.html) | ➖ | [✅](notifications/toast/danger.html) | [✅](notifications/toast/play-next.html) | [✅](notifications/toast/removed.html) | [✅](notifications/toast/album-added.html) | [✅](notifications/toast/downloads.html) |  |  |
-| Banner (`banner`) | [✅](notifications/banner/info.html) | [✅](notifications/banner/success.html) | [✅](notifications/banner/warning.html) | [✅](notifications/banner/danger.html) |  |  |  |  | [✅](notifications/banner/persistent.html) |  |
+| Screen | info | success | warning | danger | play-next | removed | album-added | downloads | added | duplicate | add-failed | persistent | Requirements |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Toast (`toast`) | [✅](notifications/toast/info.html) | [✅](notifications/toast/success.html) | ➖ | [✅](notifications/toast/danger.html) | [✅](notifications/toast/play-next.html) | [✅](notifications/toast/removed.html) | [✅](notifications/toast/album-added.html) | [✅](notifications/toast/downloads.html) | [✅](notifications/toast/added.html) | [✅](notifications/toast/duplicate.html) | [✅](notifications/toast/add-failed.html) |  |  |
+| Banner (`banner`) | [✅](notifications/banner/info.html) | [✅](notifications/banner/success.html) | [✅](notifications/banner/warning.html) | [✅](notifications/banner/danger.html) |  |  |  |  |  |  |  | [✅](notifications/banner/persistent.html) |  |
 
 <!-- coverage:end -->
 

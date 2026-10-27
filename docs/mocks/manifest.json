@@ -498,7 +498,10 @@
         "removed",
         "album-added",
         "downloads",
-        "danger"
+        "danger",
+        "added",
+        "duplicate",
+        "add-failed"
       ],
       "opens_from": "playlist",
       "not_applicable": {

@@ -79,6 +79,7 @@
 @if (signOutOpen()) {
   <hm-sign-out-dialog (closed)="signOutClosed($event)" />
 }
+<hm-playlist-dialog-host />
 @if (gate.promptOpen()) {
   <hm-sign-in-prompt-dialog />
 }

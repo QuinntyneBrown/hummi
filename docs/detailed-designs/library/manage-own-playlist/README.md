@@ -14,14 +14,14 @@ The page reads the playlist with an `IsOwner` flag; the bulk remove is one comma
 
 **Frontend — Hummi web application (Angular)**
 
-- **`PlaylistPage`** — Routed component in @hummi/library. Renders the header and owner actions, selectable `hm-track-list`, `hm-selection-bar` and the empty state
-- **`SelectionModel`** — Angular CDK `SelectionModel<string>`. Tracks selected entry ids
+- **`PlaylistPage`** — Routed component in @hummi/library. Renders the header and owner actions, selectable `hm-track-list`, the `hm-alert` selection bar and the empty state
+- **`Selection`** — Signal of selected row indexes in `PlaylistComponent`; rows map to entry ids (ADR 0013)
 - **`PlaylistsApi`** — Typed HTTP service in @hummi/api. Calls the `/api/playlists` endpoints
-- **`DialogService`** — Service in @hummi/components. Opens `hm-dialog` components as modal overlays and returns a typed close result (`L2-047`)
+- **`PlaylistDialogs`** — Service in @hummi/api. Opens Add to playlist for the selected tracks; Rename and Delete are local dialogs of the page
 
 **Backend — Hummi.Api application**
 
-- **`PlaylistsController`** — ASP.NET Core controller. Authorized `/api/playlists` endpoints; maps results through `ProblemDetailsMapper`
+- **`PlaylistsController`** — ASP.NET Core controller. `/api/playlists` endpoints, every change for the owner only; maps results to ProblemDetails with `ToProblem`
 
 **Backend — Hummi Application and Domain**
 

@@ -9,7 +9,7 @@ Container_Boundary(spa, "Hummi web application") {
   Component(gate, "SignInGate", "Service in @hummi/api", "Checks SessionStore before a save action and\nopens the Sign in to save this dialog when\nsigned out (L2-032)")
 }
 Container_Boundary(api, "Hummi.Api") {
-  Component(ctl, "PlaylistsController", "ASP.NET Core controller", "Authorized /api/playlists endpoints; maps\nresults through ProblemDetailsMapper")
+  Component(ctl, "PlaylistsController", "ASP.NET Core controller", "Authorized /api/playlists endpoints; maps\nresults through ToProblem")
   Component(q, "GetPlaylistQueryHandler", "MediatR query handler", "Calls Playlist.CanView(listener); Forbidden\nwhen false")
   Component(save, "SavePlaylistCommandHandler", "MediatR command handler", "Adds a SavedPlaylist row for the listener")
   Component(pl, "Playlist", "Domain aggregate", "CanView allows the owner, any listener when\npublic, and grantees of a share")

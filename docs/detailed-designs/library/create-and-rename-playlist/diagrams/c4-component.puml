@@ -9,9 +9,9 @@ Container_Boundary(spa, "Hummi web application") {
   Component(client, "PlaylistsApi", "Typed HTTP service in @hummi/api", "Calls the /api/playlists endpoints")
 }
 Container_Boundary(api, "Hummi.Api") {
-  Component(ctl, "PlaylistsController", "ASP.NET Core controller", "Authorized /api/playlists endpoints; maps\nresults through ProblemDetailsMapper")
-  Component(cmd, "CreatePlaylistCommandHandler", "MediatR command handlers", "CreatePlaylistCommand and\nRenamePlaylistCommand")
-  Component(val, "PlaylistNameValidator", "FluentValidation validator", "Rejects empty and over-60-character names")
+  Component(ctl, "PlaylistsController", "ASP.NET Core controller", "Authorized /api/playlists endpoints; maps\nresults through ToProblem")
+  Component(cmd, "CreatePlaylistCommandHandler", "MediatR command handlers", "CreatePlaylistCommand and\nUpdatePlaylistCommand")
+  Component(val, "PlaylistName", "Domain rule", "Rejects empty and over-60-character names")
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
 }
 ContainerDb(db, "Hummi database", "Azure SQL", "Playlists")

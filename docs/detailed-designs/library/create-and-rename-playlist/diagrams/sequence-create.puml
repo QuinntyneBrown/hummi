@@ -25,7 +25,7 @@ box "Backend — Hummi.Api application" #D1FADF
 end box
 box "Backend — Hummi Application and Domain" #ECFDF3
   participant "CreatePlaylistCommandHandler" as cmd
-  participant "PlaylistNameValidator" as val
+  participant "PlaylistName" as val
 end box
 box "Backend — Hummi Infrastructure" #FFF4E5
   participant "HummiDbContext" as ctx
