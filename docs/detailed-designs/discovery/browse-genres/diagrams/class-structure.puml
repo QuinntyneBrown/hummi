@@ -17,26 +17,22 @@ class Genre {
   +string Slug
   +string Name
   +string Description
-  +string TileColourToken
-}
-class Mood {
-  +string Label
-  +Guid GenreId
+  +int Position
+  +int Tone
+  +{static} int MoodCount = 7
+  +{static} All(): IReadOnlyList<Genre>
 }
 class GenreDirectoryDto {
   +int GenreCount
   +int OpenlyLicensedTrackCount
-  +IReadOnlyList<MoodDto> Moods
+  +IReadOnlyList<GenreTileDto> Moods
   +IReadOnlyList<GenreTileDto> Genres
 }
 class GenreTileDto {
   +string Slug
   +string Name
+  +int Tone
   +int TrackCount
-}
-class MoodDto {
-  +string Label
-  +string GenreSlug
 }
 class GetGenreDirectoryQuery
 class GetGenreDirectoryQueryHandler {
@@ -46,6 +42,5 @@ GetGenreDirectoryQueryHandler ..> GetGenreDirectoryQuery : handles
 GetGenreDirectoryQueryHandler ..> Genre : reads
 GetGenreDirectoryQueryHandler ..> GenreDirectoryDto : returns
 GenreDirectoryDto "1" *-- "*" GenreTileDto
-GenreDirectoryDto "1" *-- "*" MoodDto
-Mood "*" --> "1" Genre : opens
+note right of GenreDirectoryDto : Moods are the first seven\ngenres by Position
 @enduml

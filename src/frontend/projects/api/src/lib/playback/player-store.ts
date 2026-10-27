@@ -37,6 +37,16 @@ export class PlayerStore {
     this.start(index);
   }
 
+  /** Replaces the queue with a uniform random permutation of the list and plays its first track. */
+  playShuffled(tracks: readonly TrackSummaryDto[]): void {
+    const queue = [...tracks];
+    for (let i = queue.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [queue[i], queue[j]] = [queue[j], queue[i]];
+    }
+    this.playFrom(queue, 0);
+  }
+
   /** Pauses a playing track; otherwise plays (or retries) the current one. */
   toggle(): void {
     const audio = this.audioElement;

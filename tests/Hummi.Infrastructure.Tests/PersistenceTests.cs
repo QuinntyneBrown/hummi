@@ -22,6 +22,7 @@ public sealed class MigrationTests
         using var db = new HummiDbContext(new DbContextOptionsBuilder<HummiDbContext>().UseSqlServer("Server=unset").Options);
 
         Assert.Contains(db.Database.GetMigrations(), m => m.EndsWith("_AddCatalogueAndPlays", StringComparison.Ordinal));
+        Assert.Contains(db.Database.GetMigrations(), m => m.EndsWith("_AddGenres", StringComparison.Ordinal));
         Assert.False(db.Database.HasPendingModelChanges());
     }
 }

@@ -1,4 +1,4 @@
-import { expect, fakeHome, fakeMedia, fakePlays, TRACKS, test } from '../fixtures';
+import { expect, fakeGenreTracks, fakeHome, fakeMedia, fakePlays, TRACKS, test } from '../fixtures';
 import { HomePage } from '../pages/home.page';
 import { PlayerBar } from '../pages/player.page';
 import { ShellPage } from '../pages/shell.page';
@@ -145,6 +145,7 @@ test('the player bar stays across pages and hides on pages whose route says so (
 }) => {
   await fakeMedia(page);
   await fakePlays(page);
+  await fakeGenreTracks(page);
   const home = new HomePage(page);
   const player = new PlayerBar(page);
   const shell = new ShellPage(page);
@@ -153,6 +154,10 @@ test('the player bar stays across pages and hides on pages whose route says so (
   await expect(player.region).toBeVisible();
 
   await shell.navLink('Soca').click();
+  await expect(page.getByRole('heading', { name: 'Soca', level: 1 })).toBeVisible();
+  await expect(player.title).toHaveText('Feathers Up');
+
+  await shell.navLink('Your library').click();
   await expect(page.getByRole('heading', { name: 'Page not found' })).toBeVisible();
   await expect(player.region).toHaveCount(0);
 

@@ -13,6 +13,8 @@ public interface IHummiDbContext
 
     DbSet<Track> Tracks { get; }
 
+    DbSet<Genre> Genres { get; }
+
     DbSet<PlayEvent> PlayEvents { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

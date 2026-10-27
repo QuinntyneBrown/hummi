@@ -98,6 +98,76 @@ export async function fakeHome(
   return { calls: () => calls };
 }
 
+const tile = (slug: string, name: string, tone: number, trackCount: number) => ({ slug, name, tone, trackCount });
+
+/** GET /api/genres for the demo catalogue: the ten genres and the first seven as moods. */
+export const DIRECTORY = (() => {
+  const genres = [
+    tile('soca', 'Soca', 1, 1204),
+    tile('kids', 'Kids', 2, 610),
+    tile('steelpan', 'Steelpan & Calypso', 3, 488),
+    tile('dancehall', 'Dancehall', 5, 702),
+    tile('island-chill', 'Island chill', 4, 515),
+    tile('parang', 'Parang', 6, 233),
+    tile('chutney', 'Chutney', 1, 340),
+    tile('reggae', 'Reggae', 4, 520),
+    tile('zouk', 'Zouk', 3, 110),
+    tile('rapso', 'Rapso', 2, 90),
+  ];
+  return { genreCount: 10, openlyLicensedTrackCount: 4812, moods: genres.slice(0, 7), genres };
+})();
+
+/** Answers GET /api/genres. */
+export async function fakeGenres(page: Page, options: { status?: number } = {}): Promise<void> {
+  await page.route('**/api/genres', (route) =>
+    route.fulfill(
+      (options.status ?? 200) === 200
+        ? { status: 200, contentType: 'application/json', body: JSON.stringify(DIRECTORY) }
+        : {
+            status: options.status,
+            contentType: 'application/problem+json',
+            body: JSON.stringify({ title: 'Server error', code: 'UNEXPECTED' }),
+          },
+    ),
+  );
+}
+
+/** The Soca page's tracks newest first; most played reverses them. */
+export const SOCA_NEWEST = [TRACKS.feathersUp, TRACKS.bigTruck, TRACKS.panyard, TRACKS.redLight];
+
+/**
+ * Answers GET /api/genres/{slug}/tracks for Soca (or an empty genre), ordering by the sort parameter;
+ * keeps every requested sort.
+ */
+export async function fakeGenreTracks(
+  page: Page,
+  options: { empty?: boolean; trackCount?: number } = {},
+): Promise<{ sorts: string[] }> {
+  const sorts: string[] = [];
+  await page.route(/\/api\/genres\/[^/]+\/tracks/, (route) => {
+    const url = new URL(route.request().url());
+    const sort = url.searchParams.get('sort') ?? 'newest';
+    sorts.push(sort);
+    const tracks = options.empty ? [] : sort === 'most-played' ? [...SOCA_NEWEST].reverse() : SOCA_NEWEST;
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        slug: 'soca',
+        name: 'Soca',
+        description: 'road-march riddims, J’ouvert mornings and fete anthems',
+        tone: 1,
+        trackCount: options.empty ? 0 : (options.trackCount ?? 1204),
+        sort,
+        page: 1,
+        pageSize: 50,
+        tracks,
+      }),
+    });
+  });
+  return { sorts };
+}
+
 /** A quiet 8 kHz, 8-bit mono WAV of the given length, so the browser really plays something. */
 function wav(seconds: number): Buffer {
   const rate = 8000;

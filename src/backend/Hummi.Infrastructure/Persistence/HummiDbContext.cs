@@ -11,6 +11,8 @@ public sealed class HummiDbContext(DbContextOptions<HummiDbContext> options) : D
 
     public DbSet<Track> Tracks => Set<Track>();
 
+    public DbSet<Genre> Genres => Set<Genre>();
+
     public DbSet<PlayEvent> PlayEvents => Set<PlayEvent>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>

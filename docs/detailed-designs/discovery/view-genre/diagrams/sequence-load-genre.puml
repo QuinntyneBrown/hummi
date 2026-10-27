@@ -29,11 +29,11 @@ box "Backend — Hummi Infrastructure" #FFF4E5
   participant "HummiDbContext" as ctx
   database "Hummi database" as db
 end box
-u -> page : Open /genres/ambient
-page -> client : getTracks("ambient", Newest)
-client -> ctl : GET /api/genres/ambient/tracks?sort=newest
+u -> page : Open /genres/soca
+page -> client : getTracks("soca", Newest)
+client -> ctl : GET /api/genres/soca/tracks?sort=newest
 ctl -> q : Send GetGenreTracksQuery
-q -> ctx : Published tracks of genre ORDER BY PublishedAt DESC
+q -> ctx : Published tracks of genre ORDER BY AddedAt DESC
 ctx -> db : SELECT
 db --> ctx : Rows
 ctx --> q : Tracks
@@ -41,12 +41,12 @@ q --> ctl : Result<GenreTracksDto>
 ctl --> client : 200 GenreTracksDto, or 404 for unknown slug
 client --> page : Tracks
 alt TrackCount is 0
-  page --> u : "No Ambient tracks yet" with Browse genres (L2-004)
+  page --> u : "No Soca tracks yet" with Browse genres (L2-004)
 else tracks exist
   page --> u : Header "1,204 tracks · ...", Newest pressed (L2-004)
 end
 u -> page : Select Most played
-page -> client : getTracks("ambient", MostPlayed)
+page -> client : getTracks("soca", MostPlayed)
 client -> ctl : GET ...?sort=most-played
 ctl --> client : 200 ordered by PlayCount (L2-004)
 client --> page : Tracks

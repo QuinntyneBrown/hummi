@@ -37,6 +37,132 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                     b.ToTable("Artists", (string)null);
                 });
 
+            modelBuilder.Entity("Hummi.Domain.Catalogue.Genre", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<int>("Tone")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Genres", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("6e0f3c1a-0001-4c3e-9a51-1c0de0000001"),
+                            Description = "road-march riddims, J’ouvert mornings and fete anthems",
+                            Name = "Soca",
+                            Position = 1,
+                            Slug = "soca",
+                            Tone = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("6e0f3c1a-0002-4c3e-9a51-1c0de0000002"),
+                            Description = "sing-alongs, counting songs and gentle bedtime tunes",
+                            Name = "Kids",
+                            Position = 2,
+                            Slug = "kids",
+                            Tone = 2
+                        },
+                        new
+                        {
+                            Id = new Guid("6e0f3c1a-0003-4c3e-9a51-1c0de0000003"),
+                            Description = "panyard sessions, bomb tunes and kaiso storytelling",
+                            Name = "Steelpan & Calypso",
+                            Position = 3,
+                            Slug = "steelpan",
+                            Tone = 3
+                        },
+                        new
+                        {
+                            Id = new Guid("6e0f3c1a-0004-4c3e-9a51-1c0de0000004"),
+                            Description = "sound-system riddims and late-night selections",
+                            Name = "Dancehall",
+                            Position = 4,
+                            Slug = "dancehall",
+                            Tone = 5
+                        },
+                        new
+                        {
+                            Id = new Guid("6e0f3c1a-0005-4c3e-9a51-1c0de0000005"),
+                            Description = "slow, sunny and made to sit under other things",
+                            Name = "Island chill",
+                            Position = 5,
+                            Slug = "island-chill",
+                            Tone = 4
+                        },
+                        new
+                        {
+                            Id = new Guid("6e0f3c1a-0006-4c3e-9a51-1c0de0000006"),
+                            Description = "cuatro, maracas and Christmas serenades",
+                            Name = "Parang",
+                            Position = 6,
+                            Slug = "parang",
+                            Tone = 6
+                        },
+                        new
+                        {
+                            Id = new Guid("6e0f3c1a-0007-4c3e-9a51-1c0de0000007"),
+                            Description = "dholak grooves and wedding-tent energy",
+                            Name = "Chutney",
+                            Position = 7,
+                            Slug = "chutney",
+                            Tone = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("6e0f3c1a-0008-4c3e-9a51-1c0de0000008"),
+                            Description = "one-drop basslines and Sunday sound systems",
+                            Name = "Reggae",
+                            Position = 8,
+                            Slug = "reggae",
+                            Tone = 4
+                        },
+                        new
+                        {
+                            Id = new Guid("6e0f3c1a-0009-4c3e-9a51-1c0de0000009"),
+                            Description = "French Caribbean grooves for slow dancing",
+                            Name = "Zouk",
+                            Position = 9,
+                            Slug = "zouk",
+                            Tone = 3
+                        },
+                        new
+                        {
+                            Id = new Guid("6e0f3c1a-0010-4c3e-9a51-1c0de0000010"),
+                            Description = "the poetry of the people over a riddim",
+                            Name = "Rapso",
+                            Position = 10,
+                            Slug = "rapso",
+                            Tone = 2
+                        });
+                });
+
             modelBuilder.Entity("Hummi.Domain.Catalogue.PlayEvent", b =>
                 {
                     b.Property<Guid>("Id")
@@ -78,6 +204,9 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                     b.Property<int>("DurationSeconds")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("GenreId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<long>("PlayCount")
                         .HasColumnType("bigint");
 
@@ -96,6 +225,10 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                     b.HasIndex("ArtistId");
 
                     b.HasIndex("PlayCount");
+
+                    b.HasIndex("GenreId", "AddedAt");
+
+                    b.HasIndex("GenreId", "PlayCount");
 
                     b.ToTable("Tracks", (string)null);
                 });
@@ -116,6 +249,11 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                         .HasForeignKey("ArtistId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Hummi.Domain.Catalogue.Genre", null)
+                        .WithMany()
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Artist");
                 });

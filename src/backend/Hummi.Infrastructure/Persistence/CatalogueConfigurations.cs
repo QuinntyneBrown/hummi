@@ -25,8 +25,26 @@ internal sealed class TrackConfiguration : IEntityTypeConfiguration<Track>
         builder.HasOne(t => t.Artist).WithMany().HasForeignKey(t => t.ArtistId).OnDelete(DeleteBehavior.Restrict);
         builder.Ignore(t => t.IsPlayable);
         builder.Ignore(t => t.AudioPath);
+        builder.HasOne<Genre>().WithMany().HasForeignKey(t => t.GenreId).OnDelete(DeleteBehavior.Restrict);
         builder.HasIndex(t => t.AddedAt);
         builder.HasIndex(t => t.PlayCount);
+        builder.HasIndex(t => new { t.GenreId, t.AddedAt });
+        builder.HasIndex(t => new { t.GenreId, t.PlayCount });
+    }
+}
+
+/// <summary>The ten fixed genres are seeded with the schema, so every install has them.</summary>
+internal sealed class GenreConfiguration : IEntityTypeConfiguration<Genre>
+{
+    public void Configure(EntityTypeBuilder<Genre> builder)
+    {
+        builder.ToTable("Genres");
+        builder.Property(g => g.Id).ValueGeneratedNever();
+        builder.Property(g => g.Slug).HasMaxLength(64).IsRequired();
+        builder.Property(g => g.Name).HasMaxLength(100).IsRequired();
+        builder.Property(g => g.Description).HasMaxLength(300).IsRequired();
+        builder.HasIndex(g => g.Slug).IsUnique();
+        builder.HasData(Genre.All());
     }
 }
 
