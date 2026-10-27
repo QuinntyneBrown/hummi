@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 
 import { NgTemplateOutlet } from '@angular/common';
 
@@ -38,6 +38,11 @@ const ICONS: Record<AlertTone, IconName> = { info: 'info', success: 'ok', warnin
         }
       </div>
       <ng-content select="[actions]" />
+      @if (dismissible()) {
+        <button class="close" type="button" aria-label="Dismiss" (click)="dismiss.emit()">
+          <hm-icon name="close" />
+        </button>
+      }
     </div>
     <ng-template #text><ng-content /></ng-template>
   `,
@@ -47,5 +52,8 @@ export class AlertComponent {
   readonly tone = input<AlertTone>('info');
   readonly heading = input<string>();
   readonly banner = input(false);
+  /** Shows a Dismiss button (L2-042 AC1). */
+  readonly dismissible = input(false);
+  readonly dismiss = output<void>();
   protected readonly icon = computed(() => ICONS[this.tone()]);
 }

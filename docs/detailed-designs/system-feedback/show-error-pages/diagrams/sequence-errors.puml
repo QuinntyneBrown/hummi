@@ -16,7 +16,7 @@ skinparam package {
 }
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
-  participant "errorPageInterceptor" as int
+  participant "ServerErrorHandler" as int
   participant "Router" as router
   participant "NotFoundPage, ForbiddenPage, ServerErrorPage" as pages
 end box

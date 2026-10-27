@@ -15,14 +15,14 @@ An HTTP interceptor and a wildcard route map failures to the three pages; the AP
 
 **Frontend — Hummi web application (Angular)**
 
-- **`errorPageInterceptor`** — Angular HTTP interceptor in @hummi/api. On a page's primary request maps 404, 403 and 500 to the matching error route, keeping the URL
+- **`ServerErrorHandler`** — Angular `ErrorHandler` in @hummi/api. Records a render failure with `POST /api/client-errors` and shows `/server-error` keeping the URL; pages map their own 404 and 403 to Not found and Forbidden (ADR 0019)
 - **`Router`** — Angular router. `**` wildcard to `NotFoundPage`
 - **`NotFoundPage, ForbiddenPage, ServerErrorPage`** — Shell pages in the hummi application. Render `hm-error-page` with code, title, text and actions
 
 **Backend — Hummi.Api application**
 
 - **`ExceptionHandlingMiddleware`** — ASP.NET Core middleware. Logs unhandled exceptions with a trace id and returns 500 ProblemDetails
-- **`ILogger`** — Microsoft.Extensions.Logging. Writes to the container log; alerting to the team: <TO SUPPLY>
+- **`ILogger`** — Microsoft.Extensions.Logging. Writes to the container log at Error level; paging the team from the log is an operations concern (ADR 0019)
 
 ## Requirements
 
@@ -50,7 +50,7 @@ Pages render in the Angular application; `Hummi.Api` logs server failures to the
 
 ### Components
 
-`errorPageInterceptor` and the router choose the page; `ExceptionHandlingMiddleware` logs through `ILogger`.
+`ServerErrorHandler` and each page choose the error page; `ClientErrorsController` and the API log through `ILogger`.
 
 ![C4 component view for show error pages](diagrams/c4-component.png)
 

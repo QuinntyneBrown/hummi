@@ -1,6 +1,6 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
-import { provideApi } from '@hummi/api';
+import { ServerErrorHandler, provideApi } from '@hummi/api';
 
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
@@ -10,5 +10,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
     provideApi(environment.apiBaseUrl),
+    // A page that cannot render shows Server error and is recorded (L2-046).
+    { provide: ErrorHandler, useClass: ServerErrorHandler },
   ],
 };

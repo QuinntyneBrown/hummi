@@ -16,7 +16,7 @@ skinparam package {
 }
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
-  participant "DialogService" as dialogs
+  participant "Dialog hosts" as dialogs
   participant "DialogComponent" as dlg
   participant "Feature dialog" as content
 end box
