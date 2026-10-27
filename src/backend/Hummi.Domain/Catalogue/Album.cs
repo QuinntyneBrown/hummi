@@ -28,11 +28,24 @@ public sealed class Album
 
     public bool Published { get; private set; }
 
+    /// <summary>The billboard's kicker, for example "New album · Carnival 2025" (L2-001 AC1); null when not featured.</summary>
+    public string? Kicker { get; private set; }
+
+    /// <summary>The billboard's one-sentence blurb.</summary>
+    public string? Blurb { get; private set; }
+
     public static Album Create(string title, Guid artistId, int year, string? slug = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
         ArgumentOutOfRangeException.ThrowIfLessThan(year, 1900);
         return new Album(Guid.NewGuid(), slug ?? Catalogue.Slug.From(title), title.Trim(), artistId, year);
+    }
+
+    /// <summary>Puts the album on the Home billboard with its kicker and blurb.</summary>
+    public void Feature(string kicker, string blurb)
+    {
+        Kicker = kicker.Trim();
+        Blurb = blurb.Trim();
     }
 
     /// <summary>Lists the album; the tracks given are its tracks and must all belong to it.</summary>

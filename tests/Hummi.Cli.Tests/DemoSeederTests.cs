@@ -40,11 +40,16 @@ public sealed class DemoSeederTests : IDisposable
     {
         await DemoSeeder.SeedAsync(db, mediaRoot, TimeProvider.System);
 
-        var home = (await new GetHomeQueryHandler(db).Handle(new GetHomeQuery(), default)).Value!;
+        var shelves = new Hummi.Application.Discovery.GetHomeShelfQueryHandler(db, TimeProvider.System);
+        var top = (await shelves.Handle(new("top-10"), default)).Value!;
+        var recent = (await shelves.Handle(new("recently-added"), default)).Value!;
+        var featured = (await new Hummi.Application.Discovery.GetFeaturedAlbumQueryHandler(db).Handle(new(), default)).Value!;
 
-        Assert.Equal("Big Truck Energy", home.TopTen[0].Title);
-        Assert.Equal(10, home.TopTen.Count);
-        Assert.Equal(GetHomeQueryHandler.RecentlyAddedCount, home.RecentlyAdded.Count);
+        Assert.Equal("Big Truck Energy", top.Tracks[0].Title);
+        Assert.Equal(10, top.Tracks.Count);
+        Assert.Equal(Hummi.Application.Discovery.GetHomeShelfQueryHandler.RecentlyAddedCount, recent.Tracks.Count);
+        Assert.Equal(DemoSeeder.FeaturedAlbum, featured.Title);
+        Assert.Equal("New album · Carnival 2025", featured.Kicker);
     }
 
     [Fact]

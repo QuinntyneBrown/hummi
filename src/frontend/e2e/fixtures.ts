@@ -167,27 +167,79 @@ export const HOME = {
   topTen: [TRACKS.bigTruck, TRACKS.redLight, TRACKS.feathersUp, TRACKS.longTitle],
 };
 
-/** Answers GET /api/home; returns how many times it was asked. */
+/** The billboard album of the mocks (L2-001 AC1). */
+export const FEATURED = {
+  slug: 'mas-on-the-avenue',
+  title: 'Mas on the Avenue',
+  artistName: 'Kaiso Collective',
+  artistSlug: 'kaiso-collective',
+  kicker: 'New album · Carnival 2025',
+  blurb: 'Twelve road-ready tracks recorded live on the Avenue — brass, iron and a whole band of feathers.',
+  trackCount: 12,
+  durationSeconds: 46 * 60,
+  tracks: [TRACKS.feathersUp, TRACKS.jouvert],
+};
+
+/** Home's shelves by key, in order (L2-001 AC4). */
+export const HOME_SHELVES: Record<string, FakeTrack[]> = {
+  'recently-added': HOME.recentlyAdded,
+  'top-10': HOME.topTen,
+  soca: [TRACKS.roadMarch, TRACKS.bigTruck],
+  kids: [TRACKS.feathersUp],
+  steelpan: [TRACKS.panyard],
+  dancehall: [TRACKS.redLight],
+  'island-chill': [TRACKS.wineSlow],
+};
+
+/**
+ * Answers Home's calls: GET /api/home/summary, /api/home/featured and /api/home/shelves/{key}. status
+ * fails every part; shelves fails single shelves by key; newIds marks tracks New. calls counts the
+ * billboard requests, one per load of Home.
+ */
 export async function fakeHome(
   page: Page,
-  options: { status?: number; delayMs?: number; body?: unknown } = {},
-): Promise<{ calls: () => number }> {
+  options: {
+    status?: number;
+    delayMs?: number;
+    hasHistory?: boolean;
+    featured?: unknown;
+    shelves?: Record<string, number>;
+    newIds?: string[];
+    tracks?: Record<string, FakeTrack[]>;
+  } = {},
+): Promise<{ calls: () => number; shelfCalls: (key: string) => number }> {
   let calls = 0;
-  await page.route('**/api/home', async (route) => {
-    calls++;
+  const shelfCalls: Record<string, number> = {};
+  const answer = async (route: Route, status: number, body: unknown) => {
     if (options.delayMs) await new Promise((resolve) => setTimeout(resolve, options.delayMs));
-    const status = options.status ?? 200;
     await route.fulfill(
       status === 200
-        ? { status, contentType: 'application/json', body: JSON.stringify(options.body ?? HOME) }
+        ? { status, contentType: 'application/json', body: JSON.stringify(body) }
         : {
             status,
             contentType: 'application/problem+json',
             body: JSON.stringify({ title: 'Server error', code: 'UNEXPECTED' }),
           },
     );
+  };
+  await page.route('**/api/home/summary', (route) =>
+    answer(route, options.status ?? 200, { hasHistory: options.hasHistory ?? true }),
+  );
+  await page.route('**/api/home/featured', (route) => {
+    calls++;
+    return answer(route, options.status ?? 200, options.featured ?? FEATURED);
   });
-  return { calls: () => calls };
+  await page.route(/\/api\/home\/shelves\/[^/?]+$/, (route) => {
+    const key = new URL(route.request().url()).pathname.split('/').pop()!;
+    shelfCalls[key] = (shelfCalls[key] ?? 0) + 1;
+    const tracks = options.tracks?.[key] ?? HOME_SHELVES[key] ?? [];
+    return answer(route, options.shelves?.[key] ?? options.status ?? 200, {
+      key,
+      tracks,
+      newTrackIds: (options.newIds ?? []).filter((id) => tracks.some((t) => t.id === id)),
+    });
+  });
+  return { calls: () => calls, shelfCalls: (key: string) => shelfCalls[key] ?? 0 };
 }
 
 const tile = (slug: string, name: string, tone: number, trackCount: number) => ({ slug, name, tone, trackCount });

@@ -88,6 +88,8 @@ test('L2-005 AC4: a long title truncates without breaking the row', async ({ pag
     .locator('.track__title')
     .evaluate((el) => el.scrollWidth > el.clientWidth && getComputedStyle(el).textOverflow === 'ellipsis');
   expect(truncated).toBe(true);
+  // The billboard sits above the Top 10, so bring the row up before checking nothing overflows sideways.
+  await longRow.scrollIntoViewIfNeeded();
   await expect(longRow.getByRole('button', { name: `More actions for ${TRACKS.longTitle.title}` })).toBeInViewport();
 });
 

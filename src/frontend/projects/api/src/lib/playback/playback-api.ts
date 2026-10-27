@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
 
 import { API_BASE_URL } from '../api-base-url';
 import { toResult } from '../api-result';
@@ -21,21 +20,11 @@ export interface TrackSummaryDto {
   genreName?: string | null;
 }
 
-/** GET /api/home: the Recently added shelf and the Top 10 on Hummi this week. */
-export interface HomeDto {
-  recentlyAdded: TrackSummaryDto[];
-  topTen: TrackSummaryDto[];
-}
-
-/** Home, stream URLs and play recording. Streams come from /media, a sibling of the API base URL. */
+/** Stream URLs and play recording. Streams come from /media, a sibling of the API base URL. */
 @Injectable({ providedIn: 'root' })
 export class PlaybackApi {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = inject(API_BASE_URL);
-
-  home(): Observable<HomeDto> {
-    return this.http.get<HomeDto>(`${this.baseUrl}/home`);
-  }
 
   /** The audio of a track, served by byte range. */
   streamUrl(trackId: string): string {

@@ -21,6 +21,9 @@ public static class DemoSeeder
     /// <summary>What Nadia Charles has liked and follows, so Library has something to show (L2-019).</summary>
     public static readonly IReadOnlyList<string> DemoLikes = ["Feathers Up", "Big Truck Energy", "Panyard Nights"];
 
+    /// <summary>The album on the Home billboard (L2-001 AC1).</summary>
+    public const string FeaturedAlbum = "Mas on the Avenue";
+
     /// <summary>Nadia's private playlist, holding her liked tracks (L2-023).</summary>
     public const string DemoPlaylist = "Road trip to the north coast";
 
@@ -134,6 +137,10 @@ public static class DemoSeeder
         foreach (var (key, album) in albums)
         {
             album.Publish(albumTracks[key]);
+            if (key.Album == FeaturedAlbum)
+            {
+                album.Feature("New album · Carnival 2025", "Twelve road-ready tracks recorded live on the Avenue — brass, iron and a whole band of feathers.");
+            }
         }
 
         var listener = Listener.Create("Nadia Charles", DemoEmail, new IdentityPasswordHasher().Hash(DemoPassword), now);

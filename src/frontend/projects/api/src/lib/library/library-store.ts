@@ -89,6 +89,19 @@ export class LibraryStore {
     this.fail(liked ? 'Couldn’t like the track' : 'Couldn’t remove the like', () => void this.toggleLike(track));
   }
 
+  /** Likes every track not liked yet, as Add to library on an album does; false when any request failed. */
+  async likeAll(tracks: readonly { id: string; title: string }[]): Promise<boolean> {
+    if (!this.gate.allow()) return false;
+    const fresh = tracks.filter((t) => !this.isLiked(t.id));
+    this.likedIds.update((ids) => fresh.reduce((set, t) => toggled(set, t.id, true), ids));
+    const results = await Promise.all(fresh.map((t) => this.api.setLike(t.id, true)));
+    const failed = fresh.filter((_, i) => !results[i].ok);
+    if (!failed.length) return true;
+    this.likedIds.update((ids) => failed.reduce((set, t) => toggled(set, t.id, false), ids));
+    this.fail('Couldn’t add to your library', () => void this.likeAll(failed));
+    return false;
+  }
+
   /** Follow or unfollow (L2-018 AC3); signed out, opens the sign-in prompt instead. */
   async toggleFollow(artist: { slug: string }): Promise<void> {
     if (!this.gate.allow()) return;

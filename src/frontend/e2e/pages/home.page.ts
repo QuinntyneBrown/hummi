@@ -30,3 +30,29 @@ export class HomePage {
     return this.recentlyAdded.locator('.card-track').filter({ hasText: title });
   }
 }
+
+/** Home's billboard, shelves and states beyond the first Home (L2-001, L2-002). */
+export class HomeContent {
+  readonly billboard: Locator;
+  readonly empty: Locator;
+  readonly banner: Locator;
+
+  constructor(private readonly page: Page) {
+    this.billboard = page.getByRole('region', { name: 'Featured' });
+    this.empty = page.locator('main .empty').first();
+    this.banner = page.locator('.banner');
+  }
+
+  shelf(name: string): Locator {
+    return this.page.getByRole('region', { name, exact: true });
+  }
+
+  /** The shelf headings, in page order. */
+  headings(): Locator {
+    return this.page.locator('main .shelf__title');
+  }
+
+  card(shelf: string, title: string): Locator {
+    return this.shelf(shelf).locator('.card-track').filter({ hasText: title });
+  }
+}

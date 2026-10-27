@@ -27,10 +27,14 @@ Mock: every page under `docs/mocks/pages/` (header, main, player bar). Routes wi
 
 | Part | Library components | Local UI |
 |---|---|---|
-| Recently added | `hm-shelf` (rail) of `hm-track-card` | None |
-| Top 10 on Hummi this week | `hm-shelf` with `hm-track-list` | None |
-| Loading | `hm-shelf` with `hm-skeleton` cards and rows inside an `aria-busy` region | Layout only |
-| Error | `hm-error-block` ("We couldn’t load this page") | None |
+| Billboard | `hm-billboard` (kicker, h1, artist link, blurb, meta, Opens with chip), `hmButton="primary"` `large` "Play album"/"Pause", `hmButton` `large` "Add to library" | `HomeComponent` in `@hummi/discovery`; `GET /api/home/featured` |
+| Recently added, Soca, Kids, Steelpan & Calypso, Dancehall, Island chill | `hm-shelf` (rail, note, See all, Previous and Next) of `hm-track-card` with the New badge outside Recently added | One `GET /api/home/shelves/{key}` per shelf |
+| Top 10 on Hummi this week | `hm-shelf` (note, See all) with `hm-track-list` numbered by rank | None |
+| Loading | `hm-skeleton` billboard rect; per shelf `hm-shelf` busy with `hm-skeleton` cards | Layout only |
+| Shelf failed | `hm-shelf` with `hm-error-block` ("{name} didn’t load", "Everything else on this page still works. Try the shelf again.") | Retries that shelf only |
+| Error | `hm-error-block` ("We couldn’t load this page") when every part failed | None |
+| Empty | `hm-empty-state` ("Your Home fills up as you listen"), `hmButton="primary"` link "Browse genres", `hm-shelf` "Start with a genre" of six `hm-genre-tile` | `GET /api/home/summary` |
+| Offline | `hm-alert` (warning, banner, "You are offline. …"); only the billboard and saved shelves | `HomeApi` localStorage copies (ADR 0015) |
 
 ## Not found (`pages/not-found`)
 

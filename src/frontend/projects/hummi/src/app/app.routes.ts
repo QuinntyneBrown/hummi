@@ -1,13 +1,14 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  {
-    path: '',
-    loadChildren: () => import('@hummi/player').then((m) => m.routes),
-  },
+  // Discovery first: it owns Home at '' (ADR 0015), which the player's empty-path parent would swallow.
   {
     path: '',
     loadChildren: () => import('@hummi/discovery').then((m) => m.routes),
+  },
+  {
+    path: '',
+    loadChildren: () => import('@hummi/player').then((m) => m.routes),
   },
   {
     path: '',

@@ -128,6 +128,12 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ArtistId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Blurb")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Kicker")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("Published")
                         .HasColumnType("bit");
 

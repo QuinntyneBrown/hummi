@@ -37,13 +37,13 @@ class ArtistTileDto {
   +string Name
   +int MonthlyListeners
 }
-class GetFeaturedMixQuery {
+class GetFeaturedAlbumQuery {
   +Guid ListenerId
 }
-class GetFeaturedMixQueryHandler {
-  +Handle(q: GetFeaturedMixQuery): Task<Result<FeaturedMixDto>>
+class GetFeaturedAlbumQueryHandler {
+  +Handle(q: GetFeaturedAlbumQuery): Task<Result<FeaturedMixDto>>
 }
-class FeaturedMixBuilder {
+class Album.Feature {
   +Build(history: IReadOnlyList<PlayEvent>, candidates: IQueryable<Track>): FeaturedMix
 }
 class PlayEvent {
@@ -51,7 +51,7 @@ class PlayEvent {
   +Guid TrackId
   +DateTimeOffset PlayedAt
 }
-class HomeStore {
+class HomeApi cache {
   +summary: Signal<ShelfState<HomeSummaryDto>>
   +featured: Signal<ShelfState<FeaturedMixDto>>
   +recent: Signal<ShelfState<TrackSummaryDto[]>>
@@ -60,12 +60,12 @@ class HomeStore {
   +load(): void
   +retry(shelf: HomeShelf): void
 }
-GetFeaturedMixQueryHandler ..> GetFeaturedMixQuery : handles
-GetFeaturedMixQueryHandler --> FeaturedMixBuilder : uses
-FeaturedMixBuilder ..> PlayEvent : reads
-GetFeaturedMixQueryHandler ..> FeaturedMixDto : returns
+GetFeaturedAlbumQueryHandler ..> GetFeaturedAlbumQuery : handles
+GetFeaturedAlbumQueryHandler --> Album.Feature : uses
+Album.Feature ..> PlayEvent : reads
+GetFeaturedAlbumQueryHandler ..> FeaturedMixDto : returns
 FeaturedMixDto "1" *-- "*" TrackSummaryDto
-HomeStore ..> HomeSummaryDto
-HomeStore ..> FeaturedMixDto
-HomeStore ..> ArtistTileDto
+HomeApi cache ..> HomeSummaryDto
+HomeApi cache ..> FeaturedMixDto
+HomeApi cache ..> ArtistTileDto
 @enduml

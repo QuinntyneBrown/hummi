@@ -256,3 +256,21 @@ SPECS.append(dict(
     content="<p>Name what is shared in the heading. Say it is free to play with no account.</p>",
     dodont=[(SH, "Offer Copy next to the link.", SH.replace('<button class="copy-btn" type="button">Copy</button>', ""), "A link without Copy is hard to share on phones.")],
     tokens=[("Panel", "--color-bg-surface-raised"), ("Copy", "--color-accent"), ("Layer", "--z-layer")], classes=[("share / share__panel", "Backdrop and panel"), ("seg-tabs", "Link and Embed"), ("linkbox / codebox", "Link or code with Copy"), ("copy-btn / copy-btn--done", "Copy and Copied"), ("embed-card", "Embed preview"), ("share__start", "Start at"), ("share__via", "Send targets")], sources=["dialogs/share/default", "dialogs/share/embed", "dialogs/share/success"]))
+
+BB = ('<section class="billboard" aria-label="Featured"><div class="billboard__text"><p class="billboard__kicker">New album · Carnival 2025</p>'
+      '<h1 class="billboard__title" style="font-size:2rem">Mas on the Avenue</h1><p class="billboard__artist">Kaiso Collective</p>'
+      '<p class="billboard__blurb">Twelve road-ready tracks recorded live on the Avenue.</p><p class="billboard__meta">12 tracks · 46 min · Free to stream and share</p>'
+      '<div class="billboard__actions"><button class="btn btn--primary btn--lg" type="button">Play album</button><button class="btn btn--lg" type="button">Add to library</button></div></div>'
+      '<div class="billboard__media" style="min-height:12rem"><div class="billboard__chip"><div><small>Opens with</small><strong>Feathers Up</strong></div></div></div></section>')
+SPECS.append(dict(
+    slug="billboard", name="Billboard", group="Media", lead="Home's featured album: kicker, title, artist, blurb, meta and actions beside the artwork with its Opens with chip.",
+    overview="The first block of Home (L2-001). It names the page with its h1. Play album plays the lead track and reads Pause while the album plays; Add to library saves the album.",
+    parts=[("Kicker", "For example “New album · Carnival 2025”"), ("Title", "The page's h1"), ("Artist", "Links to the artist"), ("Blurb and meta", "One sentence, then “{n} tracks · {length} · Free to stream and share”"), ("Actions", "Play album and Add to library"), ("Artwork", "The cover with the “Opens with” chip naming the lead track")],
+    figure=BB, variants=[("Featured album", BB)],
+    sizes=None, sizes_na="Fills the content width; two columns from 64rem.",
+    states=dict(rows=[("Play", '<button class="btn btn--primary btn--lg" type="button"{a}>Play album</button>')], cols=[("Default", ""), ("Hover", ' data-state="hover"'), ("Focus", ' data-state="focus"')]),
+    responsive="One column on phones with the artwork below the text; two columns from 64rem.",
+    a11y=dict(role="A region named “Featured”; the title is the page's h1.", keys=[("Tab", "Moves through the artist link and the actions")], focus="No focus on load.", label="Buttons carry their visible text.", pairs=[("Kicker", "--color-fg-accent", "--color-bg-canvas", 4.5), ("Blurb", "--color-fg-muted", "--color-bg-canvas", 4.5)]),
+    content="<p>Keep the blurb to one sentence. The meta line always ends “Free to stream and share”.</p>",
+    dodont=[(BB, "Name the lead track in the chip.", BB.replace('<div class="billboard__chip"><div><small>Opens with</small><strong>Feathers Up</strong></div></div>', ''), "Without the chip, Play album gives no hint of what starts.")],
+    tokens=[("Kicker", "--color-fg-accent"), ("Media", "--color-bg-surface-raised")], classes=[("billboard", "Grid"), ("billboard__text / __kicker / __title / __artist / __blurb / __meta / __actions", "Text column"), ("billboard__media / __chip", "Artwork and Opens with")], sources=["pages/home/default", "pages/home/partial", "pages/home/offline"]))
