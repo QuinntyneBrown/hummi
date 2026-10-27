@@ -49,8 +49,9 @@ test('L2-041 AC1: a toast is a pill in a polite live region above the player bar
   await expect(region).toHaveAttribute('role', 'status');
   await expect(region).toHaveAttribute('aria-live', 'polite');
   await expect(region).not.toHaveClass(/toast-region--noplayer/);
-  await expect(region.locator('.toast')).toContainText('“Big Truck Energy” will play next');
-  await expect(region.locator('.toast .cover')).toHaveCount(1);
+  const toast = region.locator('.toast').filter({ hasText: '“Big Truck Energy” will play next' });
+  await expect(toast).toBeVisible();
+  await expect(toast.locator('.cover')).toHaveCount(1);
 });
 
 test('L2-041 AC3, AC4: Saved and Removed toasts offer Undo, which reverts the like', async ({ page }) => {

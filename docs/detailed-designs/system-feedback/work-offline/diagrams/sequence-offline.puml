@@ -16,7 +16,7 @@ skinparam package {
 }
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
-  participant "ngsw Service Worker" as sw
+  participant "offlineInterceptor" as sw
   participant "SavedAudioCache" as audiocache
   participant "PlayerStore" as player
   participant "ConnectivityService" as net

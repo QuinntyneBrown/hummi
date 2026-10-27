@@ -17,6 +17,7 @@ import {
   AccountDialogs,
   AuthApi,
   BannerService,
+  SavedAudioCache,
   LibraryStore,
   PlayerOverlays,
   PlayerStore,
@@ -131,6 +132,7 @@ export class AppShellComponent {
   readonly unread = inject(UnreadStore);
   /** Maintenance, connectivity and streaming banners above the header (L2-042). */
   readonly banners = inject(BannerService);
+  private readonly savedAudio = inject(SavedAudioCache);
   private readonly avatar = viewChild<ElementRef<HTMLElement>>('avatar');
   readonly inert = computed(() =>
     this.shortcuts.dialogOpen() ||
@@ -160,6 +162,16 @@ export class AppShellComponent {
       this.accountMenuOpen.set(false);
     });
     inject(DestroyRef).onDestroy(() => subscription.unsubscribe());
+    // The first track kept on this device says so once (L2-041 AC4); offline, an unsaved track says why it
+    // does not play (L2-043 AC2).
+    effect(() => {
+      if (this.savedAudio.told())
+        untracked(() => this.toasts.show('Downloads are saved for offline listening on this device'));
+    });
+    effect(() => {
+      const missed = this.player.needsConnection();
+      if (missed) untracked(() => this.toasts.show(`“${missed.title}” needs a connection to play`));
+    });
     // A failed like or follow becomes the danger toast with Retry (L2-018 AC4).
     effect(() => {
       const problem = this.library.problem();

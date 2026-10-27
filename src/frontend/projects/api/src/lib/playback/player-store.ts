@@ -3,6 +3,7 @@ import { Injectable, computed, effect, inject, signal, untracked } from '@angula
 import { firstValueFrom } from 'rxjs';
 
 import { GenresApi } from '../discovery/genres-api';
+import { SavedAudioCache } from '../offline/saved-audio';
 import { ConnectivityService } from './connectivity';
 import { PlaybackApi, TrackSummaryDto } from './playback-api';
 
@@ -24,6 +25,10 @@ export class PlayerStore {
   private readonly api = inject(PlaybackApi);
   private readonly connectivity = inject(ConnectivityService);
   private readonly genres = inject(GenresApi);
+  private readonly saved = inject(SavedAudioCache);
+  private readonly missed = signal<{ id: number; title: string } | null>(null);
+  /** The latest track that could not play offline because it is not saved (L2-043 AC2), for the shell's toast. */
+  readonly needsConnection = this.missed.asReadonly();
   /** Settings' Playback switches (L2-034), set from the listener's settings; a visitor has the defaults. */
   private readonly preferences = signal({ autoplaySimilar: true, crossfade: false });
   /** The element of a track fading out under the next one while crossfading. */
@@ -204,12 +209,34 @@ export class PlayerStore {
     this.indexState.set(index);
     this.positionState.set(from);
     this.durationState.set(null);
+    if (!this.connectivity.online()) {
+      void this.startSaved(audio, track, from);
+      return;
+    }
     audio.src = this.api.streamUrl(track.id);
     if (from > 0) {
       audio.addEventListener('loadedmetadata', () => (audio.currentTime = from), { once: true });
     }
     void this.resume(audio);
     if (from === 0) void this.api.recordPlay(track.id);
+    // Every track played online is kept on the device for offline listening (L2-043 AC2, ADR 0020).
+    void this.saved.save(track);
+  }
+
+  /** Offline: a saved track plays from the device; any other says it needs a connection (L2-043 AC2). */
+  private async startSaved(audio: HTMLAudioElement, track: TrackSummaryDto, from: number): Promise<void> {
+    const url = await this.saved.open(track.id);
+    if (!url) {
+      audio.removeAttribute('src');
+      this.playState.set('paused');
+      this.missed.set({ id: (this.missed()?.id ?? 0) + 1, title: track.title });
+      return;
+    }
+    audio.src = url;
+    if (from > 0) {
+      audio.addEventListener('loadedmetadata', () => (audio.currentTime = from), { once: true });
+    }
+    void this.resume(audio);
   }
 
   /**

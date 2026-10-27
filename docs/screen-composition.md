@@ -254,6 +254,20 @@ Mock: the layer over Home in every state. Rendered by the shell from `@hummi/sea
 |---|---|---|
 | Page | `hm-error-page` (alert, "500", "Something broke on our side", the fixing text), `hmButton="primary"` "Try again" (reloads), `hmButton` link "Go to Home" | `ServerErrorComponent` in the hummi application, shown by `ServerErrorHandler` |
 
+## Offline (`pages/offline`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Page | `hm-error-page` (alert, "Offline", "You’re offline", the network text), `hmButton="primary"` "Retry", `hmButton` link "Open saved tracks" | `OfflineComponent` in the hummi application, shown by `offlineInterceptor` keeping the address (ADR 0020) |
+
+## Saved on this device (`pages/saved`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Header | `hm-page-header` ("Saved on this device", "{n} tracks · the last 25 you played") | `SavedTracksComponent` in the hummi application |
+| Tracks | `hm-track-list` "Saved on this device" from `SavedAudioCache` | Plays from Cache Storage offline |
+| Empty | `hm-empty-state` ("Nothing saved yet"), `hmButton="primary"` link "Browse genres" | None |
+
 ## Now playing (`pages/now-playing`)
 
 Mock: the layer over Home. Routed at `/now-playing` in `@hummi/player`; the player bar is hidden there (ADR 0009).

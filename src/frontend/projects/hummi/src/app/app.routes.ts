@@ -39,6 +39,16 @@ export const routes: Routes = [
     loadChildren: () => import('@hummi/notifications').then((m) => m.routes),
   },
   {
+    path: 'offline',
+    title: 'You’re offline · Hummi',
+    loadComponent: () => import('./offline/offline').then((m) => m.OfflineComponent),
+  },
+  {
+    path: 'saved',
+    title: 'Saved on this device · Hummi',
+    loadComponent: () => import('./offline/saved-tracks').then((m) => m.SavedTracksComponent),
+  },
+  {
     path: 'server-error',
     title: 'Something broke · Hummi',
     data: { hidePlayer: true },

@@ -54,3 +54,5 @@ export {
 } from './lib/notifications/notifications';
 export { ReportDialogs, ReportsApi, type ReportReason, type ReportSubject } from './lib/reporting/reports';
 export { BannerService, ServerErrorHandler, type Banner } from './lib/feedback/banners';
+export { CACHED_RESPONSE_LIMIT, OfflineCache } from './lib/offline/offline-cache';
+export { SAVED_TRACK_LIMIT, SavedAudioCache } from './lib/offline/saved-audio';

@@ -6,20 +6,20 @@ Hummi keeps working without a connection where it can. Pages the listener visite
 shown with the offline banner; tracks saved on the device still play. A page that was never cached
 shows the Offline page. Hummi offers no download option for any track.
 
-- **saved track** — track whose audio the service worker cached after the listener played it <TO SUPPLY: which tracks qualify and the cache size limit>
-- **cached page** — app shell and API responses held by the Angular service worker's data groups
+- **saved track** — track whose audio `SavedAudioCache` kept in Cache Storage when it started playing online; the 25 most recently played (ADR 0020)
+- **cached page** — a page whose API answers `offlineInterceptor` kept in `localStorage` (the newest 60), opened from the running app with every lazy page preloaded
 
 ## Description
 
-The Angular service worker caches the shell and selected API responses; a Cache Storage bucket holds saved audio.
+The running app keeps page answers in `localStorage` and saved audio in Cache Storage; no service worker is used yet, so a cold start offline is not covered (ADR 0020).
 
 **Frontend — Hummi web application (Angular)**
 
-- **`ngsw Service Worker`** — Angular service worker. `ngsw-config.json` asset group for the shell and data groups with `freshness` strategy for `/api/*`
+- **`offlineInterceptor`** — HTTP interceptor in @hummi/api. Keeps page answers and serves them offline; with none, shows the Offline page keeping the address
 - **`SavedAudioCache`** — Service in @hummi/api. Stores and reads audio in a Cache Storage bucket; exposes `isSaved(trackId)`
 - **`PlayerStore`** — Signal store in @hummi/api. Owns the queue, the current track, position and play state, and drives the `HTMLAudioElement`
 - **`ConnectivityService`** — Service in @hummi/api. Online signal
-- **`OfflinePage`** — Shell page in the hummi application. Renders "You’re offline" with Retry and Open saved tracks
+- **`OfflinePage`** — Shell page in the hummi application. Renders "You’re offline" with Retry and Open saved tracks; `/saved` lists the saved tracks
 
 ## Requirements
 
