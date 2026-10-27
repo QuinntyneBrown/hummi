@@ -4,26 +4,6 @@ LAYOUT_WITH_LEGEND()
 title Components — View Home
 
 Container_Boundary(spa, "Hummi web application") {
-  Component(page, "HomePage", "Routed component in @hummi/discovery", "Renders the greeting, hero and shelves with\nhm-page-header, hm-hero, hm-shelf,\nhm-track-list and hm-artist-tile, and the\nempty state with hm-empty-state")
-  Component(store, "HomeStore", "Signal store in @hummi/discovery", "Holds one ShelfState<T> (loading, ready,\nfailed) per shelf and retries a single shelf\non Try again (L2-002)")
-  Component(client, "HomeApi", "Typed HTTP service in @hummi/api", "Calls GET /api/home/summary,\n/api/home/featured, /api/home/recent,\n/api/home/new and /api/home/artists")
-  Component(sw, "ngsw Service Worker", "Angular service worker", "Serves the cached hero and Continue\nlistening responses when the device is\noffline (L2-002, L2-043)")
-  Component(player, "PlayerStore", "Signal store in @hummi/api", "Owns the queue, the current track, position\nand play state, and drives the\nHTMLAudioElement")
-}
-Container_Boundary(api, "Hummi.Api") {
-  Component(ctl, "HomeController", "ASP.NET Core controller", "Exposes the /api/home/* endpoints; each\nreturns 200 with a DTO, or ProblemDetails")
-  Component(q, "GetHomeShelfQueryHandler", "MediatR query handlers", "One handler per shelf: GetHomeSummaryQuery,\nGetFeaturedMixQuery,\nGetContinueListeningQuery,\nGetNewThisWeekQuery, GetArtistsToFollowQuery")
-  Component(mix, "FeaturedMixBuilder", "Domain service", "Picks the seed track from listening history\nand selects similar tracks by genre and mood")
-  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
-}
-ContainerDb(db, "Hummi database", "Azure SQL", "Tracks, artists, follows and play events")
-Rel(page, store, "load()")
-Rel(store, client, "getSummary(), getFeatured(),\ngetRecent(), getNew(), getArtists()")
-Rel(client, ctl, "GET /api/home/* (five parallel\nrequests)")
-Rel(ctl, q, "Send shelf query")
-Rel(q, ctx, "Read play events, follows and tracks")
-Rel(ctx, db, "SELECT")
-Rel(q, mix, "Build featured mix (L2-001)")
-Rel(page, player, "playList(featured.tracks, 0)")
-Rel(client, sw, "Fetch")
-@enduml
+  Component(page, "HomePage", "Routed component in @hummi/discovery", "Renders hm-billboard, hm-shelf rails of\nhm-track-card, the Top 10 hm-track-list and the\nempty and offline states")
+  Component(store, "HomeApi cache", "localStorage in @hummi/api", "Keeps each loaded part and answers\nfrom it offline (L2-002)")
+from it offline (L2-002)")\n  Component(client, "HomeApi", "Typed HTTP service in @hummi/api", "Calls GET /api/home/summary,\n/api/home/featured, /api/home/shelves/{key},\n/api/home/shelves/{key} and /api/home/shelves/{key}")\n  Component(sw, "localStorage copies", "Angular service worker", "Serves the cached hero and Continue\nlistening responses when the device is\noffline (L2-002, L2-043)")\n  Component(player, "PlayerStore", "Signal store in @hummi/api", "Owns the queue, the current track, position\nand play state, and drives the\nHTMLAudioElement")\n}\nContainer_Boundary(api, "Hummi.Api") {\n  Component(ctl, "HomeController", "ASP.NET Core controller", "Exposes the /api/home/* endpoints; each\nreturns 200 with a DTO, or ProblemDetails")\n  Component(q, "GetHomeShelfQueryHandler", "MediatR query handlers", "One handler per shelf: GetHomeSummaryQuery,\nGetFeaturedAlbumQuery,\nGetHomeShelfQuery,\nGetHomeShelfQuery, GetHomeShelfQuery")\n  Component(mix, "Album.Feature", "Domain service", "Picks the seed track from listening history\nand selects similar tracks by genre and mood")\n  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")\n}\nContainerDb(db, "Hummi database", "Azure SQL", "Tracks, artists, follows and play events")\nRel(page, store, "load()")\nRel(store, client, "getSummary(), getFeatured(),\ngetRecent(), getNew(), getArtists()")\nRel(client, ctl, "GET /api/home/* (five parallel\nrequests)")\nRel(ctl, q, "Send shelf query")\nRel(q, ctx, "Read play events, follows and tracks")\nRel(ctx, db, "SELECT")\nRel(q, mix, "Build featured mix (L2-001)")\nRel(page, player, "playList(featured.tracks, 0)")\nRel(client, sw, "Fetch")\n@enduml\n

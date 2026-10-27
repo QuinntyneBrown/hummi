@@ -17,9 +17,9 @@ skinparam package {
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
   participant "HomePage" as page
-  participant "HomeStore" as store
+  participant "HomeApi cache" as store
   participant "HomeApi" as client
-  participant "ngsw Service Worker" as sw
+  participant "localStorage copies" as sw
 end box
 u -> page : Open / with no connection
 page -> store : load()
@@ -27,6 +27,6 @@ store -> client : GET /api/home/*
 client -> sw : Fetch
 sw --> client : Cached featured and recent responses, network error for others
 client --> store : Partial data, offline flag
-store --> page : Hero and Continue listening only, offline banner (L2-002)
+store --> page : Billboard and saved shelves only, offline banner (L2-002)
 page --> u : Render cached Home
 @enduml

@@ -4,24 +4,16 @@ LAYOUT_WITH_LEGEND()
 title Components — Search the catalogue
 
 Container_Boundary(spa, "Hummi web application") {
-  Component(shell, "AppShellComponent", "Shell component in the hummi application", "Renders hm-search-pill; opens the layer on
-activation or / (L2-017)")
-  Component(store, "SearchStore", "Signal store in @hummi/api", "Whether the layer is open and the
-query it opens with")
-  Component(overlay, "SearchOverlayComponent", "Component in @hummi/search", "hm-search-layer with Top result, Artists
-and Songs, skeleton rows, and the empty,
-no-results and error states")
+  Component(shell, "AppShellComponent", "Shell component in the hummi application", "Renders hm-search-pill; opens the layer on\nactivation or / (L2-017)")
+  Component(store, "SearchStore", "Signal store in @hummi/api", "Whether the layer is open and the\nquery it opens with")
+  Component(overlay, "SearchOverlayComponent", "Component in @hummi/search", "hm-search-layer with Top result, Artists\nand Songs, skeleton rows, and the empty,\nno-results and error states")
   Component(recent, "RecentSearchesStore", "Signal store in @hummi/search", "Last 6 queries in localStorage")
   Component(client, "SearchApi", "Typed HTTP service in @hummi/api", "Calls GET /api/search?q=")
 }
 Container_Boundary(api, "Hummi.Api") {
-  Component(ctl, "SearchController", "ASP.NET Core controller", "Exposes GET /api/search; 422 for a bad
-query, 503 when the index is unreachable")
-  Component(q, "SearchCatalogueQueryHandler", "MediatR query handler", "Validates the query (trimmed, 1 to 100
-characters), asks ISearchIndex for 3 artists
-and 7 songs")
-  Component(idx, "SqlSearchIndex", "Infrastructure adapter", "Implements ISearchIndex with LIKE over
-track titles and artist names")
+  Component(ctl, "SearchController", "ASP.NET Core controller", "Exposes GET /api/search; 422 for a bad\nquery, 503 when the index is unreachable")
+  Component(q, "SearchCatalogueQueryHandler", "MediatR query handler", "Validates the query (trimmed, 1 to 100\ncharacters), asks ISearchIndex for 3 artists\nand 7 songs")
+  Component(idx, "SqlSearchIndex", "Infrastructure adapter", "Implements ISearchIndex with LIKE over\ntrack titles and artist names")
 }
 ContainerDb(db, "Hummi database", "Azure SQL", "Tracks and artists")
 Rel(shell, store, "open()")

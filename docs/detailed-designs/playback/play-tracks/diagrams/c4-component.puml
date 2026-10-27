@@ -14,8 +14,7 @@ Container_Boundary(api, "Hummi.Api") {
   Component(hctl, "HomeController", "ASP.NET Core controller", "GET /api/home through GetHomeQuery")
   Component(mctl, "MediaController", "ASP.NET Core controller", "GET /media/tracks/{id} streams with\nenableRangeProcessing; anonymous access\nallowed; 410 for a withdrawn track")
   Component(pctl, "PlaysController", "ASP.NET Core controller", "POST /api/plays accepts anonymous and\nsigned-in callers")
-  Component(stream, "GetTrackStreamQueryHandler", "MediatR query handler", "Opens a playable track's audio through
-IMediaStore; 404 or 410 otherwise")
+  Component(stream, "GetTrackStreamQueryHandler", "MediatR query handler", "Opens a playable track's audio through\nIMediaStore; 404 or 410 otherwise")
   Component(rec, "RecordPlayCommandHandler", "MediatR command handler", "Stores a PlayEvent and increments\nTrack.PlayCount")
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
 }

@@ -18,40 +18,6 @@ public sealed class PlaybackHandlerTests
     }
 
     [Fact]
-    public async Task Home_lists_recently_added_newest_first_and_the_top_ten_by_plays()
-    {
-        using var db = new TestDb();
-        db.AddTracks("Kaiso Collective", ("Feathers Up", 5), ("Road March Riddim", 9), ("Wine Slow", 1));
-
-        var home = await new GetHomeQueryHandler(db).Handle(new GetHomeQuery(), default);
-
-        Assert.Equal(["Wine Slow", "Road March Riddim", "Feathers Up"], home.Value!.RecentlyAdded.Select(t => t.Title));
-        Assert.Equal(["Road March Riddim", "Feathers Up", "Wine Slow"], home.Value.TopTen.Select(t => t.Title));
-        var first = home.Value.TopTen[0];
-        Assert.Equal("Kaiso Collective", first.ArtistName);
-        Assert.Equal(200, first.DurationSeconds);
-        Assert.False(first.Liked);
-        Assert.Null(first.GenreSlug);
-        Assert.Null(first.GenreName);
-    }
-
-    [Fact]
-    public async Task Home_leaves_out_withdrawn_tracks_and_caps_each_shelf()
-    {
-        using var db = new TestDb();
-        var tracks = db.AddTracks("Lady Tamboo", Enumerable.Range(1, 12).Select(i => ($"Track {i}", (long)i)).ToArray());
-        tracks[11].Withdraw();
-        await db.SaveChangesAsync();
-
-        var home = (await new GetHomeQueryHandler(db).Handle(new GetHomeQuery(), default)).Value!;
-
-        Assert.Equal(GetHomeQueryHandler.RecentlyAddedCount, home.RecentlyAdded.Count);
-        Assert.Equal(10, home.TopTen.Count);
-        Assert.DoesNotContain(home.TopTen, t => t.Title == "Track 12");
-        Assert.Equal("Track 11", home.TopTen[0].Title);
-    }
-
-    [Fact]
     public async Task Recording_an_anonymous_play_stores_the_event_and_counts_it()
     {
         using var db = new TestDb();

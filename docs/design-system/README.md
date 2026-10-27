@@ -75,6 +75,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-27. Open [index.html]
 | [Now playing layer](components/player-layer.html) | Media | Playing, Controls, Repeat on, Actions | now-playing/default, now-playing/paused |
 | [Queue drawer](components/queue-drawer.html) | Media | With tracks, Empty hint | queue/default, queue/empty |
 | [Track menu](components/track-menu.html) | Media | Default, Saved | track-menu/default, track-menu/saved |
+| [Billboard](components/billboard.html) | Media | Featured album | home/default, home/partial |
 
 ## Patterns
 

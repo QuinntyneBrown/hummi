@@ -17,7 +17,7 @@ skinparam package {
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
   participant "HomePage" as page
-  participant "HomeStore" as store
+  participant "HomeApi cache" as store
   participant "HomeApi" as client
 end box
 box "Backend — Hummi.Api application" #D1FADF
@@ -25,7 +25,7 @@ box "Backend — Hummi.Api application" #D1FADF
 end box
 box "Backend — Hummi Application and Domain" #ECFDF3
   participant "GetHomeShelfQueryHandler" as q
-  participant "FeaturedMixBuilder" as mix
+  participant "Album.Feature" as mix
 end box
 box "Backend — Hummi Infrastructure" #FFF4E5
   participant "HummiDbContext" as ctx
@@ -52,7 +52,7 @@ else one shelf request fails
   u -> page : Try again on the shelf
   page -> store : retry(newThisWeek)
 else all shelves ready
-  store --> page : Greeting, hero, Continue listening, New this week, Artists to follow (L2-001)
+  store --> page : Billboard and the seven shelves, each on its own (L2-001)
 end
 page --> u : Render Home
 @enduml

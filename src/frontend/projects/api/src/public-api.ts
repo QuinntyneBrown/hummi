@@ -5,7 +5,7 @@ export { AuthApi, type SignUpRequest } from './lib/auth/auth-api';
 export { SignInGate } from './lib/auth/sign-in-gate';
 export { provideApi } from './lib/provide-api';
 export { apiResource, REQUEST_TIMEOUT_MS, type ApiResource, type ResourceState } from './lib/resource/api-resource';
-export { PlaybackApi, type HomeDto, type TrackSummaryDto } from './lib/playback/playback-api';
+export { PlaybackApi, type TrackSummaryDto } from './lib/playback/playback-api';
 export { PlayerStore, type PlayState } from './lib/playback/player-store';
 export { ConnectivityService } from './lib/playback/connectivity';
 export { PlayerOverlays, type TrackMenuState } from './lib/playback/player-overlays';
@@ -42,3 +42,4 @@ export {
 } from './lib/library/playlists-api';
 export { PlaylistDialogs, type PlaylistDialog, type PlaylistTrack } from './lib/library/playlist-dialogs';
 export { ShareDialogs, SharesApi, type SharedItemDto, type ShareSubject } from './lib/sharing/shares-api';
+export { HomeApi, type FeaturedAlbumDto, type HomeShelfDto, type HomeSummaryDto } from './lib/discovery/home-api';

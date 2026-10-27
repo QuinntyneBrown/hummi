@@ -1,0 +1,115 @@
+@if (!online()) {
+  <hm-alert tone="warning" [banner]="true">
+    You are offline. Showing what was saved on this device. Playing tracks you have not heard recently needs a
+    connection.
+  </hm-alert>
+}
+@if (empty()) {
+  <h1 class="visually-hidden">Home</h1>
+  <hm-empty-state
+    heading="Your Home fills up as you listen"
+    text="Play a few tracks and we’ll line up what to hear next. Pick a genre to begin."
+  >
+    <a hmButton="primary" routerLink="/browse">Browse genres</a>
+  </hm-empty-state>
+  <hm-shelf heading="Start with a genre">
+    <div class="tile-grid">
+      @for (genre of starters; track genre.slug) {
+        <hm-genre-tile [slug]="genre.slug" [name]="genre.name" [tone]="genre.tone" />
+      }
+    </div>
+  </hm-shelf>
+} @else if (failed()) {
+  <h1 class="visually-hidden">Home</h1>
+  <hm-error-block (retry)="reloadAll()" />
+} @else {
+  @let feature = featured.state();
+  @switch (feature.status) {
+    @case ('ready') {
+      @let album = feature.value;
+      <hm-billboard
+        [kicker]="album.kicker"
+        [heading]="album.title"
+        [artist]="album.artistName"
+        [artistLink]="'/artists/' + album.artistSlug"
+        [blurb]="album.blurb"
+        [meta]="meta(album)"
+        [coverUrl]="album.tracks[0].coverUrl"
+        [leadTitle]="album.tracks[0].title"
+        [leadCoverUrl]="album.tracks[0].coverUrl"
+      >
+        <button hmButton="primary" [large]="true" type="button" (click)="playAlbum(album)">
+          <hm-icon [name]="albumPlaying() ? 'pause' : 'play'" [fill]="true" />{{
+            albumPlaying() ? 'Pause' : 'Play album'
+          }}
+        </button>
+        <button hmButton [large]="true" type="button" (click)="addAlbum(album)">
+          <hm-icon name="plus" />Add to library
+        </button>
+      </hm-billboard>
+    }
+    @case ('loading') {
+      <h1 class="visually-hidden">Home</h1>
+      <hm-skeleton shape="rect" height="16rem" />
+    }
+    @default {
+      <h1 class="visually-hidden">Home</h1>
+    }
+  }
+  @for (shelf of shelves; track shelf.spec.key) {
+    @let state = shelf.resource.state();
+    @switch (state.status) {
+      @case ('loading') {
+        <hm-shelf [heading]="shelf.spec.heading" [note]="shelf.spec.note" [rail]="true" [busy]="true">
+          @for (card of cards; track card) {
+            <div class="card-track" aria-hidden="true">
+              <hm-skeleton shape="card" />
+              <hm-skeleton />
+              <hm-skeleton />
+            </div>
+          }
+        </hm-shelf>
+      }
+      @case ('error') {
+        @if (online()) {
+          <hm-shelf [heading]="shelf.spec.heading" [note]="shelf.spec.note">
+            <hm-error-block
+              [heading]="shelf.spec.heading + ' didn’t load'"
+              text="Everything else on this page still works. Try the shelf again."
+              (retry)="shelf.resource.reload()"
+            />
+          </hm-shelf>
+        }
+      }
+      @case ('ready') {
+        @let value = state.value;
+        @if (shelf.spec.list) {
+          <hm-shelf [heading]="shelf.spec.heading" [note]="shelf.spec.note" [moreLink]="shelf.spec.more">
+            <hm-track-list
+              [tracks]="library.withLikes(value.tracks)"
+              [label]="shelf.spec.heading"
+              [currentTrackId]="player.current()?.id ?? null"
+              [playing]="player.playing()"
+              (playTrack)="player.playFrom(value.tracks, $event)"
+              (like)="library.toggleLike($event)"
+              (more)="overlays.openTrackMenu($event)"
+            />
+          </hm-shelf>
+        } @else {
+          <hm-shelf [heading]="shelf.spec.heading" [note]="shelf.spec.note" [rail]="true" [moreLink]="shelf.spec.more">
+            @for (track of value.tracks; track track.id; let i = $index) {
+              <hm-track-card
+                [track]="track"
+                [isNew]="isNew(value, shelf.spec, track.id)"
+                [current]="track.id === player.current()?.id"
+                [playing]="player.playing()"
+                (playTrack)="player.playFrom(value.tracks, i)"
+                (more)="overlays.openTrackMenu(track)"
+              />
+            }
+          </hm-shelf>
+        }
+      }
+    }
+  }
+}

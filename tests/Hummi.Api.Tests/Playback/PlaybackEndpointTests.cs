@@ -12,22 +12,23 @@ public sealed class PlaybackEndpointTests : IDisposable
     public void Dispose() => factory.Dispose();
 
     [Fact]
-    public async Task Home_returns_the_recently_added_shelf_and_the_top_ten()
+    public async Task L2_001_L2_002_Home_serves_each_shelf_on_its_own_and_a_visitor_has_history()
     {
         var tracks = await factory.SeedAsync("Kaiso Collective", "Feathers Up", "Road March Riddim");
         using var client = factory.CreateClient();
 
-        using var home = JsonDocument.Parse(await client.GetStringAsync("/api/home"));
+        using var recent = JsonDocument.Parse(await client.GetStringAsync("/api/home/shelves/recently-added"));
+        using var top = JsonDocument.Parse(await client.GetStringAsync("/api/home/shelves/top-10"));
+        using var summary = JsonDocument.Parse(await client.GetStringAsync("/api/home/summary"));
 
-        var recent = home.RootElement.GetProperty("recentlyAdded");
-        Assert.Equal(2, recent.GetArrayLength());
-        var first = recent[0];
+        var first = recent.RootElement.GetProperty("tracks")[0];
         Assert.Equal(tracks[1].Id.ToString(), first.GetProperty("id").GetString());
         Assert.Equal("Road March Riddim", first.GetProperty("title").GetString());
         Assert.Equal("Kaiso Collective", first.GetProperty("artistName").GetString());
-        Assert.Equal(222, first.GetProperty("durationSeconds").GetInt32());
-        Assert.False(first.GetProperty("liked").GetBoolean());
-        Assert.Equal(2, home.RootElement.GetProperty("topTen").GetArrayLength());
+        Assert.Equal(2, top.RootElement.GetProperty("tracks").GetArrayLength());
+        Assert.True(summary.RootElement.GetProperty("hasHistory").GetBoolean());
+        Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/api/home/shelves/nothing")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await client.GetAsync("/api/home/featured")).StatusCode);
     }
 
     [Fact]

@@ -5,7 +5,7 @@ import { EqualizerComponent } from '../equalizer/equalizer';
 import { IconComponent } from '../icon/icon';
 import { TrackItem, formatDuration } from '../track/track-item';
 
-/** A shelf card: artwork linking to the track, a "Play {title}" button, More actions, title and meta. */
+/** A shelf card: artwork linking to the track, an optional New badge, "Play {title}", More actions, title and meta. */
 @Component({
   selector: 'hm-track-card',
   imports: [RouterLink, EqualizerComponent, IconComponent],
@@ -24,6 +24,9 @@ import { TrackItem, formatDuration } from '../track/track-item';
             <hm-icon name="music" />
           </div>
         </a>
+        @if (isNew() && !current()) {
+          <span class="card-track__new">New</span>
+        }
         <button
           class="card-track__play"
           type="button"
@@ -58,6 +61,8 @@ export class TrackCardComponent {
   readonly track = input.required<TrackItem>();
   readonly current = input(false);
   readonly playing = input(false);
+  /** Added in the last 7 days: the "New" badge, hidden on the current track (L2-001 AC6). */
+  readonly isNew = input(false);
   readonly playTrack = output<void>();
   readonly more = output<void>();
 
