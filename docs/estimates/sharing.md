@@ -2,5 +2,5 @@
 
 | Design | Effort | Complete |
 |---|---|---|
-| open-shared-link | 2 days | 0% |
-| share-link | 3 days | 0% |
+| open-shared-link | 2 days | 100% |
+| share-link | 3 days | 100% |

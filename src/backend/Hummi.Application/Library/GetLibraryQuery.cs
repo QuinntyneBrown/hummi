@@ -9,7 +9,7 @@ namespace Hummi.Application.Library;
 /// <summary>The signed-in listener's library (L2-019), read fresh on every load so every device agrees (AC5).</summary>
 public sealed record GetLibraryQuery(Guid ListenerId) : IRequest<Result<LibraryDto>>;
 
-/// <summary>A playlist tile: "{n} tracks · {owner}" (L2-019 AC2); CoverUrl is the cover of its first track.</summary>
+/// <summary>A playlist tile, owned or saved: "{n} tracks · {owner}" (L2-019 AC2); CoverUrl is its first track's cover.</summary>
 public sealed record PlaylistTileDto(string Id, string Name, int TrackCount, string OwnerName, string? CoverUrl);
 
 /// <summary>A followed artist tile; CoverUrl is the cover of the artist's most played track.</summary>
@@ -53,16 +53,21 @@ public sealed class GetLibraryQueryHandler(IHummiDbContext db) : IRequestHandler
         var following = follows.Select(id => artists.Single(a => a.Id == id).Tile).ToList();
 
         var owner = await db.Listeners.Where(l => l.Id == request.ListenerId).Select(l => l.DisplayName).SingleOrDefaultAsync(cancellationToken) ?? string.Empty;
-        var playlists = await db.Playlists.AsNoTracking()
-            .Where(p => p.OwnerId == request.ListenerId)
-            .OrderByDescending(p => p.CreatedAt).ThenBy(p => p.Name)
-            .Select(p => new PlaylistTileDto(
-                p.Id.ToString(),
-                p.Name,
-                p.Entries.Count,
-                owner,
-                db.Tracks.Where(t => t.Id == p.Entries.OrderBy(e => e.Position).Select(e => e.TrackId).FirstOrDefault()).Select(t => t.CoverUrl).FirstOrDefault()))
+        var savedIds = db.SavedPlaylists.Where(s => s.ListenerId == request.ListenerId).Select(s => s.PlaylistId);
+        var rows = await db.Playlists.AsNoTracking()
+            .Where(p => p.OwnerId == request.ListenerId || savedIds.Contains(p.Id))
+            .OrderByDescending(p => p.OwnerId == request.ListenerId).ThenByDescending(p => p.CreatedAt).ThenBy(p => p.Name)
+            .Select(p => new
+            {
+                Tile = new PlaylistTileDto(
+                    p.Id.ToString(),
+                    p.Name,
+                    p.Entries.Count,
+                    db.Listeners.Where(l => l.Id == p.OwnerId).Select(l => l.DisplayName).FirstOrDefault() ?? owner,
+                    db.Tracks.Where(t => t.Id == p.Entries.OrderBy(e => e.Position).Select(e => e.TrackId).FirstOrDefault()).Select(t => t.CoverUrl).FirstOrDefault()),
+            })
             .ToListAsync(cancellationToken);
+        var playlists = rows.Select(r => r.Tile).ToList();
 
         return new LibraryDto(playlists.Count, liked.Count, following.Count, playlists, liked, following);
     }

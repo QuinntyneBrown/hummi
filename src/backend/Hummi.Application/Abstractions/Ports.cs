@@ -35,6 +35,10 @@ public interface IHummiDbContext
 
     DbSet<PlaylistEntry> PlaylistEntries { get; }
 
+    DbSet<ShareLink> ShareLinks { get; }
+
+    DbSet<SavedPlaylist> SavedPlaylists { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
 

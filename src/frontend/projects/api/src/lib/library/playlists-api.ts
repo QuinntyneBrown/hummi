@@ -21,6 +21,8 @@ export interface PlaylistDetailDto {
   ownerName: string;
   trackCount: number;
   durationSeconds: number;
+  /** The viewer keeps someone else's playlist in Library (L2-024 AC3). */
+  saved: boolean;
   entries: PlaylistEntryDto[];
 }
 
@@ -50,8 +52,17 @@ export class PlaylistsApi {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = inject(API_BASE_URL);
 
-  get(id: string): Observable<PlaylistDetailDto> {
-    return this.http.get<PlaylistDetailDto>(`${this.baseUrl}/playlists/${encodeURIComponent(id)}`);
+  /** share is the playlist's link code, which opens it while private (L2-024 AC4). */
+  get(id: string, share?: string | null): Observable<PlaylistDetailDto> {
+    const query = share ? `?share=${encodeURIComponent(share)}` : '';
+    return this.http.get<PlaylistDetailDto>(`${this.baseUrl}/playlists/${encodeURIComponent(id)}${query}`);
+  }
+
+  /** Save to my library, or take it out again. */
+  setSaved(id: string, saved: boolean, share?: string | null): Promise<ApiResult<unknown>> {
+    const query = share ? `?share=${encodeURIComponent(share)}` : '';
+    const url = `${this.baseUrl}/me/saved-playlists/${encodeURIComponent(id)}${query}`;
+    return toResult(saved ? this.http.put(url, null) : this.http.delete(url));
   }
 
   mine(trackId?: string): Promise<ApiResult<PlaylistChoiceDto[]>> {

@@ -29,7 +29,7 @@ def share(state, under):
         pane = (f'<div class="embed-card">{cover(a_["cover"], "sm")}<div><strong>{esc(t["title"])}</strong><small>{esc(a_["name"])} · on hummi</small></div><span class="play">{icon("play", fill=True)}</span></div>'
                 '<div class="codebox"><code>&lt;iframe src="https://hummi.fm/embed/feathers-up" width="100%" height="96" frameborder="0"&gt;&lt;/iframe&gt;</code>' + cbtn + '</div>')
     else:
-        pane = f'<div class="linkbox"><span>hummi.fm/t/feathers-up</span>{cbtn}</div><label class="share__start"><input type="checkbox"> Start at 1:14</label>'
+        pane = f'<div class="linkbox"><span>hummi.fm/s/k7m2p9qa</span>{cbtn}</div><label class="share__start"><input type="checkbox"> Start at 1:14</label>'
     via = "".join(f'<a class="pill-btn pill-btn--lg" href="#">{icon(i)}{n}</a>' for i, n in [("message", "WhatsApp"), ("mail", "Email"), ("message", "Messages")])
     live = '<p class="visually-hidden" role="status">Link copied.</p>' if copied else ""
     dlg = (f'<div class="scrim"></div><div class="share" role="dialog" aria-modal="true" aria-labelledby="dlg-title" data-dismiss-on-escape><div class="share__panel">'

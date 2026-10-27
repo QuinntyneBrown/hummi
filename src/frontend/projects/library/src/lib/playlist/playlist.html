@@ -14,8 +14,20 @@
     </ol>
   }
   @case ('error') {
-    <hm-page-header heading="Playlist" />
-    <hm-error-block heading="This playlist didn’t load" (retry)="playlist.reload()" />
+    @if (state.problem.status === 403) {
+      <hm-error-page
+        code="403"
+        icon="lock"
+        heading="You don’t have access to this"
+        text="This playlist is private. Ask the owner to share it with you, or sign in with the account they invited."
+      >
+        <a hmButton="primary" routerLink="/">Go to Home</a>
+        <a hmButton routerLink="/sign-in" [queryParams]="{ returnUrl: returnUrl() }">Switch account</a>
+      </hm-error-page>
+    } @else {
+      <hm-page-header heading="Playlist" />
+      <hm-error-block heading="This playlist didn’t load" (retry)="playlist.reload()" />
+    }
   }
   @case ('ready') {
     @let p = state.value;
@@ -25,12 +37,22 @@
           <hm-icon name="play" />Play
         </button>
       }
-      <button hmButton type="button"><hm-icon name="share" />Share</button>
+      @if (!p.isOwner) {
+        <button hmButton type="button" [pressed]="saved()" (click)="toggleSaved(p)">
+          <hm-icon name="plus" />{{ saved() ? 'Saved to your library' : 'Save to my library' }}
+        </button>
+      }
+      <button hmButton type="button" (click)="share(p)"><hm-icon name="share" />Share</button>
       @if (p.isOwner && p.entries.length) {
         <button hmButton type="button" (click)="renaming.set(true)">Rename</button>
         <button hmButton type="button" (click)="deleting.set(true)">Delete</button>
       }
     </hm-page-header>
+    @if (!p.isOwner) {
+      <hm-alert tone="info" [heading]="'This playlist belongs to ' + p.ownerName">
+        You can listen and save a copy to your library. Only {{ firstName(p.ownerName) }} can change the tracks.
+      </hm-alert>
+    }
     @if (!p.entries.length) {
       <hm-empty-state
         heading="Nothing here yet"

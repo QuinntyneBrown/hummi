@@ -552,6 +552,9 @@ export interface FakePlaylist {
   ownerName: string;
   isOwner: boolean;
   tracks: FakeTrack[];
+  /** The playlist's share code, which opens it while private. */
+  shareCode?: string;
+  saved?: boolean;
 }
 
 /** Which playlist calls fail and how: an HTTP status, or 0 for a dropped connection. */
@@ -591,6 +594,7 @@ export async function fakePlaylists(
     ownerName: p.ownerName,
     trackCount: p.tracks.length,
     durationSeconds: p.tracks.reduce((sum, t) => sum + t.durationSeconds, 0),
+    saved: !!p.saved,
     entries: p.tracks.map((track, i) => ({ entryId: `${p.id}-e${i}`, track })),
   });
   const fail = async (route: Route, key: keyof PlaylistFailures): Promise<boolean> => {
@@ -658,6 +662,9 @@ export async function fakePlaylists(
     if (!p) return route.fulfill(problem(404, 'PLAYLIST_NOT_FOUND', 'This playlist isn’t on Hummi'));
     if (!sub && method === 'GET') {
       if (await fail(route, 'get')) return;
+      if (!p.isOwner && !p.isPublic && url.searchParams.get('share') !== p.shareCode) {
+        return route.fulfill(problem(403, 'FORBIDDEN', 'This playlist is private'));
+      }
       return route.fulfill(json(detail(p)));
     }
     if (!sub && method === 'PUT') {
@@ -689,6 +696,13 @@ export async function fakePlaylists(
     }
     return route.fulfill(problem(501, 'NO_FAKE'));
   });
+  await page.route(/\/api\/me\/saved-playlists\/[^/?]+/, async (route) => {
+    const url = new URL(route.request().url());
+    calls.push({ call: `${route.request().method()} ${url.pathname}${url.search}`, body: null });
+    const p = playlists.find((x) => x.id === url.pathname.split('/').pop());
+    if (p) p.saved = route.request().method() === 'PUT';
+    await route.fulfill({ status: 204, body: '' });
+  });
   return { playlists, calls, failures };
 }
 
@@ -709,6 +723,48 @@ export const RAINY_DAY: FakePlaylist = {
   isOwner: true,
   tracks: [TRACKS.panyard],
 };
+
+export const SUNDAY_KITCHEN: FakePlaylist = {
+  id: 'p3',
+  name: 'Sunday kitchen',
+  isPublic: true,
+  ownerName: 'Mei Rodríguez',
+  isOwner: false,
+  tracks: [TRACKS.roadMarch, TRACKS.bigTruck, TRACKS.redLight],
+};
+
+/**
+ * POST /api/shares answers a code per item (k7m2p9qa for the first) and GET /api/shares/{code} resolves the
+ * given links; anything else answers 404 LINK_NOT_FOUND.
+ */
+export async function fakeShares(
+  page: Page,
+  links: Record<string, { type: 'track'; trackSlug: string } | { type: 'playlist'; playlistId: string }> = {},
+): Promise<{ shared: unknown[] }> {
+  const shared: unknown[] = [];
+  await page.route('**/api/shares', async (route) => {
+    shared.push(route.request().postDataJSON());
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ code: 'k7m2p9qa' }) });
+  });
+  await page.route(/\/api\/shares\/[^/?]+$/, async (route) => {
+    const code = new URL(route.request().url()).pathname.split('/').pop()!;
+    const link = links[code];
+    await route.fulfill(
+      link
+        ? {
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ trackSlug: null, playlistId: null, ...link }),
+          }
+        : {
+            status: 404,
+            contentType: 'application/problem+json',
+            body: JSON.stringify({ title: 'This link didn’t work', code: 'LINK_NOT_FOUND' }),
+          },
+    );
+  });
+  return { shared };
+}
 
 export const test = base.extend<{ visitor: void }>({
   visitor: [

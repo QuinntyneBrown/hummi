@@ -75,6 +75,13 @@ export class PlayerStore {
     }
   }
 
+  /** Plays one track on its own from a start time in seconds, as a shared link's "Start at" asks (L2-025 AC4). */
+  playAt(track: TrackSummaryDto, from: number): void {
+    this.unshuffled.set(null);
+    this.queueState.set([entry(track)]);
+    this.start(0, Math.max(0, from));
+  }
+
   /** Replaces the queue with a uniform random permutation of the list and plays its first track. */
   playShuffled(tracks: readonly TrackSummaryDto[]): void {
     this.unshuffled.set(null);

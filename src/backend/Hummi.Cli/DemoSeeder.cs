@@ -11,7 +11,8 @@ namespace Hummi.Cli;
 /// Writes the demo catalogue of the mocks (docs/mocks/_build/kit.py) into a local install: artists,
 /// published albums, tracks with their licences and waveforms, plays that order the Top 10, and a
 /// generated WAV per track on the media volume. There is no upload tooling; this is how a local
-/// install gets music. It also adds the confirmed demo listener Nadia Charles with a few likes and follows.
+/// install gets music. It also adds the confirmed demo listener Nadia Charles with a few likes, follows and a playlist,
+/// and Mei Rodríguez with a public playlist.
 /// </summary>
 public static class DemoSeeder
 {
@@ -155,6 +156,18 @@ public static class DemoSeeder
         }
 
         db.Playlists.Add(playlist);
+
+        // Mei's public playlist, for the read-only view of someone else's playlist (L2-024).
+        var mei = Listener.Create("Mei Rodríguez", "mei@hummi.fm", new IdentityPasswordHasher().Hash(DemoPassword), now);
+        mei.ConfirmEmail(now);
+        db.Listeners.Add(mei);
+        var kitchen = Playlist.Create(mei.Id, "Sunday kitchen", isPublic: true, now);
+        foreach (var track in db.Tracks.Local.Take(4))
+        {
+            kitchen.AddTrack(track.Id, now);
+        }
+
+        db.Playlists.Add(kitchen);
 
         await db.SaveChangesAsync(cancellationToken);
         return Tracks.Count;

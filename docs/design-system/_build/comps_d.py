@@ -237,3 +237,22 @@ SPECS.append(dict(
     content="<p>Show the display name and the full email address. The last item reads “Sign out”.</p>",
     dodont=[(AM, "Keep Sign out last, after a divider.", AM.replace('<hr class="menu-divider">', ""), "Sign out mixed in with destinations is easy to hit by mistake."), (AM, "Say who is signed in.", AM.split('<div class="menu-id">')[0] + '<hr class="menu-divider">' + AM.split('<hr class="menu-divider">')[1], "Without the identity, shared devices are confusing.")],
     tokens=[("Background", "--color-bg-surface-raised"), ("Avatar", "--color-accent"), ("Layer", "--z-menu")], classes=[("menu-scrim", "Outside-click catcher"), ("menu-panel / menu-panel--account", "Panel"), ("menu-id", "Identity"), ("mi", "Item"), ("menu-divider", "Separator")], sources=["dialogs/account-menu/default"]))
+
+SH = ('<div class="share__panel" style="animation:none"><button class="ibtn share__close" type="button" aria-label="Close">' + CLOSE + '</button>'
+      '<div class="share__head"><div class="cover cover--c1 cover--sm" aria-hidden="true"></div><div><h2>Share Feathers Up</h2><p>Free for anyone to play — no account needed.</p></div></div>'
+      '<div class="seg-tabs" role="tablist" aria-label="Share as"><button role="tab" type="button" aria-selected="true">Link</button><button role="tab" type="button" aria-selected="false" tabindex="-1">Embed</button></div>'
+      '<div class="linkbox"><span>hummi.fm/s/k7m2p9qa</span><button class="copy-btn" type="button">Copy</button></div>'
+      '<label class="share__start"><input type="checkbox"> Start at 1:14</label>'
+      '<div class="share__via"><p>Send it straight to</p><div><a class="pill-btn pill-btn--lg" href="#">WhatsApp</a><a class="pill-btn pill-btn--lg" href="#">Email</a><a class="pill-btn pill-btn--lg" href="#">Messages</a></div></div></div>')
+SPECS.append(dict(
+    slug="share-sheet", name="Share sheet", group="Containers", lead="The Share dialog for a track or playlist: link or embed code, Copy, an optional start time and quick send targets.",
+    overview="A modal sheet centred over the page (L2-025). Link shows the share link with Copy; Embed shows a preview card and the iframe code with its own Copy. Copy reads “Copied” for a moment and a status line announces it.",
+    parts=[("Head", "Cover, “Share {name}” and the free-to-play line"), ("Tabs", "Link and Embed segmented tabs"), ("Link box", "The link without its scheme and Copy"), ("Start at", "Only for the current track once it has played"), ("Send it straight to", "WhatsApp, Email and Messages")],
+    figure=SH, variants=[("Link", SH), ("Copied", SH.replace('class="copy-btn" type="button">Copy', 'class="copy-btn copy-btn--done" type="button">Copied'))],
+    sizes=None, sizes_na="Up to 32.5rem wide; full width minus the gutters on phones.",
+    states=dict(rows=[("Copy", '<button class="copy-btn{a}" type="button">Copy</button>')], cols=[("Default", ""), ("Copied", " copy-btn--done")]),
+    responsive="Centred; the panel shrinks to the viewport with 16px gutters.",
+    a11y=dict(role="<code>role=\"dialog\"</code> with <code>aria-modal</code>, named by its heading; the tabs are a <code>tablist</code>.", keys=[("Escape", "Close"), ("Tab", "Stays inside the sheet"), ("← / →", "Switch Link and Embed")], focus="The panel takes focus on open and Tab is trapped inside it.", label="Copy announces “Link copied.” in a status region.", pairs=[("Link", "--color-fg-default", "--color-bg-canvas", 4.5), ("Copy", "--color-fg-on-accent", "--color-accent", 4.5)]),
+    content="<p>Name what is shared in the heading. Say it is free to play with no account.</p>",
+    dodont=[(SH, "Offer Copy next to the link.", SH.replace('<button class="copy-btn" type="button">Copy</button>', ""), "A link without Copy is hard to share on phones.")],
+    tokens=[("Panel", "--color-bg-surface-raised"), ("Copy", "--color-accent"), ("Layer", "--z-layer")], classes=[("share / share__panel", "Backdrop and panel"), ("seg-tabs", "Link and Embed"), ("linkbox / codebox", "Link or code with Copy"), ("copy-btn / copy-btn--done", "Copy and Copied"), ("embed-card", "Embed preview"), ("share__start", "Start at"), ("share__via", "Send targets")], sources=["dialogs/share/default", "dialogs/share/embed", "dialogs/share/success"]))

@@ -23,7 +23,7 @@ class Playlist {
   +AddTrack(by: Guid, trackId: Guid): Result<int>
   +RemoveTracks(by: Guid, entryIds: Guid[]): Result
   +Delete(by: Guid): Result
-  +CanView(listener: Guid?): bool
+  +PlaylistAccess(listener: Guid?): bool
 }
 class PlaylistEntry {
   +Guid Id

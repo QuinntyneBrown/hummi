@@ -31,11 +31,11 @@ class GetOrCreateShareLinkCommand {
 class GetOrCreateShareLinkCommandHandler {
   +Handle(c): Task<Result<ShareLinkDto>>
 }
-interface IShareCodeGenerator {
+interface ShareLink.NewCode {
   +Next(): string
 }
 ShareLink --> ShareTargetType
 GetOrCreateShareLinkCommandHandler ..> GetOrCreateShareLinkCommand : handles
-GetOrCreateShareLinkCommandHandler --> IShareCodeGenerator : uses
+GetOrCreateShareLinkCommandHandler --> ShareLink.NewCode : uses
 GetOrCreateShareLinkCommandHandler ..> ShareLink : finds or creates
 @enduml

@@ -25,10 +25,10 @@ public sealed class PlaylistsController(ISender sender) : ControllerBase
 
     [AllowAnonymous]
     [HttpGet("{id}")]
-    public async Task<IActionResult> Get(string id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Get(string id, [FromQuery] string? share, CancellationToken cancellationToken)
     {
         Guid? listenerId = User.Identity?.IsAuthenticated == true ? User.UserId() : null;
-        var result = await sender.Send(new GetPlaylistQuery(listenerId, id), cancellationToken);
+        var result = await sender.Send(new GetPlaylistQuery(listenerId, id, share), cancellationToken);
         return result.IsSuccess ? Ok(result.Value) : this.ToProblem(result.Error!);
     }
 

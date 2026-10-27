@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import {
   LibraryStore,
   PlaylistDialogs,
+  ShareDialogs,
   PlayerOverlays,
   PlayerStore,
   TrackDetailDto,
@@ -61,6 +62,7 @@ export class TrackComponent {
   readonly gate = inject(SignInGate);
   readonly library = inject(LibraryStore);
   readonly dialogs = inject(PlaylistDialogs);
+  private readonly shares = inject(ShareDialogs);
   readonly track = slugResource(
     (slug) => this.api.get(slug),
     (track) => track.title,
@@ -94,5 +96,17 @@ export class TrackComponent {
 
   play(track: TrackDetailDto): void {
     this.player.playFrom([{ ...track, artistName: track.artist.name }], 0);
+  }
+
+  /** Share opens the Share dialog for this track (L2-025). */
+  share(t: TrackDetailDto): void {
+    this.shares.share({
+      type: 'track',
+      id: t.id,
+      name: t.title,
+      byline: t.artist.name,
+      coverUrl: t.coverUrl,
+      slug: t.slug,
+    });
   }
 }

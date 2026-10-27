@@ -39,7 +39,7 @@ The feature realizes the following level-2 (L2) requirements. Each L2 requiremen
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-037` | `L1-009` | **Unread notifications.** 1. Given 3 unread notifications, when any shell page renders for a signed-in listener, then the sidebar Notifications link shows a "3" badge labelled "3 unread" and the top-bar bell is labelled "Notifications, 3 unread".<br>2. Given unread notifications, when the Notifications page renders, then the subtitle reads "3 unread", each unread item shows a dot labelled "Unread", and a "Mark all as read" button is shown.<br>3. Given "Mark all as read", when activated, then all items lose their unread dot, the subtitle and badge clear, and the button is hidden. |
+| `L2-037` | `L1-009` | **Unread notifications.** 1. Given 3 unread notifications, when any shell page renders for a signed-in listener, then the header Notifications bell shows a "3" badge labelled "3 unread" and the top-bar bell is labelled "Notifications, 3 unread".<br>2. Given unread notifications, when the Notifications page renders, then the subtitle reads "3 unread", each unread item shows a dot labelled "Unread", and a "Mark all as read" button is shown.<br>3. Given "Mark all as read", when activated, then all items lose their unread dot, the subtitle and badge clear, and the button is hidden. |
 
 ## Diagrams
 

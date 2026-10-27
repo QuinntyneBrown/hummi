@@ -8,4 +8,4 @@
 | like-and-follow | 3 days | 100% |
 | manage-own-playlist | 3 days | 100% |
 | view-library | 3 days | 100% |
-| view-others-playlist | 3 days | 0% |
+| view-others-playlist | 3 days | 100% |

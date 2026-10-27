@@ -149,7 +149,8 @@ Mock: the layer over Home in every state. Rendered by the shell from `@hummi/sea
 | Tracks | `hm-track-list` with `selectable` (row checkbox "Select {title}") through `LibraryStore.withLikes` | None |
 | Loading | `hm-skeleton` rows in `.track-list` | None |
 | Empty | `hm-empty-state` ("Nothing here yet"), `hmButton="primary"` link "Browse genres"; only Share in the header | None |
-| Error | `hm-error-block` ("This playlist didn’t load") | None |
+| Error | `hm-error-block` ("This playlist didn’t load"); 403 shows the Forbidden page | None |
+| Read-only | `hm-alert` (info, "This playlist belongs to {owner}"); header Play, `hmButton` with `pressed` "Save to my library", Share; no selection | Opened with `?share={code}` from a share link |
 
 ## Add to playlist (`dialogs/add-to-playlist`)
 
@@ -179,6 +180,31 @@ Mock: the layer over Home in every state. Rendered by the shell from `@hummi/sea
 | Field | `hm-text-field` "Type the playlist name to confirm" (help "This deletes {n} tracks from the playlist, not from Hummi.") | Exact-match check |
 | Footer | `hmButton` Cancel, `hmButton="danger"` "Delete playlist" (disabled until it matches); busy "Deleting…" | None |
 | Failed | `hm-alert` (danger, "That didn’t work") | None |
+
+## Share (`dialogs/share`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Sheet | `hm-share-sheet` (cover, "Share {name}", "Free for anyone to play — no account needed.", Close) | `ShareDialogComponent` in `@hummi/sharing`, rendered by the shell's `hm-share-dialog-host` |
+| Link | `hm-share-sheet` Link tab: link box "{host}/s/{code}" with Copy ("Copied", "Link copied."), "Start at {m:ss}" when the current track has played | Link from `POST /api/shares` |
+| Embed | `hm-share-sheet` Embed tab (tracks only): `embed-card` preview and the iframe code with Copy | None |
+| Send | `hm-share-sheet` "Send it straight to": WhatsApp, Email, Messages | Target URLs |
+
+## Shared track (`pages/shared-track`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Header | `hm-page-header` (title, artist) | `SharedLinkComponent` in `@hummi/sharing` at `/s/{code}` |
+| Hero | `hm-hero` with overline "Shared with you", meta "{artist} · {album} · {m:ss} · {licence}", `hmButton="primary"` "Play preview", `hmButton` link "Sign up to save it", `hm-waveform` | Licence short names |
+| Alert | `hm-alert` (info, "Free to listen, free to keep") | None |
+| Loading | `hm-skeleton` rect | None |
+| Error | `hm-error-block` ("This link didn’t work") | A playlist code redirects to its page instead |
+
+## Forbidden (`pages/forbidden`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Page | `hm-error-page` (lock, "403", "You don’t have access to this", the private-playlist text), `hmButton="primary"` link "Go to Home", `hmButton` link "Switch account" | Rendered by `PlaylistComponent` for a 403 |
 
 ## Now playing (`pages/now-playing`)
 

@@ -26,7 +26,7 @@ box "Backend — Hummi.Api application" #D1FADF
 end box
 box "Backend — Hummi Application and Domain" #ECFDF3
   participant "GetOrCreateShareLinkCommandHandler" as cmd
-  participant "IShareCodeGenerator" as gen
+  participant "ShareLink.NewCode" as gen
 end box
 box "Backend — Hummi Infrastructure" #FFF4E5
   participant "HummiDbContext" as ctx

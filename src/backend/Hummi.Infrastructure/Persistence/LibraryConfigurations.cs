@@ -52,3 +52,26 @@ internal sealed class PlaylistEntryConfiguration : IEntityTypeConfiguration<Play
         builder.HasOne<Track>().WithMany().HasForeignKey(e => e.TrackId).OnDelete(DeleteBehavior.Cascade);
     }
 }
+
+internal sealed class ShareLinkConfiguration : IEntityTypeConfiguration<ShareLink>
+{
+    public void Configure(EntityTypeBuilder<ShareLink> builder)
+    {
+        builder.ToTable("ShareLinks");
+        builder.Property(l => l.Id).ValueGeneratedNever();
+        builder.Property(l => l.Code).HasMaxLength(ShareLink.CodeLength).IsRequired();
+        builder.HasIndex(l => l.Code).IsUnique();
+        builder.HasIndex(l => new { l.TargetType, l.TargetId }).IsUnique();
+    }
+}
+
+internal sealed class SavedPlaylistConfiguration : IEntityTypeConfiguration<SavedPlaylist>
+{
+    public void Configure(EntityTypeBuilder<SavedPlaylist> builder)
+    {
+        builder.ToTable("SavedPlaylists");
+        builder.HasKey(s => new { s.ListenerId, s.PlaylistId });
+        builder.HasOne<Listener>().WithMany().HasForeignKey(s => s.ListenerId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne<Playlist>().WithMany().HasForeignKey(s => s.PlaylistId).OnDelete(DeleteBehavior.NoAction);
+    }
+}

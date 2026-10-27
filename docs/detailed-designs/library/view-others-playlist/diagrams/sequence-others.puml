@@ -35,7 +35,7 @@ u -> page : Open Mei's "Sunday kitchen"
 page -> client : get(id)
 client -> ctl : GET /api/playlists/{id}
 ctl -> q : Send GetPlaylistQuery
-q -> pl : CanView(priya)
+q -> pl : PlaylistAccess(priya)
 alt private and not shared
   pl --> q : false
   ctl --> client : 403 ProblemDetails

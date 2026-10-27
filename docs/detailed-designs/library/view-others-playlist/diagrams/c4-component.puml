@@ -10,15 +10,15 @@ Container_Boundary(spa, "Hummi web application") {
 }
 Container_Boundary(api, "Hummi.Api") {
   Component(ctl, "PlaylistsController", "ASP.NET Core controller", "Authorized /api/playlists endpoints; maps\nresults through ToProblem")
-  Component(q, "GetPlaylistQueryHandler", "MediatR query handler", "Calls Playlist.CanView(listener); Forbidden\nwhen false")
+  Component(q, "GetPlaylistQueryHandler", "MediatR query handler", "Calls Playlist.PlaylistAccess(listener); Forbidden\nwhen false")
   Component(save, "SavePlaylistCommandHandler", "MediatR command handler", "Adds a SavedPlaylist row for the listener")
-  Component(pl, "Playlist", "Domain aggregate", "CanView allows the owner, any listener when\npublic, and grantees of a share")
+  Component(pl, "Playlist", "Domain aggregate", "PlaylistAccess allows the owner, any listener when\npublic, and grantees of a share")
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
 }
 Rel(page, client, "get(id)")
 Rel(client, ctl, "GET /api/playlists/{id}")
 Rel(ctl, q, "Send GetPlaylistQuery")
-Rel(q, pl, "CanView(priya)")
+Rel(q, pl, "PlaylistAccess(priya)")
 Rel(page, gate, "requireSession()")
 Rel(ctl, save, "Send SavePlaylistCommand")
 Rel(save, ctx, "Insert SavedPlaylist")

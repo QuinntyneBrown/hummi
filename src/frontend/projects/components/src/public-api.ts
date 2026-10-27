@@ -51,3 +51,4 @@ export { CheckboxComponent, ErrorSummaryComponent, TextFieldComponent, type Form
 export { AuthCardComponent, ProgressComponent } from './lib/auth-card/auth-card';
 export { AccountMenuComponent } from './lib/account-menu/account-menu';
 export { TabsComponent } from './lib/tabs/tabs';
+export { COPIED_MS, ShareSheetComponent, type ShareTarget } from './lib/share-sheet/share-sheet';
