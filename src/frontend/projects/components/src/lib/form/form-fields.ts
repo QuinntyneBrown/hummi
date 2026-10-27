@@ -139,3 +139,73 @@ export class ErrorSummaryComponent {
     this.jumped.emit(fieldId);
   }
 }
+
+/** An on/off switch (`.switch`, role="switch") with its label and hint line (L2-034, L2-035). */
+@Component({
+  selector: 'hm-switch',
+  template: `
+    <label class="switch">
+      <input
+        #control
+        type="checkbox"
+        role="switch"
+        [id]="fieldId()"
+        [checked]="checked()"
+        [disabled]="disabled()"
+        (change)="checked.set(control.checked)"
+      />
+      <span class="choice__text"
+        >{{ label() }}
+        @if (hint()) {
+          <small class="text-muted">{{ hint() }}</small>
+        }
+      </span>
+    </label>
+  `,
+  styles: ':host { display: contents; }',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class SwitchComponent {
+  readonly label = input.required<string>();
+  readonly fieldId = input('');
+  readonly hint = input('');
+  readonly disabled = input(false);
+  readonly checked = model(false);
+}
+
+/** One option of a radio group. */
+export interface RadioOption {
+  value: string;
+  label: string;
+}
+
+/** A labelled group of radios in a fieldset (`.choice`), such as the Theme choices (L2-049). */
+@Component({
+  selector: 'hm-radio-group',
+  template: `
+    <fieldset [disabled]="disabled()">
+      <legend>{{ legend() }}</legend>
+      @for (option of options(); track option.value) {
+        <label class="choice">
+          <input
+            type="radio"
+            [name]="name()"
+            [value]="option.value"
+            [checked]="value() === option.value"
+            (change)="value.set(option.value)"
+          />
+          <span class="choice__text">{{ option.label }}</span>
+        </label>
+      }
+    </fieldset>
+  `,
+  styles: ':host { display: contents; }',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class RadioGroupComponent {
+  readonly legend = input.required<string>();
+  readonly name = input.required<string>();
+  readonly options = input.required<readonly RadioOption[]>();
+  readonly disabled = input(false);
+  readonly value = model('');
+}

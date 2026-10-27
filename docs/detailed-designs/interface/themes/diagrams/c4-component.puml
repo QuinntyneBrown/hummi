@@ -5,11 +5,11 @@ title Components — Switch light and dark themes
 
 Container_Boundary(spa, "Hummi web application") {
   Component(page, "SettingsPage", "Routed component in @hummi/settings", "Appearance hm-radio-group Match my device,\nLight, Dark")
-  Component(theme, "ThemeService", "Service in @hummi/api", "Resolves the preference against\nmatchMedia('(prefers-color-scheme: dark)')\nand sets\ndocument.documentElement.dataset.theme")
-  Component(client, "SettingsApi", "Typed HTTP service in @hummi/api", "PUT /api/me/settings")
+  Component(theme, "SettingsStore.applyTheme", "Service in @hummi/api", "Resolves the preference against\nmatchMedia('(prefers-color-scheme: dark)')\nand sets\ndocument.documentElement.dataset.theme")
+  Component(client, "SettingsStore", "Signal store in @hummi/api", "PUT /api/me/settings")
 }
 Container_Boundary(api, "Hummi.Api") {
-  Component(ctl, "SettingsController", "ASP.NET Core controller", "Stores Theme in ListenerSettings")
+  Component(ctl, "SettingsController", "ASP.NET Core controller", "Stores Theme in Listener settings")
 }
 Rel(page, theme, "set(Light)")
 Rel(page, client, "update(theme = Light)")

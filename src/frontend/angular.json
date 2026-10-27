@@ -282,6 +282,26 @@
           "defaultConfiguration": "production"
         }
       }
+    },
+    "settings": {
+      "projectType": "settings",
+      "root": "projects/settings",
+      "sourceRoot": "projects/settings/src",
+      "prefix": "hm",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/settings/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/settings/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
     }
   }
 }

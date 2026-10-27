@@ -17,9 +17,9 @@ skinparam package {
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
   participant "SettingsPage" as page
-  participant "ThemeService" as theme
+  participant "SettingsStore.applyTheme" as theme
   participant "LogoComponent" as logo
-  participant "SettingsApi" as client
+  participant "SettingsStore" as client
 end box
 box "Backend — Hummi.Api application" #D1FADF
   participant "SettingsController" as ctl

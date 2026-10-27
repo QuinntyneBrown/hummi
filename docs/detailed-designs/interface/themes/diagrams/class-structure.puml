@@ -17,10 +17,10 @@ enum ThemePreference {
   Light
   Dark
 }
-class ThemeService {
+class SettingsStore.applyTheme {
   +preference: Signal<ThemePreference>
   +resolved: Computed<"light" | "dark">
   +set(p: ThemePreference): void
 }
-ThemeService --> ThemePreference
+SettingsStore.applyTheme --> ThemePreference
 @enduml

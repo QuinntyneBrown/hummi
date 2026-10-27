@@ -17,7 +17,7 @@ enum ThemePreference {
   Light
   Dark
 }
-class ListenerSettings {
+class Listener settings {
   +Guid ListenerId
   +bool AutoplaySimilar = true
   +bool Crossfade = false
@@ -25,7 +25,7 @@ class ListenerSettings {
   +bool ProductNews = false
   +ThemePreference Theme = Device
 }
-ListenerSettings --> ThemePreference
+Listener settings --> ThemePreference
 
 class DigestLog {
   +Guid ListenerId
@@ -35,6 +35,6 @@ class ReleaseDigestJob {
   +ExecuteAsync(ct): Task
   -IsDue(last: DigestLog, now): bool
 }
-ReleaseDigestJob ..> ListenerSettings : NotifyNewReleases
+ReleaseDigestJob ..> Listener settings : NotifyNewReleases
 ReleaseDigestJob --> DigestLog : one per 7 days
 @enduml

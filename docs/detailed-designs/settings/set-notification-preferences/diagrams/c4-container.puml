@@ -11,7 +11,7 @@ System_Boundary(hummi, "Hummi") {
   Container(worker, "Hummi.Worker", ".NET hosted services", "Sends weekly digests and product news")
   ContainerDb(db, "Hummi database", "Azure SQL, EF Core", "Catalogue, accounts, library and notifications")
 }
-System_Ext(email, "Email provider", "Delivers account and notification emails <TO SUPPLY: provider>")
+System_Ext(email, "Email provider", "Delivers account and notification emails SMTP")
 Rel(listener, web, "Opens", "HTTPS")
 Rel(web, spa, "Delivers")
 Rel(spa, web, "Calls /api", "JSON/HTTPS")

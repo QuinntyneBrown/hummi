@@ -17,7 +17,7 @@ skinparam package {
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
   participant "SettingsPage" as page
-  participant "SettingsApi" as client
+  participant "SettingsStore" as client
 end box
 box "Backend — Hummi.Api application" #D1FADF
   participant "SettingsController" as ctl
@@ -39,7 +39,7 @@ u -> page : Toggle switches, Save changes
 page -> client : update(settings)
 client -> ctl : PUT /api/me/settings
 ctl -> cmd : Send UpdateSettingsCommand
-cmd -> ctx : Update ListenerSettings
+cmd -> ctx : Update Listener settings
 job -> ctx : Listeners with NotifyNewReleases and last digest ≥ 7 days ago (L2-035)
 ctx -> db : SELECT
 job -> ctx : New tracks from followed artists since last digest

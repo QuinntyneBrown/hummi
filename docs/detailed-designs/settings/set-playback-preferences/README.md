@@ -6,7 +6,7 @@ The Playback section of Settings holds two switches that change how the player b
 queue boundaries.
 
 - **autoplay similar** — when the queue ends, the player appends similar tracks and keeps playing (on by default)
-- **crossfade** — the last seconds of a track overlap with the start of the next (off by default); overlap length <TO SUPPLY>
+- **crossfade** — the last seconds of a track overlap with the start of the next (off by default); overlap length 6 seconds (ADR 0016)
 
 ## Description
 
@@ -62,7 +62,7 @@ The Angular application is delivered by the `web` container, which also proxies 
 
 ### Class structure
 
-`PlayerStore` mirrors `AutoplaySimilar` and `Crossfade` from `ListenerSettings`.
+`PlayerStore` mirrors `AutoplaySimilar` and `Crossfade` from `Listener settings`.
 
 ![Class diagram for set playback preferences](diagrams/class-structure.png)
 

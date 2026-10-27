@@ -1,0 +1,103 @@
+@if (session.ready() && !session.signedIn()) {
+  <hm-page-header heading="Settings" />
+  <hm-empty-state icon="lock" heading="Sign in to change your settings" text="Settings are saved to your account.">
+    <a hmButton="primary" routerLink="/sign-in" [queryParams]="{ returnUrl: '/settings' }">Sign in</a>
+    <a hmButton routerLink="/sign-up" [queryParams]="{ returnUrl: '/settings' }">Create account</a>
+  </hm-empty-state>
+} @else {
+  <hm-page-header heading="Settings" [subtitle]="subtitle()" />
+  @switch (state()) {
+    @case ('loading') {
+      <div class="stack" aria-busy="true" aria-label="Loading settings">
+        <hm-skeleton shape="rect" height="10rem" />
+        <hm-skeleton shape="rect" height="8rem" />
+      </div>
+    }
+    @case ('error') {
+      <hm-error-block heading="Settings didn’t load" (retry)="load()" />
+    }
+    @case ('ready') {
+      <form class="stack stack--lg" novalidate (submit)="save($event)">
+        @for (n of [attempt()]; track n) {
+          @if (summary().length) {
+            <hm-error-summary [errors]="summary()" />
+          }
+        }
+        @if (saved()) {
+          <hm-alert tone="success" heading="Settings saved">
+            Your changes apply on every device you’re signed in on.
+          </hm-alert>
+        }
+        @if (failed()) {
+          <hm-alert tone="danger" heading="Settings weren’t saved">Check your connection and try again.</hm-alert>
+        }
+        <section class="card stack" aria-labelledby="s-profile">
+          <h2 id="s-profile" style="font: var(--text-h4)">Profile</h2>
+          <hm-text-field
+            label="Display name"
+            [fieldId]="ids.displayName"
+            autocomplete="nickname"
+            [required]="true"
+            [readonly]="busy()"
+            [error]="errors()['displayName'] ?? ''"
+            [(value)]="displayName"
+          />
+          <hm-text-field
+            label="Email"
+            [fieldId]="ids.email"
+            type="email"
+            autocomplete="email"
+            help="We use this for sign-in and account emails only."
+            [readonly]="busy()"
+            [error]="errors()['email'] ?? ''"
+            [(value)]="email"
+          />
+        </section>
+        <section class="card stack" aria-labelledby="s-play">
+          <h2 id="s-play" style="font: var(--text-h4)">Playback</h2>
+          <hm-switch
+            label="Autoplay similar tracks"
+            hint="Keep playing when your queue ends."
+            [disabled]="busy()"
+            [(checked)]="autoplaySimilar"
+          />
+          <hm-switch
+            label="Crossfade"
+            hint="Blend the end of one track into the next."
+            [disabled]="busy()"
+            [(checked)]="crossfade"
+          />
+        </section>
+        <section class="card stack" aria-labelledby="s-app">
+          <h2 id="s-app" style="font: var(--text-h4)">Appearance</h2>
+          <hm-radio-group legend="Theme" name="theme" [options]="themes" [disabled]="busy()" [(value)]="theme" />
+        </section>
+        <section class="card stack" aria-labelledby="s-n">
+          <h2 id="s-n" style="font: var(--text-h4)">Notifications</h2>
+          <hm-switch
+            label="New tracks from artists I follow"
+            hint="At most one email a week."
+            [disabled]="busy()"
+            [(checked)]="notifyNewReleases"
+          />
+          <hm-switch
+            label="Product news"
+            hint="Rare, and never about other people’s data."
+            [disabled]="busy()"
+            [(checked)]="productNews"
+          />
+        </section>
+        <div class="form-actions">
+          <button hmButton="primary" type="submit" [busy]="busy()" [disabled]="busy()">
+            @if (busy()) {
+              <span class="spinner" aria-hidden="true"></span>Saving…
+            } @else {
+              Save changes
+            }
+          </button>
+          <button hmButton type="button" (click)="signOut()">Sign out</button>
+        </div>
+      </form>
+    }
+  }
+}

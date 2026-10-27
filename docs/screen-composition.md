@@ -210,6 +210,23 @@ Mock: the layer over Home in every state. Rendered by the shell from `@hummi/sea
 |---|---|---|
 | Page | `hm-error-page` (lock, "403", "You don’t have access to this", the private-playlist text), `hmButton="primary"` link "Go to Home", `hmButton` link "Switch account" | Rendered by `PlaylistComponent` for a 403 |
 
+## Settings (`pages/settings`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Header | `hm-page-header` ("Settings", "{name} · {email}") | `SettingsComponent` in `@hummi/settings`; `SettingsStore` in `@hummi/api` |
+| Profile | `.card` section with `hm-text-field` Display name (required) and Email (help "We use this for sign-in and account emails only.") | None |
+| Playback | `.card` section with `hm-switch` Autoplay similar tracks and Crossfade | Applied by `PlayerStore.setPreferences` |
+| Appearance | `.card` section with `hm-radio-group` Theme: Match my device, Light, Dark | Applied at once by `SettingsStore.applyTheme` |
+| Notifications | `.card` section with `hm-switch` New tracks from artists I follow and Product news | None |
+| Actions | `.form-actions`: `hmButton="primary"` "Save changes" (busy "Saving…"), `hmButton` "Sign out" | Opens the shell's Sign out dialog via `AccountDialogs` |
+| Invalid | `hm-error-summary` and the field's error ("Display name can’t be empty") | None |
+| Saved | `hm-alert` (success, "Settings saved") | None |
+| Failed | `hm-alert` (danger, "Settings weren’t saved") | ADR 0016 |
+| Loading | `hm-skeleton` rects | None |
+| Error | `hm-error-block` ("Settings didn’t load") | None |
+| Signed out | `hm-empty-state` (lock, "Sign in to change your settings"), Sign in and Create account | ADR 0016 |
+
 ## Now playing (`pages/now-playing`)
 
 Mock: the layer over Home. Routed at `/now-playing` in `@hummi/player`; the player bar is hidden there (ADR 0009).

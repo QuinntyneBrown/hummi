@@ -1,5 +1,8 @@
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 
+import { firstValueFrom } from 'rxjs';
+
+import { GenresApi } from '../discovery/genres-api';
 import { ConnectivityService } from './connectivity';
 import { PlaybackApi, TrackSummaryDto } from './playback-api';
 
@@ -20,6 +23,11 @@ export type PlayState = 'idle' | 'playing' | 'paused' | 'stalled';
 export class PlayerStore {
   private readonly api = inject(PlaybackApi);
   private readonly connectivity = inject(ConnectivityService);
+  private readonly genres = inject(GenresApi);
+  /** Settings' Playback switches (L2-034), set from the listener's settings; a visitor has the defaults. */
+  private readonly preferences = signal({ autoplaySimilar: true, crossfade: false });
+  /** The element of a track fading out under the next one while crossfading. */
+  private fading: HTMLAudioElement | null = null;
   private audioElement: HTMLAudioElement | null = null;
 
   private readonly queueState = signal<readonly TrackSummaryDto[]>([]);
@@ -73,6 +81,11 @@ export class PlayerStore {
       this.queueState.set(entries);
       this.start(index);
     }
+  }
+
+  /** Applies the Playback settings (L2-034). */
+  setPreferences(preferences: { autoplaySimilar: boolean; crossfade: boolean }): void {
+    this.preferences.set(preferences);
   }
 
   /** Plays one track on its own from a start time in seconds, as a shared link's "Start at" asks (L2-025 AC4). */
@@ -199,6 +212,51 @@ export class PlayerStore {
     if (from === 0) void this.api.recordPlay(track.id);
   }
 
+  /**
+   * Crossfade (L2-034 AC3): with the last CROSSFADE_SECONDS left and a track to follow, the current element
+   * fades out while the next track starts on a new element and fades in.
+   */
+  private crossfade(): void {
+    const hasNext = this.indexState() < this.queueState().length - 1 || this.repeatState();
+    if (!hasNext || !this.audioElement) return;
+    const outgoing = this.audioElement;
+    this.fading?.pause();
+    this.fading = outgoing;
+    this.audioElement = null;
+    ramp(outgoing, outgoing.volume, 0, () => {
+      outgoing.pause();
+      if (this.fading === outgoing) this.fading = null;
+    });
+    this.next();
+    const incoming = this.audio();
+    incoming.volume = 0;
+    ramp(incoming, 0, 1);
+  }
+
+  /**
+   * The queue ran out (L2-034 AC2): with Autoplay similar tracks on, the current track's genre continues
+   * with its most played tracks not yet queued; otherwise, or when there are none, playback stops.
+   */
+  private async queueEnded(): Promise<void> {
+    const current = this.current();
+    if (this.preferences().autoplaySimilar && current?.genreSlug) {
+      try {
+        const page = await firstValueFrom(this.genres.tracks(current.genreSlug, 'most-played'));
+        const queued = new Set(this.queueState().map((t) => t.id));
+        const similar = page.tracks.filter((t) => !queued.has(t.id)).map(entry);
+        if (similar.length) {
+          this.queueState.update((queue) => [...queue, ...similar]);
+          this.unshuffled.update((original) => original && [...original, ...similar]);
+          this.start(this.indexState() + 1);
+          return;
+        }
+      } catch {
+        // No similar tracks to be had: stop as if Autoplay were off.
+      }
+    }
+    this.playState.set('paused');
+  }
+
   /** The connection went away: stop and keep the position to resume from. */
   private disconnected(): void {
     if (!this.current() || this.playState() === 'idle' || this.stalled()) return;
@@ -229,29 +287,54 @@ export class PlayerStore {
     if (this.audioElement) return this.audioElement;
     const audio = new Audio();
     audio.preload = 'auto';
-    audio.addEventListener('playing', () => this.playState.set('playing'));
+    // An element retired by a crossfade keeps playing out but no longer drives the player's state.
+    const live = () => audio === this.audioElement;
+    audio.addEventListener('playing', () => live() && this.playState.set('playing'));
     audio.addEventListener('pause', () => {
-      if (this.playState() !== 'stalled') this.playState.set('paused');
+      if (live() && this.playState() !== 'stalled') this.playState.set('paused');
     });
     audio.addEventListener('timeupdate', () => {
-      if (!this.stalled()) this.positionState.set(Math.floor(audio.currentTime));
+      if (!live() || this.stalled()) return;
+      this.positionState.set(Math.floor(audio.currentTime));
+      if (this.preferences().crossfade && audio.duration - audio.currentTime <= CROSSFADE_SECONDS) this.crossfade();
     });
-    audio.addEventListener('loadedmetadata', () =>
-      this.durationState.set(Number.isFinite(audio.duration) ? Math.round(audio.duration) : null),
-    );
+    audio.addEventListener('loadedmetadata', () => {
+      if (live()) this.durationState.set(Number.isFinite(audio.duration) ? Math.round(audio.duration) : null);
+    });
     audio.addEventListener('ended', () => {
+      if (!live()) return;
       if (this.indexState() < this.queueState().length - 1 || this.repeatState()) this.next();
-      else this.playState.set('paused');
+      else void this.queueEnded();
     });
     audio.addEventListener('error', () => {
-      if (audio.getAttribute('src')) this.stall();
+      if (live() && audio.getAttribute('src')) this.stall();
     });
     audio.addEventListener('stalled', () => {
-      if (audio.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) this.stall();
+      if (live() && audio.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) this.stall();
     });
     this.audioElement = audio;
     return audio;
   }
+}
+
+/** How long the end of one track overlaps the start of the next with Crossfade on (ADR 0016). */
+export const CROSSFADE_SECONDS = 6;
+
+/** Moves an element's volume from one level to another over CROSSFADE_SECONDS, then calls done. */
+function ramp(audio: HTMLAudioElement, from: number, to: number, done?: () => void): void {
+  const steps = 30;
+  let step = 0;
+  const timer = setInterval(
+    () => {
+      step++;
+      audio.volume = Math.min(1, Math.max(0, from + ((to - from) * step) / steps));
+      if (step >= steps) {
+        clearInterval(timer);
+        done?.();
+      }
+    },
+    (CROSSFADE_SECONDS * 1000) / steps,
+  );
 }
 
 /** A queue entry of its own, so the same track queued twice is two entries. */

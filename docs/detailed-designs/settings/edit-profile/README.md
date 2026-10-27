@@ -9,7 +9,7 @@ signs in on.
 
 - **profile** — listener's display name and sign-in email
 
-Changing the email address re-starts confirmation <TO SUPPLY: confirm whether a changed email needs re-verification before sign-in uses it>.
+Changing the email address re-starts confirmation with a fresh link; sign-in uses the new address at once (ADR 0016).
 
 ## Description
 
@@ -17,8 +17,8 @@ One form saves every section with a single command; this slice describes the pro
 
 **Frontend — Hummi web application (Angular)**
 
-- **`SettingsPage`** — Routed component in @hummi/settings. Renders `hm-form-section` per section, `hm-text-field`, `hm-switch`, `hm-radio-group`, `hm-error-summary`, success `hm-alert`, Save changes and Sign out
-- **`SettingsApi`** — Typed HTTP service in @hummi/api. Calls `GET` and `PUT /api/me/settings`
+- **`SettingsPage`** — Routed component in @hummi/settings. Renders a `.card` section per group, `hm-text-field`, `hm-switch`, `hm-radio-group`, `hm-error-summary`, success `hm-alert`, Save changes and Sign out
+- **`SettingsStore`** — Signal store in @hummi/api. Calls `GET` and `PUT /api/me/settings` and applies the theme and Playback switches
 - **`SessionStore`** — Signal store in @hummi/api. Holds the signed-in listener, the access token and the signed-in/signed-out state the shell reads
 
 **Backend — Hummi.Api application**
@@ -27,13 +27,13 @@ One form saves every section with a single command; this slice describes the pro
 
 **Backend — Hummi Application and Domain**
 
-- **`UpdateSettingsValidator`** — FluentValidation validator. Display name not empty; email well formed
-- **`UpdateSettingsCommandHandler`** — MediatR command handler. Updates `Listener` profile fields and `ListenerSettings` in one transaction
+- **`UpdateSettingsCommandHandler` checks** — Display name not empty; email well formed and not taken (422)
+- **`UpdateSettingsCommandHandler`** — MediatR command handler. Updates the `Listener` profile and settings columns in one save
 
 **Backend — Hummi Infrastructure**
 
 - **`HummiDbContext`** — EF Core DbContext. Implements the `IHummiDbContext` port from `Application/Abstractions` and maps entities to tables
-- **`Hummi database`** — Azure SQL. Listeners and listener settings
+- **`Hummi database`** — Azure SQL. Listeners with their settings columns
 
 ## Requirements
 
@@ -59,13 +59,13 @@ The Angular application is delivered by the `web` container, which also proxies 
 
 ### Components
 
-`SettingsPage` calls `SettingsApi`; `SettingsController` validates and sends `UpdateSettingsCommand`.
+`SettingsPage` calls `SettingsStore`; `SettingsController` validates and sends `UpdateSettingsCommand`.
 
 ![C4 component view for edit the profile](diagrams/c4-component.png)
 
 ### Class structure
 
-`UpdateSettingsCommandHandler` updates `Listener` and `ListenerSettings`, which holds every preference with its default.
+`UpdateSettingsCommandHandler` updates `Listener` and `Listener settings`, which holds every preference with its default.
 
 ![Class diagram for edit the profile](diagrams/class-structure.png)
 
