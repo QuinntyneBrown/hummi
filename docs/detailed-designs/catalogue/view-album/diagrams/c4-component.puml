@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View an album
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "AlbumPage", "Routed component in @hummi/catalogue", "Renders the header, Play, Add to playlist\nand Share, the summary line and\nhm-track-list")
+  Component(client, "AlbumsApi", "Typed HTTP service in @hummi/api", "Calls GET /api/albums/{slug}")
+  Component(player, "PlayerStore", "Signal store in @hummi/api", "Owns the queue, the current track, position\nand play state, and drives the\nHTMLAudioElement")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "AlbumsController", "ASP.NET Core controller", "Returns 200 AlbumDetailDto or 404")
+  Component(q, "GetAlbumQueryHandler", "MediatR query handler", "Loads the album with ordered tracks and\nbuilds the summary; total minutes round up\n<TO SUPPLY: rounding rule>")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Albums and tracks")
+Rel(page, client, "get('night-garden')")
+Rel(client, ctl, "GET /api/albums/night-garden")
+Rel(ctl, q, "Send GetAlbumQuery")
+Rel(q, ctx, "Album with tracks by Position")
+Rel(ctx, db, "SELECT")
+Rel(page, player, "playList(album.tracks, 0)")
+@enduml

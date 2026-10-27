@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Switch light and dark themes
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "SettingsPage", "Routed component in @hummi/settings", "Appearance hm-radio-group Match my device,\nLight, Dark")
+  Component(theme, "ThemeService", "Service in @hummi/api", "Resolves the preference against\nmatchMedia('(prefers-color-scheme: dark)')\nand sets\ndocument.documentElement.dataset.theme")
+  Component(client, "SettingsApi", "Typed HTTP service in @hummi/api", "PUT /api/me/settings")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "SettingsController", "ASP.NET Core controller", "Stores Theme in ListenerSettings")
+}
+Rel(page, theme, "set(Light)")
+Rel(page, client, "update(theme = Light)")
+Rel(client, ctl, "PUT /api/me/settings")
+@enduml

@@ -1,0 +1,42 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Verify an email address
+
+class Listener {
+  +Guid Id
+  +string DisplayName
+  +string Email
+  +string PasswordHash
+  +DateTimeOffset? EmailConfirmedAt
+  +bool IsEmailConfirmed
+  +{static} Register(name, email, hash, now): Listener
+  +ConfirmEmail(now): void
+  +ChangePassword(hash): void
+}
+
+class EmailToken {
+  +string TokenHash
+  +DateTimeOffset ExpiresAt
+  +DateTimeOffset? UsedAt
+  +Redeem(now): Result
+}
+class ConfirmEmailCommand {
+  +string Token
+}
+class ConfirmEmailCommandHandler {
+  +Handle(c): Task<Result<string>>
+}
+ConfirmEmailCommandHandler ..> ConfirmEmailCommand : handles
+ConfirmEmailCommandHandler --> EmailToken : Redeem
+ConfirmEmailCommandHandler --> Listener : ConfirmEmail
+@enduml

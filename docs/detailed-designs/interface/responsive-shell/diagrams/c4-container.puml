@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Adapt the shell to the viewport
+
+Person(listener, "Listener", "Uses Hummi in a browser")
+System_Boundary(hummi, "Hummi") {
+  Container(web, "web", "Caddy", "Serves the Angular build, terminates TLS, proxies /api and /media")
+  Container(spa, "Hummi web application", "Angular", "Provides accessible, themed, responsive UI")
+  Container(api, "Hummi.Api", "ASP.NET Core", "Stores the theme preference")
+}
+Rel(listener, web, "Opens", "HTTPS")
+Rel(web, spa, "Delivers")
+Rel(spa, web, "Calls /api", "JSON/HTTPS")
+Rel(web, api, "Proxies", "HTTP")
+@enduml

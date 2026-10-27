@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Show Now playing
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "NowPlayingPage", "Routed component in @hummi/player", "Renders hm-cover, title and links,\nhm-waveform, the transport hm-icon-button\nset with Shuffle and Repeat as aria-pressed\ntoggles, and the empty and danger states")
+  Component(player, "PlayerStore", "Signal store in @hummi/api", "Owns the queue, the current track, position\nand play state, and drives the\nHTMLAudioElement")
+  Component(audio, "HTMLAudioElement", "Browser media element", "Requests audio by byte range and reports\ntimeupdate, ended, stalled and error")
+  Component(net, "ConnectivityService", "Service in @hummi/api", "Exposes online as a signal from\nnavigator.onLine and online/offline events")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(mctl, "MediaController", "ASP.NET Core controller", "GET /media/tracks/{id}/peaks.json returns\nwaveform peaks")
+}
+ContainerDb(media, "media volume", "Docker volume /data/media", "Holds audio and peaks files")
+Rel(page, player, "currentTrack()")
+Rel(page, mctl, "GET /media/tracks/{id}/peaks.json")
+Rel(mctl, media, "Read peaks")
+Rel(player, net, "online()")
+Rel(player, audio, "currentTime = resumeAtSeconds;\nplay() (L2-015)")
+@enduml

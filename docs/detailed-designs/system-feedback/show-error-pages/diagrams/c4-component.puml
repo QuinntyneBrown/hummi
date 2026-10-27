@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Show error pages
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(int, "errorPageInterceptor", "Angular HTTP interceptor in @hummi/api", "On a page's primary request maps 404, 403\nand 500 to the matching error route, keeping\nthe URL")
+  Component(router, "Router", "Angular router", "** wildcard to NotFoundPage")
+  Component(pages, "NotFoundPage, ForbiddenPage, ServerErrorPage", "Shell pages in the hummi application", "Render hm-error-page with code, title, text\nand actions")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(mw, "ExceptionHandlingMiddleware", "ASP.NET Core middleware", "Logs unhandled exceptions with a trace id\nand returns 500 ProblemDetails")
+  Component(log, "ILogger", "Microsoft.Extensions.Logging", "Writes to the container log; alerting to the\nteam: <TO SUPPLY>")
+}
+Rel(router, pages, "NotFoundPage 'We couldn’t find that\npage' (L2-044)")
+Rel(int, router, "navigate NotFound or Forbidden,\nskipLocationChange (L2-044, L2-045)")
+Rel(mw, log, "LogError with trace id (L2-046)")
+@enduml

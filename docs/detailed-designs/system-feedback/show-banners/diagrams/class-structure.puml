@@ -1,0 +1,39 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Show banners
+
+enum BannerTone {
+  info
+  success
+  warning
+  danger
+}
+class Banner {
+  +key: string
+  +tone: BannerTone
+  +title: string
+  +text: string
+  +dismissible: boolean
+}
+class BannerService {
+  +banners: Computed<Banner[]>
+  +dismiss(key: string): void
+}
+class SystemStatusDto {
+  +MaintenanceWindow? Maintenance
+  +bool StreamingAvailable
+}
+Banner --> BannerTone
+BannerService "1" *-- "*" Banner
+BannerService ..> SystemStatusDto
+@enduml

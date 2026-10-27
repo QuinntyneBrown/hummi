@@ -1,0 +1,29 @@
+@startuml
+title UML sequence behaviour — Play all or shuffle
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "GenrePage" as page
+  participant "PlayerStore" as player
+end box
+u -> page : Activate Play all
+page -> player : playList(tracks, 0, shuffle=false)
+player --> page : Plays in list order (L2-004)
+u -> page : Activate Shuffle
+page -> player : playList(tracks, 0, shuffle=true)
+player -> player : Fisher–Yates permutation of the queue
+player --> page : Plays in random order (L2-004)
+@enduml

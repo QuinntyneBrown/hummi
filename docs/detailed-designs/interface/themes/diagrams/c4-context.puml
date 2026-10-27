@@ -1,0 +1,11 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Switch light and dark themes
+
+Person(listener, "Listener", "Discovers, plays and shares openly licensed AI-generated music")
+System(hummi, "Hummi", "Free streaming platform for open-source AI-generated music")
+System_Ext(device, "Browser and device", "Clipboard, media session, colour scheme and Cache Storage")
+Rel(listener, hummi, "Uses", "HTTPS")
+Rel(hummi, device, "Reads colour scheme from")
+@enduml

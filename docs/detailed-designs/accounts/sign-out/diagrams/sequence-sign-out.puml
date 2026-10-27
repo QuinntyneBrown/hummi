@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour — Sign out
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "SignOutDialog" as dlg
+  participant "AuthApi" as client
+  participant "SessionStore" as session
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "AuthController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "SignOutCommandHandler" as cmd
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+u -> dlg : Sign out (from Settings)
+dlg --> u : "Sign out of Hummi?" (L2-031)
+u -> dlg : Confirm
+dlg -> dlg : Cancel disabled, "Signing out…" (L2-031)
+dlg -> client : signOut()
+client -> ctl : POST /api/auth/sign-out (refresh cookie)
+ctl -> cmd : Send SignOutCommand
+cmd -> ctx : Revoke RefreshToken
+ctx -> db : UPDATE
+alt success
+  ctl --> client : 204, cookie cleared
+  client -> session : clear()
+  session --> u : Shell shows Sign in and Sign up; data stays saved (L2-031)
+else failure
+  dlg --> u : "That didn’t work" (L2-031)
+end
+@enduml

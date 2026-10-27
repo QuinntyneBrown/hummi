@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Create and rename a playlist
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(dlg, "PlaylistFormDialog", "Dialog component in @hummi/library", "Renders New playlist or Rename playlist with\nhm-text-field (help "Up to 60 characters"),\nhm-checkbox Make it public, busy and error\nstates")
+  Component(gate, "SignInGate", "Service in @hummi/api", "Checks SessionStore before a save action and\nopens the Sign in to save this dialog when\nsigned out (L2-032)")
+  Component(client, "PlaylistsApi", "Typed HTTP service in @hummi/api", "Calls the /api/playlists endpoints")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "PlaylistsController", "ASP.NET Core controller", "Authorized /api/playlists endpoints; maps\nresults through ProblemDetailsMapper")
+  Component(cmd, "CreatePlaylistCommandHandler", "MediatR command handlers", "CreatePlaylistCommand and\nRenamePlaylistCommand")
+  Component(val, "PlaylistNameValidator", "FluentValidation validator", "Rejects empty and over-60-character names")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Playlists")
+Rel(dlg, gate, "requireSession() (L2-032)")
+Rel(dlg, client, "create(name, isPublic=false)")
+Rel(client, ctl, "POST /api/playlists")
+Rel(ctl, val, "Validate name length 1..60 (L2-021)")
+Rel(ctl, cmd, "Send CreatePlaylistCommand")
+Rel(cmd, ctx, "Add Playlist(IsPublic = false)")
+Rel(ctx, db, "INSERT")
+@enduml

@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Open, save, and attempt to change another listener's playlist
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "PlaylistPage" as page
+  participant "PlaylistsApi" as client
+  participant "SignInGate" as gate
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "PlaylistsController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "GetPlaylistQueryHandler" as q
+  participant "SavePlaylistCommandHandler" as save
+  participant "Playlist" as pl
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+end box
+u -> page : Open Mei's "Sunday kitchen"
+page -> client : get(id)
+client -> ctl : GET /api/playlists/{id}
+ctl -> q : Send GetPlaylistQuery
+q -> pl : CanView(priya)
+alt private and not shared
+  pl --> q : false
+  ctl --> client : 403 ProblemDetails
+  page --> u : Forbidden page (L2-024, L2-045)
+else public or shared
+  ctl --> client : 200 (IsOwner = false)
+  page --> u : "31 tracks · by Mei Rodríguez · public", Play, Save to my library, Share, info alert (L2-024)
+end
+u -> page : Save to my library
+page -> gate : requireSession()
+page -> client : save(id)
+client -> ctl : PUT /api/me/saved-playlists/{id}
+ctl -> save : Send SavePlaylistCommand
+save -> ctx : Insert SavedPlaylist
+page --> u : Appears in Library (L2-024)
+u -> client : Crafted PUT /api/playlists/{id}/name
+client -> ctl : Request
+ctl -> pl : Rename(priya, ...)
+pl --> ctl : Forbidden
+ctl --> client : 403 (L2-024)
+@enduml

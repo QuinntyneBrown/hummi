@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Report a track
+
+Person(listener, "Listener", "Uses Hummi in a browser")
+System_Boundary(hummi, "Hummi") {
+  Container(web, "web", "Caddy", "Serves the Angular build, terminates TLS, proxies /api and /media")
+  Container(spa, "Hummi web application", "Angular", "Renders the report dialog")
+  Container(api, "Hummi.Api", "ASP.NET Core", "Stores reports and emails outcomes")
+  ContainerDb(db, "Hummi database", "Azure SQL, EF Core", "Catalogue, accounts, library and notifications")
+}
+System_Ext(email, "Email provider", "Delivers account and notification emails <TO SUPPLY: provider>")
+Rel(listener, web, "Opens", "HTTPS")
+Rel(web, spa, "Delivers")
+Rel(spa, web, "Calls /api", "JSON/HTTPS")
+Rel(web, api, "Proxies", "HTTP")
+Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, email, "Emails report outcomes through")
+@enduml

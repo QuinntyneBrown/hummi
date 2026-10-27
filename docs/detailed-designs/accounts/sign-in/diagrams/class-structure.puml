@@ -1,0 +1,50 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Sign in
+
+class Listener {
+  +Guid Id
+  +string DisplayName
+  +string Email
+  +string PasswordHash
+  +DateTimeOffset? EmailConfirmedAt
+  +bool IsEmailConfirmed
+  +{static} Register(name, email, hash, now): Listener
+  +ConfirmEmail(now): void
+  +ChangePassword(hash): void
+}
+
+class SignInCommand {
+  +string Email
+  +string Password
+  +bool KeepSignedIn
+}
+class SignInCommandHandler {
+  +Handle(c): Task<Result<SessionDto>>
+}
+class RefreshToken {
+  +string TokenHash
+  +Guid ListenerId
+  +DateTimeOffset ExpiresAt
+  +bool Persistent
+  +DateTimeOffset? RevokedAt
+}
+interface ITokenService {
+  +IssueAccess(listener): string
+  +IssueRefresh(listener, persistent): RefreshToken
+}
+SignInCommandHandler ..> SignInCommand : handles
+SignInCommandHandler --> Listener : verifies
+SignInCommandHandler --> ITokenService : uses
+ITokenService ..> RefreshToken : creates
+@enduml

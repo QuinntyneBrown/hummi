@@ -1,0 +1,32 @@
+@startuml
+title UML sequence behaviour — Open Home offline
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "HomePage" as page
+  participant "HomeStore" as store
+  participant "HomeApi" as client
+  participant "ngsw Service Worker" as sw
+end box
+u -> page : Open / with no connection
+page -> store : load()
+store -> client : GET /api/home/*
+client -> sw : Fetch
+sw --> client : Cached featured and recent responses, network error for others
+client --> store : Partial data, offline flag
+store --> page : Hero and Continue listening only, offline banner (L2-002)
+page --> u : Render cached Home
+@enduml

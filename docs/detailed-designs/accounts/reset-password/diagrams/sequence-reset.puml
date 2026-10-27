@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour — Request and redeem a reset link
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "ResetPasswordPage" as page
+  participant "AuthApi" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "AuthController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "RequestPasswordResetCommandHandler" as cmd
+  participant "ResetPasswordCommandHandler" as redeem
+  participant "IEmailSender" as mail
+  participant "IClock" as clock
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+end box
+participant "Email provider" as email
+u -> page : Submit email
+page -> page : Read-only, "Send reset link…" (L2-030)
+page -> client : requestReset(email)
+client -> ctl : POST /api/auth/password-reset
+ctl -> cmd : Send RequestPasswordResetCommand
+cmd -> ctx : Listener by email
+opt account exists
+  cmd -> ctx : Add EmailToken(ResetPassword, now + 1 h)
+  cmd -> mail : Send reset link
+  mail -> email : SMTP
+end
+alt email sent or no account
+  ctl --> client : 202
+  page --> u : "Check your inbox" "If an account exists for ..." (L2-030)
+else provider fails
+  ctl --> client : 503
+  page --> u : "We couldn’t send the email" (L2-030)
+end
+u -> client : Open link, submit new password
+client -> ctl : POST /api/auth/password-reset/confirm
+ctl -> redeem : Send ResetPasswordCommand
+redeem -> clock : UtcNow
+redeem -> ctx : Redeem token; older than 1 hour fails (L2-030)
+@enduml

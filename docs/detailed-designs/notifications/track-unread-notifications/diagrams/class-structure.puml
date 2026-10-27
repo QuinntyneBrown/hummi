@@ -1,0 +1,41 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Track unread notifications
+
+enum NotificationKind {
+  NewRelease
+  PlaylistShared
+  PlayMilestone
+  ProductChange
+}
+class Notification {
+  +Guid Id
+  +Guid ListenerId
+  +NotificationKind Kind
+  +string PayloadJson
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset? ReadAt
+  +MarkRead(now): void
+}
+Notification --> NotificationKind
+
+class UnreadStore {
+  +count: Signal<number>
+  +refresh(): void
+  +clear(): void
+}
+class MarkAllNotificationsReadCommandHandler {
+  +Handle(c): Task<Result>
+}
+MarkAllNotificationsReadCommandHandler --> Notification : MarkRead
+@enduml

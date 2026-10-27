@@ -1,0 +1,32 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Show Now playing
+
+class NowPlayingPage {
+  +track: Computed<TrackSummaryDto | null>
+  +mainLabel(): "Play" | "Pause"
+}
+class PlayerStore {
+  +shuffle: Signal<boolean>
+  +repeat: Signal<boolean>
+  +resumeAtSeconds: Signal<number | null>
+  +toggleShuffle(): void
+  +toggleRepeat(): void
+  +resume(): void
+}
+class ConnectivityService {
+  +online: Signal<boolean>
+}
+NowPlayingPage ..> PlayerStore : reads and commands
+PlayerStore --> ConnectivityService : resumes on online
+@enduml

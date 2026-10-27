@@ -1,0 +1,44 @@
+@startuml
+title UML sequence behaviour — Load, fail and retry
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "Any data page" as page
+  participant "apiResource" as res
+  participant "Typed API service" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "Any controller" as ctl
+  participant "ExceptionHandlingMiddleware" as mw
+end box
+u -> page : Open a data page
+page -> res : apiResource(() => api.get())
+res --> page : status loading
+page --> u : Skeletons, aria-busy="true" (L2-039)
+res -> client : get()
+client -> ctl : GET /api/...
+alt success
+  ctl --> client : 200
+  res --> page : status ready
+else timeout or 5xx
+  ctl -> mw : Unhandled exception
+  mw --> client : 500 ProblemDetails
+  res --> page : status error
+  page --> u : Error block, e.g. "This track didn’t load", Try again, Go to Home (L2-040)
+  u -> page : Try again
+  page -> res : reload() (L2-040)
+end
+@enduml

@@ -1,0 +1,71 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — View Home
+
+class HomeSummaryDto {
+  +string DisplayName
+  +DateOnly Today
+  +int NewTracksFromFollowed
+  +bool HasHistory
+}
+class FeaturedMixDto {
+  +string SeedTrackTitle
+  +int SimilarCount
+  +IReadOnlyList<TrackSummaryDto> Tracks
+}
+class TrackSummaryDto {
+  +Guid Id
+  +string Slug
+  +string Title
+  +string ArtistName
+  +int DurationSeconds
+  +string CoverUrl
+  +bool Liked
+}
+class ArtistTileDto {
+  +string Slug
+  +string Name
+  +int MonthlyListeners
+}
+class GetFeaturedMixQuery {
+  +Guid ListenerId
+}
+class GetFeaturedMixQueryHandler {
+  +Handle(q: GetFeaturedMixQuery): Task<Result<FeaturedMixDto>>
+}
+class FeaturedMixBuilder {
+  +Build(history: IReadOnlyList<PlayEvent>, candidates: IQueryable<Track>): FeaturedMix
+}
+class PlayEvent {
+  +Guid ListenerId
+  +Guid TrackId
+  +DateTimeOffset PlayedAt
+}
+class HomeStore {
+  +summary: Signal<ShelfState<HomeSummaryDto>>
+  +featured: Signal<ShelfState<FeaturedMixDto>>
+  +recent: Signal<ShelfState<TrackSummaryDto[]>>
+  +newThisWeek: Signal<ShelfState<TrackSummaryDto[]>>
+  +artists: Signal<ShelfState<ArtistTileDto[]>>
+  +load(): void
+  +retry(shelf: HomeShelf): void
+}
+GetFeaturedMixQueryHandler ..> GetFeaturedMixQuery : handles
+GetFeaturedMixQueryHandler --> FeaturedMixBuilder : uses
+FeaturedMixBuilder ..> PlayEvent : reads
+GetFeaturedMixQueryHandler ..> FeaturedMixDto : returns
+FeaturedMixDto "1" *-- "*" TrackSummaryDto
+HomeStore ..> HomeSummaryDto
+HomeStore ..> FeaturedMixDto
+HomeStore ..> ArtistTileDto
+@enduml

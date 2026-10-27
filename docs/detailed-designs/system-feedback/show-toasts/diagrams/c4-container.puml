@@ -1,0 +1,16 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Show toasts
+
+Person(listener, "Listener", "Uses Hummi in a browser")
+System_Boundary(hummi, "Hummi") {
+  Container(web, "web", "Caddy", "Serves the Angular build, terminates TLS, proxies /api and /media")
+  Container(spa, "Hummi web application", "Angular", "Renders system states, toasts, banners and error pages")
+  Container(api, "Hummi.Api", "ASP.NET Core", "Reports failures as ProblemDetails")
+}
+Rel(listener, web, "Opens", "HTTPS")
+Rel(web, spa, "Delivers")
+Rel(spa, web, "Calls /api", "JSON/HTTPS")
+Rel(web, api, "Proxies", "HTTP")
+@enduml

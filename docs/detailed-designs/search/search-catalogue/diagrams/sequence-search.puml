@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Run a search
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "TopBarSearchComponent" as field
+  participant "SearchPage" as page
+  participant "RecentSearchesStore" as recent
+  participant "SearchApi" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "SearchController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "SearchCatalogueQueryHandler" as q
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "SqlSearchIndex" as idx
+  database "Hummi database" as db
+end box
+u -> field : Type "rain" and submit
+field -> page : Navigate /search?q=rain (L2-006)
+page -> page : Subtitle "Searching…", skeleton rows (L2-006)
+page -> client : search("rain", All)
+client -> ctl : GET /api/search?q=rain&type=all
+ctl -> q : Send SearchCatalogueQuery
+q -> idx : SearchAsync("rain", All)
+idx -> db : SELECT ... WHERE Title LIKE '%rain%'
+db --> idx : Rows
+idx --> q : Ranked hits
+q --> ctl : Result<SearchResultsDto>
+alt hits found
+  ctl --> client : 200, Total = 7
+  client --> page : Results
+  page -> recent : add("rain")
+  page --> u : "7 results", tabs, Tracks and Playlists shelves (L2-006)
+else no hits
+  ctl --> client : 200, Total = 0
+  page --> u : "0 results", "Nothing matches “…”", Clear search, Browse genres (L2-007)
+else index unreachable
+  ctl --> client : 503 ProblemDetails
+  page --> u : "Search isn’t working right now", query kept (L2-007)
+end
+@enduml

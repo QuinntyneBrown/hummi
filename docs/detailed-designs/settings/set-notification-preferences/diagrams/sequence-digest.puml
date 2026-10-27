@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Send the weekly digest
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "SettingsPage" as page
+  participant "SettingsApi" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "SettingsController" as ctl
+end box
+box "Backend — Hummi.Worker application" #D1FADF
+  participant "ReleaseDigestJob" as job
+  participant "ProductNewsSender" as news
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "UpdateSettingsCommandHandler" as cmd
+  participant "IEmailSender" as mail
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+participant "Email provider" as email
+u -> page : Toggle switches, Save changes
+page -> client : update(settings)
+client -> ctl : PUT /api/me/settings
+ctl -> cmd : Send UpdateSettingsCommand
+cmd -> ctx : Update ListenerSettings
+job -> ctx : Listeners with NotifyNewReleases and last digest ≥ 7 days ago (L2-035)
+ctx -> db : SELECT
+job -> ctx : New tracks from followed artists since last digest
+alt has releases
+  job -> mail : Send digest
+  mail -> email : SMTP
+  job -> ctx : Insert DigestLog
+end
+news -> ctx : Listeners with ProductNews on (L2-035)
+news -> mail : Send announcement
+@enduml

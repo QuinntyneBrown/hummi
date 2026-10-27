@@ -1,0 +1,40 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — View licence and credit
+
+enum Licence {
+  Cc0
+  CcBy4
+  CcBySa4
+}
+class LicenceTerm {
+  +licence: Licence
+  +label: string
+  +youMay: string
+  +youMust: string
+}
+class LicencePage {
+  +track: Signal<TrackDetailDto>
+  +creditLine(): string
+  +alertTitle(): string
+}
+class TrackDetailDto {
+  +string Title
+  +string ArtistName
+  +string GeneratedWith
+  +Licence Licence
+}
+LicencePage ..> TrackDetailDto
+LicencePage ..> LicenceTerm : renders 3
+LicenceTerm --> Licence
+@enduml

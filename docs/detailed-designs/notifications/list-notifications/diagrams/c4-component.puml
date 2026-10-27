@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — List notifications
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "NotificationsPage", "Routed component in @hummi/notifications", "Renders hm-notification-item rows with icon,\nlinked text and relative time, and the empty\nstate")
+  Component(client, "NotificationsApi", "Typed HTTP service in @hummi/api", "Calls /api/me/notifications")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "NotificationsController", "ASP.NET Core controller", "/api/me/notifications; [Authorize]")
+  Component(q, "GetNotificationsQueryHandler", "MediatR query handler", "Returns the listener's notifications newest\nfirst")
+  Component(evt, "NotificationEventHandlers", "MediatR notification handlers", "On TrackPublished, PlaylistShared and\nProductChangeAnnounced create one\nNotification per recipient")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+Container_Boundary(wk, "Hummi.Worker") {
+  Component(job, "PlayMilestoneJob", "Hosted background job", "Detects tracks whose play count crossed a\nmilestone and notifies <TO SUPPLY:\nrecipients>")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Notifications")
+Rel(evt, ctx, "On TrackPublished, add\nNotification(NewRelease) per\nfollower")
+Rel(ctx, db, "INSERT")
+Rel(job, ctx, "Add Notification(PlayMilestone)")
+Rel(page, client, "list()")
+Rel(client, ctl, "GET /api/me/notifications")
+Rel(ctl, q, "Send GetNotificationsQuery")
+Rel(q, ctx, "Newest first")
+@enduml

@@ -1,0 +1,50 @@
+@startuml
+title UML sequence behaviour — Open a shared track link
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "SharedTrackPage" as page
+  participant "SharesApi" as client
+  participant "PlayerStore" as player
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "SharesController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "ResolveShareLinkQueryHandler" as q
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+u -> page : Open /s/{code} (signed out)
+page -> client : resolve(code)
+client -> ctl : GET /api/shares/{code}
+ctl -> q : Send ResolveShareLinkQuery
+q -> ctx : ShareLink with target
+ctx -> db : SELECT
+alt unknown code or removed track
+  ctl --> client : 404
+  page --> u : "This link didn’t work" (L2-026)
+else track
+  ctl --> client : 200 SharedItemDto
+  page --> u : "Paper Planes at 2 a.m.", "Shared with you", meta, Play preview, Sign up to save it, info alert (L2-026)
+end
+u -> page : Play preview
+page -> player : playList([track], 0) without session (L2-026)
+u -> page : Sign up to save it
+page --> u : Navigate /sign-up (L2-026)
+@enduml

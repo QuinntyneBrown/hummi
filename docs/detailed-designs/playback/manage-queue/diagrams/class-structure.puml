@@ -1,0 +1,37 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Manage the queue
+
+class PlayerStore {
+  +upNext: Computed<TrackSummaryDto[]>
+  +upNextDurationSeconds: Computed<number>
+  +playNext(track: TrackSummaryDto): void
+  +clearUpNext(): void
+}
+class SavedQueue {
+  +Guid ListenerId
+  +IReadOnlyList<Guid> TrackIds
+  +int CurrentIndex
+  +DateTimeOffset UpdatedAt
+}
+class SaveQueueCommand {
+  +IReadOnlyList<Guid> TrackIds
+  +int CurrentIndex
+}
+class SaveQueueCommandHandler {
+  +Handle(c: SaveQueueCommand): Task<Result>
+}
+SaveQueueCommandHandler ..> SaveQueueCommand : handles
+SaveQueueCommandHandler --> SavedQueue : upserts
+PlayerStore ..> SaveQueueCommand : syncs via QueueApi
+@enduml

@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Open a shared link
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "SharedTrackPage", "Routed component in @hummi/sharing", "Renders the overline "Shared with you", meta\nline, Play preview, Sign up to save it,\nhm-waveform, the info hm-alert and the\nfailure state; route data hides the player\nbar")
+  Component(client, "SharesApi", "Typed HTTP service in @hummi/api", "Calls GET /api/shares/{code}")
+  Component(player, "PlayerStore", "Signal store in @hummi/api", "Owns the queue, the current track, position\nand play state, and drives the\nHTMLAudioElement")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "SharesController", "ASP.NET Core controller", "GET /api/shares/{code}; [AllowAnonymous]")
+  Component(q, "ResolveShareLinkQueryHandler", "MediatR query handler", "Loads the target; NotFound for an unknown\ncode, a withdrawn track or a deleted\nplaylist")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Share links and their targets")
+Rel(page, client, "resolve(code)")
+Rel(client, ctl, "GET /api/shares/{code}")
+Rel(ctl, q, "Send ResolveShareLinkQuery")
+Rel(q, ctx, "ShareLink with target")
+Rel(ctx, db, "SELECT")
+Rel(page, player, "playList([track], 0) without session\n(L2-026)")
+@enduml

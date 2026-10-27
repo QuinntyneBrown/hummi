@@ -1,0 +1,40 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Set notification preferences
+
+enum ThemePreference {
+  Device
+  Light
+  Dark
+}
+class ListenerSettings {
+  +Guid ListenerId
+  +bool AutoplaySimilar = true
+  +bool Crossfade = false
+  +bool NotifyNewReleases = true
+  +bool ProductNews = false
+  +ThemePreference Theme = Device
+}
+ListenerSettings --> ThemePreference
+
+class DigestLog {
+  +Guid ListenerId
+  +DateTimeOffset SentAt
+}
+class ReleaseDigestJob {
+  +ExecuteAsync(ct): Task
+  -IsDue(last: DigestLog, now): bool
+}
+ReleaseDigestJob ..> ListenerSettings : NotifyNewReleases
+ReleaseDigestJob --> DigestLog : one per 7 days
+@enduml

@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Edit the profile
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "SettingsPage", "Routed component in @hummi/settings", "Renders hm-form-section per section,\nhm-text-field, hm-switch, hm-radio-group,\nhm-error-summary, success hm-alert, Save\nchanges and Sign out")
+  Component(client, "SettingsApi", "Typed HTTP service in @hummi/api", "Calls GET and PUT /api/me/settings")
+  Component(session, "SessionStore", "Signal store in @hummi/api", "Holds the signed-in listener, the access\ntoken and the signed-in/signed-out state the\nshell reads")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "SettingsController", "ASP.NET Core controller", "/api/me/settings; [Authorize]")
+  Component(val, "UpdateSettingsValidator", "FluentValidation validator", "Display name not empty; email well formed")
+  Component(cmd, "UpdateSettingsCommandHandler", "MediatR command handler", "Updates Listener profile fields and\nListenerSettings in one transaction")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Listeners and listener settings")
+Rel(page, client, "get()")
+Rel(client, ctl, "GET /api/me/settings")
+Rel(ctl, val, "Validate")
+Rel(ctl, cmd, "Send UpdateSettingsCommand")
+Rel(cmd, ctx, "Update Listener and ListenerSettings")
+Rel(ctx, db, "UPDATE")
+Rel(client, session, "Update displayName")
+@enduml

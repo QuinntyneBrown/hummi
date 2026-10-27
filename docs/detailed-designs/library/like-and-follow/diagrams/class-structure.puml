@@ -1,0 +1,43 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Like tracks and follow artists
+
+class Like {
+  +Guid ListenerId
+  +Guid TrackId
+  +DateTimeOffset CreatedAt
+}
+class Follow {
+  +Guid ListenerId
+  +Guid ArtistId
+  +DateTimeOffset CreatedAt
+}
+class LikeTrackCommand {
+  +Guid TrackId
+}
+class LikeTrackCommandHandler {
+  +Handle(c: LikeTrackCommand): Task<Result>
+}
+class FollowArtistCommandHandler {
+  +Handle(c: FollowArtistCommand): Task<Result>
+}
+class LibraryStore {
+  +likedIds: Signal<Set<string>>
+  +followedIds: Signal<Set<string>>
+  +toggleLike(track): Promise<void>
+  +toggleFollow(artist): Promise<void>
+}
+LikeTrackCommandHandler ..> LikeTrackCommand : handles
+LikeTrackCommandHandler ..> Like : creates
+FollowArtistCommandHandler ..> Follow : creates
+@enduml

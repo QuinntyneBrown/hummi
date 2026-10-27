@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Sign in
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "SignInPage" as page
+  participant "AuthApi" as client
+  participant "SessionStore" as session
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "AuthController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "SignInCommandHandler" as cmd
+  participant "ITokenService" as tok
+  participant "IPasswordHasher" as hash
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+u -> page : Submit empty form
+page --> u : "Fix 2 things to continue" (L2-029)
+u -> page : Submit email and password
+page -> page : Read-only fields, "Sign in…" disabled (L2-029)
+page -> client : signIn(email, password, keep)
+client -> ctl : POST /api/auth/sign-in
+ctl -> cmd : Send SignInCommand
+cmd -> ctx : Listener by email
+cmd -> hash : Verify(hash, password)
+alt mismatch or unknown email
+  ctl --> client : 401 ProblemDetails
+  page --> u : "That email and password don’t match" (L2-029)
+else match
+  cmd -> tok : IssueAccess, IssueRefresh(persistent = keep)
+  cmd -> ctx : Store RefreshToken hash
+  ctx -> db : INSERT
+  ctl --> client : 200 access token, Set-Cookie refresh (Expires only if keep, L2-029)
+  client -> session : setSession(listener, token)
+  page --> u : Navigate to return URL or Home
+end
+@enduml

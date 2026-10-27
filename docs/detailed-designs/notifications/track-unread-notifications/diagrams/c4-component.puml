@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Track unread notifications
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(shell, "ShellComponent", "Shell component in the hummi application", "Shows hm-badge "3" labelled "3 unread" and\nthe bell label "Notifications, 3 unread"")
+  Component(store, "UnreadStore", "Signal store in @hummi/api", "Holds the unread count; refreshes on\nnavigation <TO SUPPLY: polling interval>")
+  Component(page, "NotificationsPage", "Routed component in @hummi/notifications", "Shows unread dots, the "3 unread" subtitle\nand Mark all as read")
+  Component(client, "NotificationsApi", "Typed HTTP service in @hummi/api", "Calls /api/me/notifications")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "NotificationsController", "ASP.NET Core controller", "/api/me/notifications; [Authorize]")
+  Component(q, "GetUnreadCountQueryHandler", "MediatR query handler", "Counts notifications with null ReadAt")
+  Component(cmd, "MarkAllNotificationsReadCommandHandler", "MediatR command handler", "Sets ReadAt on every unread notification of\nthe listener")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Notifications indexed by (ListenerId,\nReadAt)")
+Rel(shell, store, "refresh()")
+Rel(store, client, "unreadCount()")
+Rel(client, ctl, "GET\n/api/me/notifications/unread-count")
+Rel(ctl, q, "Send GetUnreadCountQuery")
+Rel(q, ctx, "COUNT where ReadAt is null")
+Rel(page, client, "markAllRead()")
+Rel(ctl, cmd, "Send MarkAllNotificationsReadCommand")
+Rel(cmd, ctx, "UPDATE ReadAt = now")
+Rel(ctx, db, "UPDATE")
+Rel(page, store, "clear()")
+@enduml

@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Search the catalogue
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(field, "TopBarSearchComponent", "Shell component in the hummi application", "Wraps hm-search-field ("Search tracks,\nartists, playlists") and navigates to\n/search?q= on submit; / focuses it (L2-017)")
+  Component(page, "SearchPage", "Routed component in @hummi/search", "Renders hm-tabs (All, Tracks, Artists,\nPlaylists), the Tracks and Playlists\nshelves, skeleton rows while busy, and the\nempty, no-results and error states")
+  Component(recent, "RecentSearchesStore", "Signal store in @hummi/search", "Keeps the last queries in localStorage for\nthe device")
+  Component(client, "SearchApi", "Typed HTTP service in @hummi/api", "Calls GET /api/search?q=&type=")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "SearchController", "ASP.NET Core controller", "Exposes GET /api/search; returns 503\nProblemDetails when the index is unreachable")
+  Component(q, "SearchCatalogueQueryHandler", "MediatR query handler", "Validates the query (trimmed, 1 to 100\ncharacters <TO SUPPLY: limit>), calls\nISearchIndex and groups hits by type")
+  Component(idx, "SqlSearchIndex", "Infrastructure adapter", "Implements ISearchIndex with LIKE and\nfull-text predicates over titles and names")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Tracks, artists and public playlists")
+Rel(field, page, "Navigate /search?q=rain (L2-006)")
+Rel(page, client, "search('rain', All)")
+Rel(client, ctl, "GET /api/search?q=rain&type=all")
+Rel(ctl, q, "Send SearchCatalogueQuery")
+Rel(q, idx, "SearchAsync('rain', All)")
+Rel(idx, db, "SELECT ... WHERE Title LIKE '%rain%'")
+Rel(page, recent, "add('rain')")
+@enduml

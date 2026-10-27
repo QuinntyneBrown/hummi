@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Report a track
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(dlg, "ReportTrackDialog", "Dialog component in @hummi/reporting", "Renders hm-radio-group "What’s wrong?",\nhm-textarea Details, busy, success and error\nstates")
+  Component(client, "ReportsApi", "Typed HTTP service in @hummi/api", "Calls POST /api/tracks/{id}/reports")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "ReportsController", "ASP.NET Core controller", "POST /api/tracks/{id}/reports")
+  Component(val, "ReportTrackValidator", "FluentValidation validator", "Reason required; details at most <TO SUPPLY>\ncharacters")
+  Component(cmd, "ReportTrackCommandHandler", "MediatR command handler", "Stores TrackReport with status Open")
+  Component(res, "ResolveReportCommandHandler", "MediatR command handler", "Records the outcome and emails the reporter")
+  Component(mail, "IEmailSender", "Application port", "Sends the outcome email")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Track reports")
+Rel(dlg, client, "report(id, reason, details)")
+Rel(client, ctl, "POST /api/tracks/{id}/reports")
+Rel(ctl, val, "Validate")
+Rel(ctl, cmd, "Send ReportTrackCommand")
+Rel(cmd, ctx, "Insert TrackReport(Open)")
+Rel(ctx, db, "INSERT")
+Rel(res, ctx, "Resolve report")
+Rel(res, mail, "Email reporter the outcome (L2-038)")
+@enduml

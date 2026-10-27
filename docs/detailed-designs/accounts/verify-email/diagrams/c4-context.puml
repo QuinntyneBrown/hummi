@@ -1,0 +1,11 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Verify an email address
+
+Person(listener, "Listener", "Discovers, plays and shares openly licensed AI-generated music")
+System(hummi, "Hummi", "Free streaming platform for open-source AI-generated music")
+System_Ext(email, "Email provider", "Delivers account and notification emails <TO SUPPLY: provider>")
+Rel(listener, hummi, "Uses", "HTTPS")
+Rel(hummi, email, "Sends emails through")
+@enduml

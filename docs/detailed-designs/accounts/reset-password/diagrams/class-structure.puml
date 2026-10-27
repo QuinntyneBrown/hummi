@@ -1,0 +1,42 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Reset a password
+
+class Listener {
+  +Guid Id
+  +string DisplayName
+  +string Email
+  +string PasswordHash
+  +DateTimeOffset? EmailConfirmedAt
+  +bool IsEmailConfirmed
+  +{static} Register(name, email, hash, now): Listener
+  +ConfirmEmail(now): void
+  +ChangePassword(hash): void
+}
+
+class RequestPasswordResetCommand {
+  +string Email
+}
+class ResetPasswordCommand {
+  +string Token
+  +string NewPassword
+}
+class EmailToken {
+  +TokenPurpose Purpose
+  +DateTimeOffset ExpiresAt
+  +Redeem(now): Result
+}
+RequestPasswordResetCommandHandler ..> EmailToken : creates (1 h)
+ResetPasswordCommandHandler --> EmailToken : Redeem
+ResetPasswordCommandHandler --> Listener : ChangePassword
+@enduml

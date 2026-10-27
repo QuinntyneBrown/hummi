@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Confirm or resend
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "VerifyEmailPage" as page
+  participant "ShellBannerHost" as banner
+  participant "AuthApi" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "AuthController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "ConfirmEmailCommandHandler" as cmd
+  participant "ResendConfirmationCommandHandler" as resend
+  participant "IClock" as clock
+  participant "IEmailSender" as mail
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+participant "Email provider" as email
+u -> page : Open /verify-email?token=...
+page --> u : "Confirming your email…" with progress (L2-028)
+page -> client : confirm(token)
+client -> ctl : POST /api/auth/confirm-email
+ctl -> cmd : Send ConfirmEmailCommand
+cmd -> clock : UtcNow
+cmd -> ctx : Token by hash
+alt under 24 hours
+  cmd -> ctx : Mark used, Listener.ConfirmEmail
+  ctx -> db : UPDATE
+  ctl --> client : 200 displayName
+  page --> u : "Email confirmed" "You’re all set, Priya." Start listening (L2-028)
+else expired
+  ctl --> client : 410 ProblemDetails
+  page --> u : "This link has expired", Send a new link, Back to sign in (L2-028)
+end
+u -> banner : Resend the email (signed in, unconfirmed)
+banner -> client : resend()
+client -> ctl : POST /api/auth/resend-confirmation
+ctl -> resend : Send ResendConfirmationCommand
+resend -> mail : Send new link
+mail -> email : SMTP
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Behave as accessible dialogs
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(dialogs, "DialogService", "Service in @hummi/components", "Opens hm-dialog components as modal overlays\nand returns a typed close result (L2-047)")
+  Component(dlg, "DialogComponent", "`hm-dialog` in @hummi/components", "Wraps native <dialog> opened with\nshowModal(), sets aria-labelledby and\naria-describedby, input busy")
+  Component(content, "Feature dialog", "Any dialog content component", "Sets busy while saving")
+}
+Rel(content, dialogs, "open(ShareDialog)")
+Rel(dialogs, dlg, "showModal(); app root gets inert\n(L2-047)")
+Rel(dlg, dialogs, "close(undefined), nothing saved\n(L2-047)")
+@enduml

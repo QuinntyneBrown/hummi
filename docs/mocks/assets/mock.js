@@ -12,7 +12,7 @@
 
   function currentTheme() {
     if (root.dataset.theme === 'dark' || root.dataset.theme === 'light') return root.dataset.theme;
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return 'dark'; // dark plum is the default look; light is opt-in
   }
   function applyTheme(theme, persist) {
     root.dataset.theme = theme;
@@ -34,6 +34,14 @@
   document.addEventListener('click', function (event) {
     var toggle = event.target.closest('[data-theme-toggle]');
     if (toggle) { applyTheme(currentTheme() === 'dark' ? 'light' : 'dark', true); return; }
+    var menu = event.target.closest('[data-nav-toggle]');
+    if (menu) {
+      var links = document.querySelector('.topnav__links');
+      var open = links.dataset.open !== 'true';
+      links.dataset.open = open ? 'true' : 'false';
+      menu.setAttribute('aria-expanded', open ? 'true' : 'false');
+      return;
+    }
     var chrome = event.target.closest('[data-chrome-toggle]');
     if (chrome) { root.dataset.chrome = root.dataset.chrome === 'off' ? 'on' : 'off'; return; }
     var setter = event.target.closest('[data-set-state]');

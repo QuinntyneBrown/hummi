@@ -1,0 +1,47 @@
+@startuml
+title UML sequence behaviour — Open the licence page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "LicencePage" as page
+  participant "LICENCE_TERMS" as terms
+  participant "TracksApi" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "TracksController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "GetTrackQueryHandler" as q
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+u -> page : Open /tracks/slow-orbit/licence
+page -> client : get("slow-orbit")
+client -> ctl : GET /api/tracks/slow-orbit
+ctl -> q : Send GetTrackQuery
+q -> ctx : Load track
+ctx -> db : SELECT
+db --> ctx : Row
+ctx --> q : Track
+q --> ctl : Result<TrackDetailDto>
+ctl --> client : 200
+client --> page : Track
+page -> terms : Lookup Cc0
+terms --> page : Label and terms
+page --> u : Alert "Slow Orbit is CC0" with credit line, licence table, Back to Slow Orbit (L2-012)
+@enduml

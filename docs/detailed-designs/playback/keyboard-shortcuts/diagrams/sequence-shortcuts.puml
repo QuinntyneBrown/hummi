@@ -1,0 +1,42 @@
+@startuml
+title UML sequence behaviour — Press a shortcut
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "ShortcutService" as keys
+  participant "PlayerStore" as player
+  participant "DialogService" as dialogs
+  participant "LibraryApi" as like
+  participant "Router" as router
+  participant "ShortcutsDialogComponent" as dlg
+end box
+u -> keys : keydown
+keys -> keys : isTextField(event.target)
+alt text field focused
+  keys --> u : Key types into the field, no shortcut (L2-017)
+else Space
+  keys -> player : toggle() (L2-017)
+else ArrowRight / ArrowLeft
+  keys -> player : next() / previous() (L2-017)
+else L
+  keys -> like : like(currentTrack) (L2-017)
+else Q
+  keys -> router : navigate /queue (L2-017)
+else ?
+  keys -> dialogs : open(ShortcutsDialogComponent)
+  dialogs -> dlg : Render "Work while the page is focused and no text field is." and six rows (L2-017)
+end
+@enduml

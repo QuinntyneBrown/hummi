@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Render track lists
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(list, "TrackListComponent", "`hm-track-list` in @hummi/components", "Renders an ordered list of hm-track-row;\ninputs tracks, currentTrackId, numbered,\nselectable")
+  Component(row, "TrackRowComponent", "`hm-track-row` in @hummi/components", "Renders number or hm-equalizer ("Playing"),\ncover, title link, "{artist} · {duration}",\nthe like hm-icon-button and the More actions\nhm-menu; the title truncates with\ntext-overflow: ellipsis")
+  Component(host, "Host page", "Any feature page", "Supplies TrackSummaryDto[] and reacts to\nlike, play and more outputs")
+}
+Rel(host, list, "tracks, currentTrackId =\nplayer.currentTrack().id")
+Rel(list, row, "One row per track with position")
+Rel(row, host, "like(track)")
+@enduml

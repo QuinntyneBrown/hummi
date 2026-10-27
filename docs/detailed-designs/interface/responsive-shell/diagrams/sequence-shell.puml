@@ -1,0 +1,38 @@
+@startuml
+title UML sequence behaviour — Render the shell at two widths
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "ShellComponent" as shell
+  participant "BreakpointObserver" as bp
+  participant "SidebarNavComponent" as nav
+  participant "NavToggleButton" as toggle
+  participant "SessionStore" as session
+end box
+shell -> bp : observe(narrow breakpoint)
+shell -> session : isSignedIn()
+alt wide
+  bp --> shell : false
+  shell -> nav : mode docked, Account > Settings when signed in (L2-050)
+else narrow
+  bp --> shell : true
+  shell --> u : Sidebar hidden, "Open navigation" aria-expanded=false (L2-050)
+  u -> toggle : Activate
+  toggle -> shell : toggleNav()
+  shell -> nav : mode overlay, aria-expanded=true (L2-050)
+end
+shell --> u : Grids and lists reflow with no horizontal scroll (L2-050)
+@enduml

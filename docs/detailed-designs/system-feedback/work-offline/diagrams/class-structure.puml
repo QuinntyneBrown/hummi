@@ -1,0 +1,28 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Work offline
+
+class SavedAudioCache {
+  +isSaved(trackId: string): Promise<boolean>
+  +save(trackId: string, response: Response): Promise<void>
+  +url(trackId: string): Promise<string>
+}
+class PlayerStore {
+  +canPlay(track): boolean
+}
+class ConnectivityService {
+  +online: Signal<boolean>
+}
+PlayerStore --> SavedAudioCache
+PlayerStore --> ConnectivityService
+@enduml

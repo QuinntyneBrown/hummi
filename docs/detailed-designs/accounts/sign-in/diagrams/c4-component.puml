@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Sign in
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "SignInPage", "Routed component in @hummi/accounts", "Renders the form, hm-error-summary, danger\nhm-alert and busy state; renders immediately\nwithout loading state (L2-039)")
+  Component(client, "AuthApi", "Typed HTTP service in @hummi/api", "Calls the anonymous /api/auth/* endpoints")
+  Component(session, "SessionStore", "Signal store in @hummi/api", "Holds the signed-in listener, the access\ntoken and the signed-in/signed-out state the\nshell reads")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "AuthController", "ASP.NET Core controller", "/api/auth/* endpoints; rate limited per IP\n<TO SUPPLY: limits>")
+  Component(cmd, "SignInCommandHandler", "MediatR command handler", "Verifies the password with IPasswordHasher;\nreturns one InvalidCredentials error for any\nmismatch")
+  Component(tok, "ITokenService", "Application port", "Issues JWT access tokens and rotating\nrefresh tokens")
+  Component(hash, "IPasswordHasher", "Application port", "Hashes and verifies passwords; implemented\nwith ASP.NET Core Identity's\nPasswordHasher<T>")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Listeners and refresh tokens")
+Rel(page, client, "signIn(email, password, keep)")
+Rel(client, ctl, "POST /api/auth/sign-in")
+Rel(ctl, cmd, "Send SignInCommand")
+Rel(cmd, ctx, "Listener by email")
+Rel(cmd, hash, "Verify(hash, password)")
+Rel(cmd, tok, "IssueAccess, IssueRefresh(persistent\n= keep)")
+Rel(ctx, db, "INSERT")
+Rel(client, session, "setSession(listener, token)")
+@enduml

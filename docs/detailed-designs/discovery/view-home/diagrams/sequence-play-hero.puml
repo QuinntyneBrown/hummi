@@ -1,0 +1,30 @@
+@startuml
+title UML sequence behaviour — Play the featured mix
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "HomePage" as page
+  participant "PlayerStore" as player
+end box
+u -> page : Activate Play on the hero
+page -> player : playList(featured.tracks, 0)
+player --> page : Current track set
+page -> page : Navigate to /now-playing (L2-001)
+alt Save as playlist
+  u -> page : Activate Save as playlist
+  page --> u : Open New playlist dialog (L2-021)
+end
+@enduml

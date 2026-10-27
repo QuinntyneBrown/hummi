@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Save playlist membership
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "AddToPlaylistDialog" as dlg
+  participant "SignInGate" as gate
+  participant "PlaylistsApi" as client
+  participant "ToastService" as toast
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "PlaylistsController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "SetTrackMembershipCommandHandler" as cmd
+  participant "Playlist" as pl
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+u -> dlg : Open Add to playlist for Slow Orbit
+dlg -> gate : requireSession() (L2-032)
+dlg -> client : getMine(trackId)
+client -> ctl : GET /api/playlists/mine?containing={trackId}
+ctl --> client : Playlists with Contains flag
+dlg --> u : "Add “Slow Orbit” to a playlist", checkboxes (L2-020)
+u -> dlg : Check "Focus", Save
+dlg -> dlg : Disable choices and Cancel, "Saving…" (L2-020)
+dlg -> client : setMembership(trackId, addTo, removeFrom)
+client -> ctl : PUT /api/tracks/{id}/playlists
+ctl -> cmd : Send SetTrackMembershipCommand
+cmd -> pl : AddTrack / RemoveTracks per playlist
+pl --> cmd : Results
+cmd -> ctx : SaveChanges in one transaction
+ctx -> db : INSERT, DELETE
+alt committed
+  ctl --> client : 200 MembershipResultDto
+  dlg -> toast : success "Added to Focus" "“Slow Orbit” is now track 12." with Undo (L2-020)
+else server error
+  ctl --> client : 500
+  dlg --> u : "That didn’t work", nothing changed (L2-020)
+else connection dropped
+  dlg -> toast : danger "Couldn’t add the track" with Retry (L2-020)
+end
+@enduml

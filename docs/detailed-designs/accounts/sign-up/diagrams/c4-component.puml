@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Sign up
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "SignUpPage", "Routed component in @hummi/accounts", "Renders the form with hm-text-field,\nhm-checkbox, hm-error-summary, busy state\nand the Check your inbox state")
+  Component(client, "AuthApi", "Typed HTTP service in @hummi/api", "Calls the anonymous /api/auth/* endpoints")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "AuthController", "ASP.NET Core controller", "/api/auth/* endpoints; rate limited per IP\n<TO SUPPLY: limits>")
+  Component(val, "RegisterListenerValidator", "FluentValidation validator", "Display name required; email well formed;\npassword at least 10 characters; terms\naccepted")
+  Component(cmd, "RegisterListenerCommandHandler", "MediatR command handler", "Hashes the password, creates Listener and\nEmailToken(Purpose = ConfirmEmail, 24 h),\nsaves, then sends the email")
+  Component(hash, "IPasswordHasher", "Application port", "Hashes and verifies passwords; implemented\nwith ASP.NET Core Identity's\nPasswordHasher<T>")
+  Component(mail, "IEmailSender", "Application port", "SendAsync(EmailMessage); implemented by an\nSMTP adapter in Infrastructure")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Listeners and email tokens")
+Rel(page, client, "register(dto)")
+Rel(client, ctl, "POST /api/auth/register")
+Rel(ctl, val, "Validate")
+Rel(ctl, cmd, "Send RegisterListenerCommand")
+Rel(cmd, hash, "Hash(password)")
+Rel(cmd, ctx, "Add Listener and EmailToken")
+Rel(ctx, db, "INSERT in one transaction")
+Rel(cmd, mail, "Send confirmation link")
+@enduml

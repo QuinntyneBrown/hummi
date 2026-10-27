@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — Show and clear unread
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "ShellComponent" as shell
+  participant "UnreadStore" as store
+  participant "NotificationsPage" as page
+  participant "NotificationsApi" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "NotificationsController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "GetUnreadCountQueryHandler" as q
+  participant "MarkAllNotificationsReadCommandHandler" as cmd
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+shell -> store : refresh()
+store -> client : unreadCount()
+client -> ctl : GET /api/me/notifications/unread-count
+ctl -> q : Send GetUnreadCountQuery
+q -> ctx : COUNT where ReadAt is null
+ctl --> client : 3
+store --> shell : Badge "3 unread", bell "Notifications, 3 unread" (L2-037)
+u -> page : Mark all as read
+page -> client : markAllRead()
+client -> ctl : POST /api/me/notifications/read-all
+ctl -> cmd : Send MarkAllNotificationsReadCommand
+cmd -> ctx : UPDATE ReadAt = now
+ctx -> db : UPDATE
+ctl --> client : 204
+page -> store : clear()
+page --> u : Dots, subtitle, badge and button cleared (L2-037)
+@enduml

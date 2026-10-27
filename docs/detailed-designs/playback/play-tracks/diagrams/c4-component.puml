@@ -1,0 +1,31 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Play tracks
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(bar, "PlayerBarComponent", "`hm-player-bar` in @hummi/components, hosted by the shell", "Renders the Player region from PlayerStore\nsignals; hidden when the active route has\ndata.hidePlayer")
+  Component(player, "PlayerStore", "Signal store in @hummi/api", "Owns the queue, the current track, position\nand play state, and drives the\nHTMLAudioElement")
+  Component(audio, "HTMLAudioElement", "Browser media element", "Requests audio by byte range and reports\ntimeupdate, ended, stalled and error")
+  Component(client, "PlaybackApi", "Typed HTTP service in @hummi/api", "Posts POST /api/plays and builds stream URLs\n/media/tracks/{id}")
+  Component(session, "SessionStore", "Signal store in @hummi/api", "Holds the signed-in listener, the access\ntoken and the signed-in/signed-out state the\nshell reads")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(mctl, "MediaController", "ASP.NET Core controller", "GET /media/tracks/{id} streams with\nenableRangeProcessing; anonymous access\nallowed; 410 for a withdrawn track")
+  Component(pctl, "PlaysController", "ASP.NET Core controller", "POST /api/plays accepts anonymous and\nsigned-in callers")
+  Component(rec, "RecordPlayCommandHandler", "MediatR command handler", "Stores a PlayEvent and increments\nTrack.PlayCount")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Tracks and play events")
+ContainerDb(media, "media volume", "Docker volume /data/media", "Holds encoded audio files")
+Rel(bar, player, "playList(tracks, i)")
+Rel(player, session, "isSignedIn()")
+Rel(player, audio, "src = /media/tracks/{id}; play()")
+Rel(audio, mctl, "GET /media/tracks/{id} Range:\nbytes=0-")
+Rel(mctl, media, "Open file stream")
+Rel(player, client, "recordPlay(trackId)")
+Rel(client, pctl, "POST /api/plays")
+Rel(pctl, rec, "Send RecordPlayCommand")
+Rel(rec, ctx, "Add PlayEvent, Track.RegisterPlay()")
+Rel(ctx, db, "INSERT, UPDATE")
+@enduml

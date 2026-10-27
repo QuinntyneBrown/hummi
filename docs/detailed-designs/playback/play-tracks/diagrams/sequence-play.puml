@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Play a track without an account
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "PlayerBarComponent" as bar
+  participant "PlayerStore" as player
+  participant "HTMLAudioElement" as audio
+  participant "PlaybackApi" as client
+  participant "SessionStore" as session
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "MediaController" as mctl
+  participant "PlaysController" as pctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "RecordPlayCommandHandler" as rec
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+  database "media volume" as media
+end box
+u -> bar : Activate Play on a track row (signed out)
+bar -> player : playList(tracks, i)
+player -> session : isSignedIn()
+session --> player : false, no prompt (L2-014)
+player -> audio : src = /media/tracks/{id}; play()
+audio -> mctl : GET /media/tracks/{id} Range: bytes=0-
+mctl -> media : Open file stream
+media --> mctl : Bytes
+mctl --> audio : 206 Partial Content
+audio --> player : playing, timeupdate
+player -> client : recordPlay(trackId)
+client -> pctl : POST /api/plays
+pctl -> rec : Send RecordPlayCommand
+rec -> ctx : Add PlayEvent, Track.RegisterPlay()
+ctx -> db : INSERT, UPDATE
+pctl --> client : 202
+player --> bar : Title, artist, "1:24" / "4:12", Pause (L2-013)
+bar --> u : Player region
+@enduml

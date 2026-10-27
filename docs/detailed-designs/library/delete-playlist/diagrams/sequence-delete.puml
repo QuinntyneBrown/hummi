@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Delete a playlist
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "DeletePlaylistDialog" as dlg
+  participant "PlaylistsApi" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "PlaylistsController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "DeletePlaylistCommandHandler" as cmd
+  participant "Playlist" as pl
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+u -> dlg : Activate Delete on "Late-night coding"
+dlg --> u : "Delete “Late-night coding”?", Delete playlist disabled (L2-022)
+u -> dlg : Type the name
+dlg -> dlg : Enable when text equals name (L2-022)
+u -> dlg : Delete playlist
+dlg -> dlg : Field read-only, Cancel disabled, "Deleting…" (L2-022)
+dlg -> client : delete(id)
+client -> ctl : DELETE /api/playlists/{id}
+ctl -> cmd : Send DeletePlaylistCommand
+cmd -> pl : Delete(listenerId)
+pl --> cmd : Ok, or Forbidden
+cmd -> ctx : Remove playlist, entries, saved copies, share links
+ctx -> db : DELETE in one transaction (L2-022)
+alt success
+  ctl --> client : 204
+  dlg --> u : Close, navigate to Library
+else failure
+  ctl --> client : 5xx
+  dlg --> u : "That didn’t work", playlist still exists (L2-022)
+end
+@enduml

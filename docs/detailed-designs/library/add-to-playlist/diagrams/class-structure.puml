@@ -1,0 +1,56 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Add a track to playlists
+
+class Playlist {
+  +Guid Id
+  +Guid OwnerId
+  +string Name
+  +bool IsPublic
+  +IReadOnlyList<PlaylistEntry> Entries
+  +{static} Create(owner: Guid, name: PlaylistName, isPublic: bool): Playlist
+  +Rename(by: Guid, name: PlaylistName): Result
+  +AddTrack(by: Guid, trackId: Guid): Result<int>
+  +RemoveTracks(by: Guid, entryIds: Guid[]): Result
+  +Delete(by: Guid): Result
+  +CanView(listener: Guid?): bool
+}
+class PlaylistEntry {
+  +Guid Id
+  +Guid TrackId
+  +int Position
+}
+class PlaylistName <<value object>> {
+  +string Value
+  +{static} Create(raw: string): Result<PlaylistName>
+}
+Playlist "1" *-- "*" PlaylistEntry
+Playlist --> PlaylistName
+
+class SetTrackMembershipCommand {
+  +Guid TrackId
+  +IReadOnlyList<Guid> AddTo
+  +IReadOnlyList<Guid> RemoveFrom
+}
+class SetTrackMembershipCommandHandler {
+  +Handle(c: SetTrackMembershipCommand): Task<Result<MembershipResultDto>>
+}
+class MembershipResultDto {
+  +string FirstPlaylistName
+  +int Position
+  +Guid UndoToken
+}
+SetTrackMembershipCommandHandler ..> SetTrackMembershipCommand : handles
+SetTrackMembershipCommandHandler --> Playlist : mutates
+SetTrackMembershipCommandHandler ..> MembershipResultDto : returns
+@enduml

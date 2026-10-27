@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Manage an owned playlist
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "PlaylistPage", "Routed component in @hummi/library", "Renders the header and owner actions,\nselectable hm-track-list, hm-selection-bar\nand the empty state")
+  Component(sel, "SelectionModel", "Angular CDK `SelectionModel<string>`", "Tracks selected entry ids")
+  Component(client, "PlaylistsApi", "Typed HTTP service in @hummi/api", "Calls the /api/playlists endpoints")
+  Component(dialogs, "DialogService", "Service in @hummi/components", "Opens hm-dialog components as modal overlays\nand returns a typed close result (L2-047)")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "PlaylistsController", "ASP.NET Core controller", "Authorized /api/playlists endpoints; maps\nresults through ProblemDetailsMapper")
+  Component(q, "GetPlaylistQueryHandler", "MediatR query handler", "Returns the playlist with IsOwner, entries,\nduration and visibility, or Forbidden\n(L2-024)")
+  Component(cmd, "RemovePlaylistEntriesCommandHandler", "MediatR command handler", "Calls Playlist.RemoveTracks for the owner")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Playlists and entries")
+Rel(page, client, "get(id)")
+Rel(client, ctl, "GET /api/playlists/{id}")
+Rel(ctl, q, "Send GetPlaylistQuery")
+Rel(q, ctx, "Load playlist with entries")
+Rel(ctx, db, "SELECT")
+Rel(page, sel, "select(a, b)")
+Rel(ctl, cmd, "Send RemovePlaylistEntriesCommand")
+Rel(cmd, ctx, "Remove entries, renumber positions")
+Rel(page, dialogs, "open(AddToPlaylistDialog, selected\ntracks) (L2-023)")
+@enduml

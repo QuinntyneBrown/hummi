@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View a genre
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "GenrePage", "Routed component in @hummi/discovery", "Renders hm-page-header, the Play all and\nShuffle buttons, the sort hm-chip group and\nhm-track-list; empty state via\nhm-empty-state")
+  Component(client, "GenresApi", "Typed HTTP service in @hummi/api", "Calls GET\n/api/genres/{slug}/tracks?sort=newest|most-played&page=n")
+  Component(player, "PlayerStore", "Signal store in @hummi/api", "Owns the queue, the current track, position\nand play state, and drives the\nHTMLAudioElement")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "GenresController", "ASP.NET Core controller", "Returns 404 ProblemDetails for an unknown\nslug")
+  Component(q, "GetGenreTracksQueryHandler", "MediatR query handler", "Validates the sort value, orders published\ntracks of the genre and returns a page")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Tracks indexed by `GenreId`, `PublishedAt`\nand `PlayCount`")
+Rel(page, client, "getTracks('ambient', Newest)")
+Rel(client, ctl, "GET\n/api/genres/ambient/tracks?sort=newest")
+Rel(ctl, q, "Send GetGenreTracksQuery")
+Rel(q, ctx, "Published tracks of genre ORDER BY\nPublishedAt DESC")
+Rel(ctx, db, "SELECT")
+Rel(page, player, "playList(tracks, 0, shuffle=false)")
+@enduml

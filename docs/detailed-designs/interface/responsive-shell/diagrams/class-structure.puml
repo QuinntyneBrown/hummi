@@ -1,0 +1,26 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Adapt the shell to the viewport
+
+class ShellComponent {
+  +narrow: Signal<boolean>
+  +navOpen: Signal<boolean>
+  +toggleNav(): void
+}
+class SidebarNavComponent <<hm-sidebar-nav>> {
+  +signedIn: input<boolean>
+  +mode: input<"docked" | "overlay">
+}
+ShellComponent --> SidebarNavComponent
+ShellComponent ..> BreakpointObserver
+@enduml

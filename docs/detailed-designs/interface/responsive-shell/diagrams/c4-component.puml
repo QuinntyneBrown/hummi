@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Adapt the shell to the viewport
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(shell, "ShellComponent", "Shell component in the hummi application", "CSS grid of sidebar, top bar, main and\nplayer bar")
+  Component(bp, "BreakpointObserver", "Angular CDK layout", "Emits whether the viewport is narrow")
+  Component(nav, "SidebarNavComponent", "`hm-sidebar-nav` in @hummi/components", "Home, Browse, Search, Library, Notifications\nand, signed in, Account > Settings")
+  Component(toggle, "NavToggleButton", "`hm-icon-button` in the top bar", ""Open navigation" with aria-expanded")
+  Component(session, "SessionStore", "Signal store in @hummi/api", "Holds the signed-in listener, the access\ntoken and the signed-in/signed-out state the\nshell reads")
+}
+Rel(shell, bp, "observe(narrow breakpoint)")
+Rel(shell, session, "isSignedIn()")
+Rel(shell, nav, "mode docked, Account > Settings when\nsigned in (L2-050)")
+Rel(toggle, shell, "toggleNav()")
+@enduml
