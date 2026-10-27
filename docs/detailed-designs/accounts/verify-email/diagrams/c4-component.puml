@@ -5,14 +5,14 @@ title Components — Verify an email address
 
 Container_Boundary(spa, "Hummi web application") {
   Component(page, "VerifyEmailPage", "Routed component in @hummi/accounts", "Shows the indeterminate hm-progress\n"Confirming email", then confirmed or\nexpired state")
-  Component(banner, "ShellBannerHost", "Shell component in the hummi application", "Shows the email-confirmation hm-banner while\nSessionStore.listener().emailConfirmed is\nfalse")
+  Component(banner, "AppShell", "Shell component in the hummi application", "Shows the email-confirmation banner while\nSessionStore.user().emailConfirmed is\nfalse")
   Component(client, "AuthApi", "Typed HTTP service in @hummi/api", "Calls the anonymous /api/auth/* endpoints")
 }
 Container_Boundary(api, "Hummi.Api") {
-  Component(ctl, "AuthController", "ASP.NET Core controller", "/api/auth/* endpoints; rate limited per IP\n<TO SUPPLY: limits>")
-  Component(cmd, "ConfirmEmailCommandHandler", "MediatR command handler", "Finds the token by hash, checks expiry\nagainst IClock, marks it used and calls\nListener.ConfirmEmail")
+  Component(ctl, "AuthController", "ASP.NET Core controller", "/api/auth/* endpoints; rate limited per IP\n20 requests a minute per client IP (ADR 0010)")
+  Component(cmd, "ConfirmEmailCommandHandler", "MediatR command handler", "Finds the token by hash, checks expiry\nagainst TimeProvider, marks it used and calls\nListener.ConfirmEmail")
   Component(resend, "ResendConfirmationCommandHandler", "MediatR command handler", "Invalidates open tokens and issues a new\n24-hour token")
-  Component(clock, "IClock", "Application port", "Supplies the current UTC time so time rules\nare testable")
+  Component(clock, "TimeProvider", ".NET clock abstraction", "Supplies the current UTC time; tests use a\nfake clock")
   Component(mail, "IEmailSender", "Application port", "SendAsync(EmailMessage); implemented by an\nSMTP adapter in Infrastructure")
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
 }

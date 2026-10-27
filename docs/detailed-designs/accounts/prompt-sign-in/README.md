@@ -12,10 +12,10 @@ Create account. Nothing is saved. The API independently rejects unauthenticated 
 
 **Frontend — Hummi web application (Angular)**
 
-- **`SignInGate`** — Service in @hummi/api. Checks `SessionStore` before a save action and opens the Sign in to save this dialog when signed out (`L2-032`)
+- **`SignInGate`** — Service in @hummi/api. `allow()` checks `SessionStore` before a save action; signed out it sets `promptOpen` and returns false (`L2-032`). Wired today to Like (track page, track rows, player bar, the L shortcut), Save (track menu, Now playing), Add to playlist (track and album pages) and Follow (artist page); Create playlist joins with journey 10
 - **`SessionStore`** — Signal store in @hummi/api. Holds the signed-in listener, the access token and the signed-in/signed-out state the shell reads
-- **`DialogService`** — Service in @hummi/components. Opens `hm-dialog` components as modal overlays and returns a typed close result (`L2-047`)
-- **`SignInPromptDialog`** — Dialog component in @hummi/components. Renders "Sign in to save this" with Not now, Create account and Sign in
+- **`AppShell`** — Shell component in the hummi application. Renders the prompt while `SignInGate.promptOpen()` and makes the page behind it inert (ADR 0010)
+- **`SignInPromptDialog`** — Dialog component in @hummi/accounts (`hm-sign-in-prompt-dialog`) built on `hm-dialog`. Renders "Sign in to save this" with Not now, Create account and Sign in
 - **`Router`** — Angular router. Navigates to `/sign-in` or `/sign-up` with a `returnUrl`
 
 ## Requirements
@@ -42,13 +42,13 @@ The prompt runs entirely in the Angular application; `Hummi.Api` independently r
 
 ### Components
 
-`SignInGate` reads `SessionStore` and opens `SignInPromptDialog` through `DialogService`.
+`SignInGate` reads `SessionStore`; the shell renders `SignInPromptDialog` while the gate's `promptOpen` is true.
 
 ![C4 component view for prompt to sign in](diagrams/c4-component.png)
 
 ### Class structure
 
-`SignInGate` depends on `SessionStore` and opens `SignInPromptDialog`.
+`SignInGate` depends on `SessionStore`; `SignInPromptDialog` closes it.
 
 ![Class diagram for prompt to sign in](diagrams/class-structure.png)
 

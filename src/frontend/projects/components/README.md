@@ -7,6 +7,7 @@ composed from (see `docs/screen-composition.md`).
   fails when they drift (see `src/styles/README.md`).
 - Components: `hm-logo`, `hm-skip-link`, `hmButton`, `hm-alert`, `hm-spinner`, `hm-center-state`, `hm-icon`,
   `hm-equalizer`, `hm-skeleton`, `hm-error-block`, `hm-track-row`, `hm-track-list`, `hm-track-card`, `hm-shelf`,
-  `hm-top-nav`, `hm-player-bar`, `hm-scrubber`, `hm-player-layer`, `hm-queue-drawer`, `hm-track-menu`, `hm-dialog`
-  and `hm-toast-region`, among others listed in `src/public-api.ts`. They render design-system class names and
+  `hm-top-nav`, `hm-player-bar`, `hm-scrubber`, `hm-player-layer`, `hm-queue-drawer`, `hm-track-menu`, `hm-dialog`,
+  `hm-toast-region`, the form parts `hm-text-field`, `hm-checkbox` and `hm-error-summary`, `hm-progress`,
+  `hm-auth-card` and `hm-account-menu`, among others listed in `src/public-api.ts`. They render design-system class names and
   hold no data of their own; `ToastService` queues the toasts `hm-toast-region` shows.

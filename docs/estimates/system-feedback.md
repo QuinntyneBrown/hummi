@@ -2,7 +2,7 @@
 
 | Design | Effort | Complete |
 |---|---|---|
-| show-banners | 3 days | 0% |
+| show-banners | 3 days | 20% |
 | show-error-pages | 3 days | 35% |
 | show-loading-and-errors | 3 days | 80% |
 | show-toasts | 3 days | 50% |

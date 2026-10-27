@@ -47,7 +47,7 @@ Secrets, in the repository's `production` environment only:
 | `DEPLOY_SSH_KEY` | Private key whose public half is on the VM    |
 | `SITE_HOST`      | The production domain (`www.` is derived)     |
 
-Application secrets (connection string, signing keys) live only in `/opt/hummi/.env` on the VM.
+Application secrets (connection string, signing keys, the SMTP relay for account emails, ADR 0010) live only in `/opt/hummi/.env` on the VM.
 
 ## Rolling back
 

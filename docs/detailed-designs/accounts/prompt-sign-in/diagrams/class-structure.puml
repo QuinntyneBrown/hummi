@@ -13,14 +13,17 @@ hide empty members
 title Class structure — Prompt to sign in
 
 class SignInGate {
-  +requireSession(): boolean
+  +promptOpen: Signal<boolean>
+  +allow(): boolean
+  +closePrompt(): void
 }
 class SignInPromptDialog {
-  +result: "dismiss" | "sign-in" | "sign-up"
+  +close(): void
+  +go(path): void
 }
 class SessionStore {
-  +isSignedIn: Signal<boolean>
+  +signedIn: Signal<boolean>
 }
 SignInGate --> SessionStore : reads
-SignInGate ..> SignInPromptDialog : opens
+SignInPromptDialog --> SignInGate : closePrompt()
 @enduml

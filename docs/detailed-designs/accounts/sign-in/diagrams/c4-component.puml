@@ -9,9 +9,9 @@ Container_Boundary(spa, "Hummi web application") {
   Component(session, "SessionStore", "Signal store in @hummi/api", "Holds the signed-in listener, the access\ntoken and the signed-in/signed-out state the\nshell reads")
 }
 Container_Boundary(api, "Hummi.Api") {
-  Component(ctl, "AuthController", "ASP.NET Core controller", "/api/auth/* endpoints; rate limited per IP\n<TO SUPPLY: limits>")
+  Component(ctl, "AuthController", "ASP.NET Core controller", "/api/auth/* endpoints; rate limited per IP\n20 requests a minute per client IP (ADR 0010)")
   Component(cmd, "SignInCommandHandler", "MediatR command handler", "Verifies the password with IPasswordHasher;\nreturns one InvalidCredentials error for any\nmismatch")
-  Component(tok, "ITokenService", "Application port", "Issues JWT access tokens and rotating\nrefresh tokens")
+  Component(tok, "SessionCookies", "Hummi.Api service", "Issues the 15-minute JWT access cookie and\nwrites the rotating refresh cookie")
   Component(hash, "IPasswordHasher", "Application port", "Hashes and verifies passwords; implemented\nwith ASP.NET Core Identity's\nPasswordHasher<T>")
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
 }

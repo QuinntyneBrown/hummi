@@ -18,19 +18,19 @@ Registration is one command that creates the account and an email token in one t
 
 **Frontend — Hummi web application (Angular)**
 
-- **`SignUpPage`** — Routed component in @hummi/accounts. Renders the form with `hm-text-field`, `hm-checkbox`, `hm-error-summary`, busy state and the Check your inbox state
+- **`SignUpPage`** — Routed component in @hummi/accounts (`SignUpComponent`, a bare page without the header). Renders `hm-auth-card` with `hm-text-field`, `hm-checkbox`, `hm-error-summary`, `hm-alert`, busy state and the Check your inbox state
 - **`AuthApi`** — Typed HTTP service in @hummi/api. Calls the anonymous `/api/auth/*` endpoints
 
 **Backend — Hummi.Api application**
 
-- **`AuthController`** — ASP.NET Core controller. `/api/auth/*` endpoints; rate limited per IP <TO SUPPLY: limits>
+- **`AuthController`** — ASP.NET Core controller. `/api/auth/*` endpoints; rate limited per IP 20 requests a minute per client IP (ADR 0010)
 
 **Backend — Hummi Application and Domain**
 
-- **`RegisterListenerValidator`** — FluentValidation validator. Display name required; email well formed; password at least 10 characters; terms accepted
-- **`RegisterListenerCommandHandler`** — MediatR command handler. Hashes the password, creates `Listener` and `EmailToken(Purpose = ConfirmEmail, 24 h)`, saves, then sends the email
+- **`RegisterListenerCommandHandler`** — MediatR command handler. Validates (display name required; email well formed; password at least 10 characters; terms accepted) and answers 422 with field errors in the form's words; hashes the password, creates `Listener` and `EmailToken(Purpose = ConfirmEmail, 24 h)`, saves, then sends the email
 - **`IPasswordHasher`** — Application port. Hashes and verifies passwords; implemented with ASP.NET Core Identity's `PasswordHasher<T>`
-- **`IEmailSender`** — Application port. `SendAsync(EmailMessage)`; implemented by an SMTP adapter in Infrastructure
+- **`IEmailSender`** — Application port. `SendAsync(EmailMessage)`; implemented by `SmtpEmailSender` in Infrastructure, configured from `Email__Smtp__*` and `Email__From` in `/opt/hummi/.env`; every test uses a fake (ADR 0010)
+- **`IAppLinks`** — Application port. Builds the absolute `/verify-email?token=` link from `App__BaseUrl`
 
 **Backend — Hummi Infrastructure**
 
@@ -73,6 +73,6 @@ A visitor creates an account in Hummi, which sends a confirmation email through 
 
 ### Behaviour — create an account
 
-The server validates again with the same rules. Account and token commit together, so a failure leaves no account; the email goes out after the commit. An address already registered returns the same 202 response to avoid revealing accounts <TO SUPPLY: confirm duplicate-email behaviour>.
+The server validates again with the same rules. Account and token commit together, so a failure leaves no account; the email goes out after the commit. An address already registered returns the same 202 response and sends nothing, so sign-up never reveals who has an account (ADR 0010). If the email provider refuses the message, the listener and token are removed again and the API answers 503 `EMAIL_UNAVAILABLE`, so a failure still leaves no account.
 
 ![Sequence diagram for create an account](diagrams/sequence-sign-up.png)

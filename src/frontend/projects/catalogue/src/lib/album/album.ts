@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AlbumsApi, PlayerOverlays, PlayerStore } from '@hummi/api';
+import { AlbumsApi, PlayerOverlays, PlayerStore, SignInGate } from '@hummi/api';
 import {
   ButtonDirective,
   ErrorBlockComponent,
@@ -36,6 +36,7 @@ export class AlbumComponent {
   private readonly api = inject(AlbumsApi);
   readonly player = inject(PlayerStore);
   readonly overlays = inject(PlayerOverlays);
+  readonly gate = inject(SignInGate);
   readonly album = slugResource(
     (slug) => this.api.get(slug),
     (album) => album.title,

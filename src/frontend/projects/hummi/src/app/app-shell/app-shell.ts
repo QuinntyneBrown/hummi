@@ -1,11 +1,27 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal, viewChild } from '@angular/core';
-import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { PlayerOverlays, PlayerStore, SearchStore, SessionStore } from '@hummi/api';
 import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  ElementRef,
+  afterNextRender,
+  computed,
+  inject,
+  Injector,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { AuthApi, PlayerOverlays, PlayerStore, SearchStore, SessionStore, SignInGate } from '@hummi/api';
+import { SignInPromptDialogComponent, SignOutDialogComponent } from '@hummi/accounts';
+import {
+  AccountMenuComponent,
+  AlertComponent,
+  ButtonDirective,
   NavLink,
   PlayerBarComponent,
   SearchPillComponent,
   ToastRegionComponent,
+  ToastService,
   TopNavComponent,
 } from '@hummi/components';
 import { QueuePanelComponent, TrackMenuHostComponent } from '@hummi/player';
@@ -20,7 +36,10 @@ import { ShortcutService } from '../shortcuts/shortcuts';
  * and the footer, and the player bar once a track is loaded, except on routes with data.hidePlayer.
  * The header search pill opens the search layer (L2-006). It also hosts the queue drawer, the track menu
  * and the toasts, and passes keydowns to ShortcutService (L2-017); while the Keyboard shortcuts dialog
- * is open the page behind it is inert (L2-047).
+ * is open the page behind it is inert (L2-047). Signed in, the avatar opens the account menu, whose Sign
+ * out opens the Sign out dialog (L2-031, L2-052), and an unconfirmed email shows the banner (L2-028 AC4).
+ * It renders the Sign in to save this prompt for SignInGate (L2-032). Routes with data.bare (the auth
+ * pages) render without the header, banner and footer.
  */
 @Component({
   selector: 'hm-app-shell',
@@ -35,6 +54,11 @@ import { ShortcutService } from '../shortcuts/shortcuts';
     TrackMenuHostComponent,
     ToastRegionComponent,
     ShortcutsDialogComponent,
+    AccountMenuComponent,
+    AlertComponent,
+    ButtonDirective,
+    SignOutDialogComponent,
+    SignInPromptDialogComponent,
   ],
   host: {
     '[class.has-player]': 'showPlayer() && !!player.current()',
@@ -60,7 +84,18 @@ export class AppShellComponent {
   readonly overlays = inject(PlayerOverlays);
   readonly shortcuts = inject(ShortcutService);
   private readonly router = inject(Router);
-  readonly inert = computed(() => (this.shortcuts.dialogOpen() ? '' : null));
+  readonly gate = inject(SignInGate);
+  private readonly auth = inject(AuthApi);
+  private readonly toasts = inject(ToastService);
+  private readonly injector = inject(Injector);
+  readonly accountMenuOpen = signal(false);
+  readonly signOutOpen = signal(false);
+  private readonly avatar = viewChild<ElementRef<HTMLElement>>('avatar');
+  readonly inert = computed(() =>
+    this.shortcuts.dialogOpen() || this.signOutOpen() || this.gate.promptOpen() ? '' : null,
+  );
+  /** The deepest route sets data.bare: no header, banner or footer. */
+  readonly bare = signal(false);
   private readonly searchPill = viewChild.required(SearchPillComponent);
   private readonly hidePlayer = signal(false);
   readonly showPlayer = computed(() => !this.hidePlayer());
@@ -71,6 +106,8 @@ export class AppShellComponent {
     const subscription = router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
       this.navOpen.set(false);
       this.hidePlayer.set(hidesPlayer(router.routerState.snapshot.root));
+      this.bare.set(routeData(router.routerState.snapshot.root, 'bare'));
+      this.accountMenuOpen.set(false);
     });
     inject(DestroyRef).onDestroy(() => subscription.unsubscribe());
   }
@@ -79,7 +116,9 @@ export class AppShellComponent {
     this.navOpen.update((open) => !open);
   }
 
+  /** Shortcuts stay off while a dialog makes the page inert. */
   shortcut(event: KeyboardEvent): void {
+    if (this.signOutOpen() || this.gate.promptOpen()) return;
     this.shortcuts.handle(event);
   }
 
@@ -87,6 +126,37 @@ export class AppShellComponent {
   openNowPlaying(): void {
     this.overlays.closeQueue();
     void this.router.navigateByUrl('/now-playing');
+  }
+
+  toggleAccountMenu(): void {
+    this.accountMenuOpen.update((open) => !open);
+  }
+
+  /** Escape or an outside click: the menu closes and focus returns to the avatar. */
+  closeAccountMenu(): void {
+    this.accountMenuOpen.set(false);
+    this.avatar()?.nativeElement.focus();
+  }
+
+  openSignOut(): void {
+    this.accountMenuOpen.set(false);
+    this.signOutOpen.set(true);
+  }
+
+  /** Cancelled: focus returns to the avatar. Signed out: the header now shows Sign in and Sign up. */
+  signOutClosed(reason: 'signed-out' | 'cancelled'): void {
+    this.signOutOpen.set(false);
+    if (reason === 'cancelled') {
+      afterNextRender(() => this.avatar()?.nativeElement.focus(), { injector: this.injector });
+    }
+  }
+
+  /** The banner's Resend the email (L2-028 AC4). */
+  async resendConfirmation(): Promise<void> {
+    const result = await this.auth.resendConfirmation();
+    this.toasts.show(
+      result.ok ? 'We sent a new confirmation link' : 'We couldn’t send the email. Try again in a minute.',
+    );
   }
 
   /** Close or Escape in the search layer: focus goes back to the header search field. */
@@ -97,5 +167,10 @@ export class AppShellComponent {
 
 /** True when the deepest active route, or any route above it, sets data.hidePlayer. */
 function hidesPlayer(route: ActivatedRouteSnapshot): boolean {
-  return route.data['hidePlayer'] === true || route.children.some(hidesPlayer);
+  return routeData(route, 'hidePlayer');
+}
+
+/** True when the route, or any route below it, sets data[key] to true. */
+function routeData(route: ActivatedRouteSnapshot, key: string): boolean {
+  return route.data[key] === true || route.children.some((child) => routeData(child, key));
 }

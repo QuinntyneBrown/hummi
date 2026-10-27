@@ -5,7 +5,7 @@ title System Context — Reset a password
 
 Person(listener, "Listener", "Discovers, plays and shares openly licensed AI-generated music")
 System(hummi, "Hummi", "Free streaming platform for open-source AI-generated music")
-System_Ext(email, "Email provider", "Delivers account and notification emails <TO SUPPLY: provider>")
+System_Ext(email, "Email provider", "Delivers account and notification emails (an SMTP relay set in /opt/hummi/.env, ADR 0010)")
 Rel(listener, hummi, "Uses", "HTTPS")
 Rel(hummi, email, "Sends emails through")
 @enduml

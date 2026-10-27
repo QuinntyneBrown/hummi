@@ -7,6 +7,7 @@
       "@hummi/discovery": ["./projects/discovery/src/public-api.ts"],
       "@hummi/catalogue": ["./projects/catalogue/src/public-api.ts"],
       "@hummi/search": ["./projects/search/src/public-api.ts"],
+      "@hummi/accounts": ["./projects/accounts/src/public-api.ts"],
       "@hummi/player": ["./projects/player/src/public-api.ts"]
     },
     "noImplicitOverride": true,

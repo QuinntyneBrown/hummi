@@ -8,7 +8,7 @@ Container_Boundary(spa, "Hummi web application") {
   Component(client, "AuthApi", "Typed HTTP service in @hummi/api", "Calls the anonymous /api/auth/* endpoints")
 }
 Container_Boundary(api, "Hummi.Api") {
-  Component(ctl, "AuthController", "ASP.NET Core controller", "/api/auth/* endpoints; rate limited per IP\n<TO SUPPLY: limits>")
+  Component(ctl, "AuthController", "ASP.NET Core controller", "/api/auth/* endpoints; rate limited per IP\n20 requests a minute per client IP (ADR 0010)")
   Component(cmd, "RequestPasswordResetCommandHandler", "MediatR command handler", "Issues a 1-hour token and sends the email\nonly when the account exists; always returns\nsuccess unless sending fails")
   Component(redeem, "ResetPasswordCommandHandler", "MediatR command handler", "Redeems the token, sets the new hash and\nrevokes all refresh tokens")
   Component(mail, "IEmailSender", "Application port", "SendAsync(EmailMessage); implemented by an\nSMTP adapter in Infrastructure")

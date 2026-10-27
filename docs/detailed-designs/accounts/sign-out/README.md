@@ -2,7 +2,7 @@
 
 ## Overview
 
-Sign out ends the session on this device after a confirmation dialog opened from Settings. The
+Sign out ends the session on this device after a confirmation dialog opened from the account menu under the header avatar (and, once journey 13 builds it, from Settings). The
 listener's playlists and likes stay saved, and they can keep listening signed out.
 
 - **revocation** — marking a refresh token unusable so it cannot mint new access tokens
@@ -13,17 +13,17 @@ Sign out revokes the device's refresh token and clears browser session state.
 
 **Frontend — Hummi web application (Angular)**
 
-- **`SignOutDialog`** — Dialog component in @hummi/settings. Renders "Sign out of Hummi?", Cancel and Sign out with busy and error states
+- **`SignOutDialog`** — Dialog component in @hummi/accounts (`hm-sign-out-dialog`), opened by the shell from `hm-account-menu`. Renders "Sign out of Hummi?", Cancel and Sign out with busy and error states
 - **`AuthApi`** — Typed HTTP service in @hummi/api. Calls the anonymous `/api/auth/*` endpoints
 - **`SessionStore`** — Signal store in @hummi/api. Holds the signed-in listener, the access token and the signed-in/signed-out state the shell reads
 
 **Backend — Hummi.Api application**
 
-- **`AuthController`** — ASP.NET Core controller. `/api/auth/*` endpoints; rate limited per IP <TO SUPPLY: limits>
+- **`AuthController`** — ASP.NET Core controller. `/api/auth/*` endpoints; rate limited per IP 20 requests a minute per client IP (ADR 0010)
 
 **Backend — Hummi Application and Domain**
 
-- **`SignOutCommandHandler`** — MediatR command handler. Revokes the refresh token named by the cookie
+- **`SignOutCommandHandler`** — MediatR command handler. Revokes the refresh token named by the cookie; the controller then clears both cookies
 
 **Backend — Hummi Infrastructure**
 
@@ -36,7 +36,7 @@ The feature realizes the following level-2 (L2) requirements. Each L2 requiremen
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-031` | `L1-007` | **Sign out.** 1. Given a signed-in listener on Settings, when they activate "Sign out", then the dialog "Sign out of Hummi?" reads "Your playlists and likes stay saved. You can keep listening without an account." with "Cancel" and "Sign out".<br>2. Given they confirm, when sign-out succeeds, then the session ends, the shell shows the signed-out state, and their data remains saved.<br>3. Given sign-out is in progress, when the dialog renders, then "Cancel" is disabled and the button reads "Signing out…".<br>4. Given sign-out fails, when the dialog renders, then it shows "That didn’t work" with "We couldn’t sign you out. Check your connection and try again." |
+| `L2-031` | `L1-007` | **Sign out.** 1. Given a signed-in listener, when they activate "Sign out" in the account menu or on Settings, then the dialog "Sign out of Hummi?" reads "Your playlists and likes stay saved. You can keep listening without an account." with "Cancel" and "Sign out".<br>2. Given they confirm, when sign-out succeeds, then the session ends, the shell shows the signed-out state, and their data remains saved.<br>3. Given sign-out is in progress, when the dialog renders, then "Cancel" is disabled and the button reads "Signing out…".<br>4. Given sign-out fails, when the dialog renders, then it shows "That didn’t work" with "We couldn’t sign you out. Check your connection and try again." |
 
 ## Diagrams
 

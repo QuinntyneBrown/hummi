@@ -13,11 +13,17 @@ public sealed class AuthOptions
 
     public string Issuer { get; set; } = "Hummi";
 
+    /// <summary>Requests per minute each client may make to /api/auth (ADR 0010).</summary>
+    public int RequestsPerMinute { get; set; } = 20;
+
     public SymmetricSecurityKey Key => new(Encoding.UTF8.GetBytes(SigningKey));
 }
 
-/// <summary>The outcome of a sign-in: who signed in and the opaque refresh token to hand the browser.</summary>
-public sealed record SignedIn(Guid UserId, string RefreshToken, DateTime RefreshExpiresAt);
+/// <summary>
+/// The outcome of a sign-in: who signed in and the opaque refresh token to hand the browser. A null
+/// expiry makes both cookies end with the browser ("Keep me signed in" unchecked, L2-029 AC5).
+/// </summary>
+public sealed record SignedIn(Guid UserId, string RefreshToken, DateTime? RefreshExpiresAt);
 
 /// <summary>
 /// Issues the 15-minute access token and writes both session cookies as HttpOnly, Secure and
@@ -43,7 +49,7 @@ public sealed class SessionCookies(IOptions<AuthOptions> options, TimeProvider c
             Expires = now + AccessLifetime,
             SigningCredentials = new SigningCredentials(options.Value.Key, SecurityAlgorithms.HmacSha256),
         });
-        response.Cookies.Append(AccessCookie, token, Cookie("/", now + AccessLifetime));
+        response.Cookies.Append(AccessCookie, token, Cookie("/", session.RefreshExpiresAt is null ? null : now + AccessLifetime));
         response.Cookies.Append(RefreshCookie, session.RefreshToken, Cookie(RefreshPath, session.RefreshExpiresAt));
     }
 

@@ -35,12 +35,15 @@
               <button hmButton="primary" type="button" (click)="player.playFrom(a.popular, 0)">
                 <hm-icon name="play" />Play
               </button>
-              <button hmButton type="button" [pressed]="a.following"><hm-icon name="plus" />Follow</button>
+              <button hmButton type="button" [pressed]="a.following" (click)="gate.allow()">
+                <hm-icon name="plus" />Follow
+              </button>
               <button hmButton type="button"><hm-icon name="share" />Share</button>
             </div>
           </hm-hero>
           <hm-shelf heading="Popular">
             <hm-track-list
+              (like)="gate.allow()"
               [tracks]="a.popular"
               label="Popular tracks"
               [currentTrackId]="player.current()?.id ?? null"
@@ -68,7 +71,9 @@
             heading="No tracks released yet"
             [text]="a.name + ' hasn’t published anything. Follow to hear when they do.'"
           >
-            <button hmButton="primary" type="button" [pressed]="a.following"><hm-icon name="plus" />Follow</button>
+            <button hmButton="primary" type="button" [pressed]="a.following" (click)="gate.allow()">
+              <hm-icon name="plus" />Follow
+            </button>
           </hm-empty-state>
         }
       }

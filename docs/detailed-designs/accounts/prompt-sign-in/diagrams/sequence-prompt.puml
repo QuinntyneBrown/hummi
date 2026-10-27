@@ -18,14 +18,15 @@ actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
   participant "SignInGate" as gate
   participant "SessionStore" as session
-  participant "DialogService" as dialogs
+  participant "AppShell" as dialogs
   participant "SignInPromptDialog" as dlg
   participant "Router" as router
 end box
 u -> gate : Like, add to playlist, follow or create (signed out)
-gate -> session : isSignedIn()
+gate -> session : signedIn()
 session --> gate : false
-gate -> dialogs : open(SignInPromptDialog)
+gate -> gate : promptOpen = true
+dialogs -> gate : promptOpen()
 dialogs -> dlg : Render "Sign in to save this" (L2-032)
 gate --> u : Nothing saved (L2-032)
 alt Not now

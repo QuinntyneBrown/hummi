@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Threading.RateLimiting;
 using Hummi.Api.Http;
 using Hummi.Application.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -31,6 +33,8 @@ public sealed class ProblemAuthorizationResultHandler : IAuthorizationMiddleware
 
 public static class AuthSetup
 {
+    public const string AuthRateLimit = "auth";
+
     public static IServiceCollection AddHummiAuth(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<AuthOptions>(configuration.GetSection("Auth"));
@@ -65,6 +69,21 @@ public static class AuthSetup
             });
 
         services.AddAuthorization();
+
+        // Fixed window per client IP on /api/auth/* (ADR 0010); the 429 carries Retry-After.
+        var perMinute = configuration.GetValue("Auth:RequestsPerMinute", 20);
+        services.AddRateLimiter(limiter =>
+        {
+            limiter.AddPolicy(AuthRateLimit, context => RateLimitPartition.GetFixedWindowLimiter(
+                context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                _ => new FixedWindowRateLimiterOptions { PermitLimit = perMinute, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
+            limiter.OnRejected = (context, _) =>
+            {
+                var retryAfter = context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var wait) ? wait : TimeSpan.FromMinutes(1);
+                context.HttpContext.Response.Headers.RetryAfter = Math.Max(1, (int)Math.Ceiling(retryAfter.TotalSeconds)).ToString(CultureInfo.InvariantCulture);
+                return new ValueTask(ProblemResults.WriteAsync(context.HttpContext, Error.TooManyRequests(retryAfter, "Too many attempts. Try again in a minute.")));
+            };
+        });
         return services;
     }
 }

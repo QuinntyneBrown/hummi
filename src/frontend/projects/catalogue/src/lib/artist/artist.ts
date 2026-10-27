@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { AlbumTileDto, ArtistsApi, PlayerOverlays, PlayerStore } from '@hummi/api';
+import { AlbumTileDto, ArtistsApi, PlayerOverlays, PlayerStore, SignInGate } from '@hummi/api';
 import {
   ButtonDirective,
   EmptyStateComponent,
@@ -42,6 +42,7 @@ export class ArtistComponent {
   private readonly api = inject(ArtistsApi);
   readonly player = inject(PlayerStore);
   readonly overlays = inject(PlayerOverlays);
+  readonly gate = inject(SignInGate);
   readonly artist = slugResource(
     (slug) => this.api.get(slug),
     (artist) => artist.name,

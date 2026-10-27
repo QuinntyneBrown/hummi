@@ -19,7 +19,7 @@ Two commands: request a link, and redeem it with a new password.
 
 **Backend — Hummi.Api application**
 
-- **`AuthController`** — ASP.NET Core controller. `/api/auth/*` endpoints; rate limited per IP <TO SUPPLY: limits>
+- **`AuthController`** — ASP.NET Core controller. `/api/auth/*` endpoints; rate limited per IP 20 requests a minute per client IP (ADR 0010)
 
 **Backend — Hummi Application and Domain**
 

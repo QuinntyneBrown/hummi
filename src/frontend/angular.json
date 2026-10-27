@@ -222,6 +222,26 @@
           "defaultConfiguration": "production"
         }
       }
+    },
+    "accounts": {
+      "projectType": "library",
+      "root": "projects/accounts",
+      "sourceRoot": "projects/accounts/src",
+      "prefix": "hm",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/accounts/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/accounts/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
     }
   }
 }

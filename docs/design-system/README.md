@@ -41,6 +41,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-27. Open [index.html]
 | [Breadcrumb](components/breadcrumb.html) | Navigation | Default | genre/default |
 | [Pagination](components/pagination.html) | Navigation | Numbered | genre/default |
 | [Skip link](components/skip-link.html) | Navigation | Focused | home/default |
+| [Account menu](components/account-menu.html) | Navigation | Signed in | account-menu/default |
 | [Card](components/card.html) | Containers | Default, Interactive, Selected | settings/default, sign-in/default |
 | [Dialog](components/dialog.html) | Containers | Confirmation, Destructive | create-playlist/default, delete-playlist/confirm |
 | [Tooltip](components/tooltip.html) | Containers | On an icon button | home/default |

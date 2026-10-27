@@ -86,6 +86,18 @@ public sealed class DemoSeederTests : IDisposable
     }
 
     [Fact]
+    public async Task Seed_adds_a_confirmed_demo_listener_who_can_sign_in()
+    {
+        await DemoSeeder.SeedAsync(db, mediaRoot, TimeProvider.System);
+
+        var listener = await db.Listeners.SingleAsync();
+        Assert.Equal(DemoSeeder.DemoEmail, listener.Email);
+        Assert.Equal("Nadia Charles", listener.DisplayName);
+        Assert.True(listener.EmailConfirmed);
+        Assert.True(new Hummi.Infrastructure.Accounts.IdentityPasswordHasher().Verify(listener.PasswordHash, DemoSeeder.DemoPassword));
+    }
+
+    [Fact]
     public async Task Seeding_twice_adds_nothing_the_second_time()
     {
         await DemoSeeder.SeedAsync(db, mediaRoot, TimeProvider.System);

@@ -14,20 +14,20 @@ Two commands: one redeems a token, one issues a fresh one.
 
 **Frontend — Hummi web application (Angular)**
 
-- **`VerifyEmailPage`** — Routed component in @hummi/accounts. Shows the indeterminate `hm-progress` "Confirming email", then confirmed or expired state
-- **`ShellBannerHost`** — Shell component in the hummi application. Shows the email-confirmation `hm-banner` while `SessionStore.listener().emailConfirmed` is false
+- **`VerifyEmailPage`** — Routed component in @hummi/accounts (`VerifyEmailComponent`, a bare page). Shows the indeterminate `hm-progress` "Confirming email" in `hm-auth-card`, then the confirmed or expired state; an unknown or used link counts as expired (410 `LINK_EXPIRED`)
+- **`AppShell`** — Shell component in the hummi application. Shows the email-confirmation banner (`hm-alert` with `banner`) above the header while `SessionStore.user().emailConfirmed` is false; Resend the email calls `AuthApi.resendConfirmation()` and confirms with a toast
 - **`AuthApi`** — Typed HTTP service in @hummi/api. Calls the anonymous `/api/auth/*` endpoints
 - **`SessionStore`** — Signal store in @hummi/api. Holds the signed-in listener, the access token and the signed-in/signed-out state the shell reads
 
 **Backend — Hummi.Api application**
 
-- **`AuthController`** — ASP.NET Core controller. `/api/auth/*` endpoints; rate limited per IP <TO SUPPLY: limits>
+- **`AuthController`** — ASP.NET Core controller. `/api/auth/*` endpoints; rate limited per IP 20 requests a minute per client IP (ADR 0010)
 
 **Backend — Hummi Application and Domain**
 
-- **`ConfirmEmailCommandHandler`** — MediatR command handler. Finds the token by hash, checks expiry against `IClock`, marks it used and calls `Listener.ConfirmEmail`
-- **`ResendConfirmationCommandHandler`** — MediatR command handler. Invalidates open tokens and issues a new 24-hour token
-- **`IClock`** — Application port. Supplies the current UTC time so time rules are testable
+- **`ConfirmEmailCommandHandler`** — MediatR command handler. Finds the token by hash, checks expiry against `TimeProvider`, marks it used and calls `Listener.ConfirmEmail`
+- **`ResendConfirmationCommandHandler`** — MediatR command handler. For the signed-in listener, or the owner of the expired link the page passes back, invalidates open tokens and issues a new 24-hour token; confirmed or unknown accounts get nothing
+- **`TimeProvider`** — Application port. Supplies the current UTC time so time rules are testable
 - **`IEmailSender`** — Application port. `SendAsync(EmailMessage)`; implemented by an SMTP adapter in Infrastructure
 
 **Backend — Hummi Infrastructure**
@@ -59,7 +59,7 @@ A listener confirms their email address with a link Hummi sent through the email
 
 ### Components
 
-`VerifyEmailPage` and `ShellBannerHost` call `AuthApi`; `AuthController` sends `ConfirmEmailCommand` and `ResendConfirmationCommand`.
+`VerifyEmailPage` and `AppShell` call `AuthApi`; `AuthController` sends `ConfirmEmailCommand` and `ResendConfirmationCommand`.
 
 ![C4 component view for verify an email address](diagrams/c4-component.png)
 
@@ -71,6 +71,6 @@ A listener confirms their email address with a link Hummi sent through the email
 
 ### Behaviour — confirm or resend
 
-Expiry is checked on the server against `IClock`. The shell banner (`L2-028`, `L2-042`) reads the confirmed flag from the session and calls the resend command.
+Expiry is checked on the server against `TimeProvider`. The shell banner (`L2-028`, `L2-042`) reads the confirmed flag from the session and calls the resend command.
 
 ![Sequence diagram for confirm or resend](diagrams/sequence-verify.png)

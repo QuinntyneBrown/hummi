@@ -79,14 +79,16 @@ test('L2-017 AC3: Q opens the queue, / opens search and ? opens Keyboard shortcu
   await expect(page.getByRole('dialog', { name: 'Keyboard shortcuts' })).toBeVisible();
 });
 
-test('L2-017 AC3: L with no like flow yet leaves playback alone (likes arrive with journey 09)', async ({ page }) => {
+test('L2-017 AC3, L2-032 AC1: L signed out opens "Sign in to save this" and leaves playback alone', async ({
+  page,
+}) => {
   const player = new PlayerBar(page);
   await playAndBlur(page);
 
   await page.keyboard.press('l');
 
+  await expect(page.getByRole('dialog', { name: 'Sign in to save this' })).toBeVisible();
   await expect(player.pause).toBeVisible();
-  await expect(page.getByRole('dialog')).toHaveCount(0);
 });
 
 test('L2-017 AC4: with a text field focused the keys type into it and no shortcut fires', async ({ page }) => {

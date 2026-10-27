@@ -1,3 +1,4 @@
+using Hummi.Domain.Accounts;
 using Hummi.Domain.Catalogue;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,12 @@ public interface IHummiDbContext
     DbSet<Album> Albums { get; }
 
     DbSet<PlayEvent> PlayEvents { get; }
+
+    DbSet<Listener> Listeners { get; }
+
+    DbSet<EmailToken> EmailTokens { get; }
+
+    DbSet<RefreshToken> RefreshTokens { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
@@ -48,3 +55,33 @@ public sealed record SearchHits(IReadOnlyList<Search.ArtistHitDto> Artists, IRea
 /// <summary>The search index could not answer; the API reports 503 SEARCH_UNAVAILABLE.</summary>
 public sealed class SearchUnavailableException(Exception innerException)
     : Exception("The search index is unreachable.", innerException);
+
+/// <summary>Hashes and verifies passwords; Infrastructure uses ASP.NET Core Identity's hasher.</summary>
+public interface IPasswordHasher
+{
+    string Hash(string password);
+
+    bool Verify(string hash, string password);
+}
+
+/// <summary>
+/// The outgoing email port (ADR 0010): an SMTP adapter in production, a fake in every test. Throws
+/// <see cref="EmailNotSentException"/> when the message could not be handed to the provider.
+/// </summary>
+public interface IEmailSender
+{
+    Task SendAsync(EmailMessage message, CancellationToken cancellationToken);
+}
+
+/// <summary>A plain-text email to one recipient.</summary>
+public sealed record EmailMessage(string To, string Subject, string Body);
+
+/// <summary>The email provider refused or could not be reached.</summary>
+public sealed class EmailNotSentException(Exception innerException)
+    : Exception("The email could not be sent.", innerException);
+
+/// <summary>Absolute links into the Hummi web app, for emails.</summary>
+public interface IAppLinks
+{
+    Uri VerifyEmail(string token);
+}

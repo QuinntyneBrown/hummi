@@ -1,21 +1,51 @@
-<hm-top-nav [attr.inert]="inert()" [links]="links" [open]="navOpen()" (menuToggle)="toggleNav()">
-  <hm-search-pill (activate)="search.openWith()" />
+@if (!bare()) {
   @if (session.user(); as user) {
-    <span class="avatar avatar--nav" role="img" [attr.aria-label]="'Account: ' + user.displayName">{{
-      user.displayName.charAt(0)
-    }}</span>
-  } @else {
-    <a class="btn" routerLink="/sign-in">Sign in</a>
-    <a class="btn btn--primary" routerLink="/sign-up">Sign up</a>
+    @if (!user.emailConfirmed) {
+      <hm-alert [attr.inert]="inert()" tone="warning" heading="Confirm your email" [banner]="true">
+        Check your inbox to keep saving playlists.
+        <button hmButton="link" type="button" (click)="resendConfirmation()">Resend the email</button>.
+      </hm-alert>
+    }
   }
-</hm-top-nav>
+  <hm-top-nav [attr.inert]="inert()" [links]="links" [open]="navOpen()" (menuToggle)="toggleNav()">
+    <hm-search-pill (activate)="search.openWith()" />
+    @if (session.user(); as user) {
+      <button
+        #avatar
+        class="avatar avatar--nav"
+        type="button"
+        aria-haspopup="menu"
+        [attr.aria-expanded]="accountMenuOpen()"
+        [attr.aria-label]="'Account: ' + user.displayName"
+        (click)="toggleAccountMenu()"
+      >
+        {{ user.displayName.charAt(0).toUpperCase() }}
+      </button>
+    } @else {
+      <a hmButton routerLink="/sign-in">Sign in</a>
+      <a hmButton="primary" routerLink="/sign-up">Sign up</a>
+    }
+  </hm-top-nav>
+}
 <main id="main" class="container app-main" tabindex="-1" [attr.inert]="inert()">
   <router-outlet />
-  <footer class="site-footer">
-    <span>Every track on Hummi is free to stream and free to share.</span>
-    <span>hummi.fm — free music, made in the open.</span>
-  </footer>
+  @if (!bare()) {
+    <footer class="site-footer">
+      <span>Every track on Hummi is free to stream and free to share.</span>
+      <span>hummi.fm — free music, made in the open.</span>
+    </footer>
+  }
 </main>
+@if (accountMenuOpen()) {
+  @if (session.user(); as user) {
+    <hm-account-menu
+      [name]="user.displayName"
+      [email]="user.email"
+      (dismiss)="closeAccountMenu()"
+      (signOut)="openSignOut()"
+    />
+  }
+}
 @if (search.open()) {
   <hm-search-overlay (closed)="searchClosed()" />
 }
@@ -31,6 +61,7 @@
       (togglePlay)="player.toggle()"
       (previous)="player.previous()"
       (next)="player.next()"
+      (like)="gate.allow()"
       (more)="overlays.openTrackMenu(track)"
       (queue)="overlays.toggleQueue()"
       (expand)="openNowPlaying()"
@@ -44,4 +75,10 @@
 <hm-toast-region [noPlayer]="!(showPlayer() && player.current())" />
 @if (shortcuts.dialogOpen()) {
   <hm-shortcuts-dialog (closed)="shortcuts.closeDialog()" />
+}
+@if (signOutOpen()) {
+  <hm-sign-out-dialog (closed)="signOutClosed($event)" />
+}
+@if (gate.promptOpen()) {
+  <hm-sign-in-prompt-dialog />
 }

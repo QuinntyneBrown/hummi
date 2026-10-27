@@ -4,12 +4,12 @@ LAYOUT_WITH_LEGEND()
 title Components — Sign out
 
 Container_Boundary(spa, "Hummi web application") {
-  Component(dlg, "SignOutDialog", "Dialog component in @hummi/settings", "Renders "Sign out of Hummi?", Cancel and\nSign out with busy and error states")
+  Component(dlg, "SignOutDialog", "Dialog component in @hummi/accounts", "Renders "Sign out of Hummi?", Cancel and\nSign out with busy and error states")
   Component(client, "AuthApi", "Typed HTTP service in @hummi/api", "Calls the anonymous /api/auth/* endpoints")
   Component(session, "SessionStore", "Signal store in @hummi/api", "Holds the signed-in listener, the access\ntoken and the signed-in/signed-out state the\nshell reads")
 }
 Container_Boundary(api, "Hummi.Api") {
-  Component(ctl, "AuthController", "ASP.NET Core controller", "/api/auth/* endpoints; rate limited per IP\n<TO SUPPLY: limits>")
+  Component(ctl, "AuthController", "ASP.NET Core controller", "/api/auth/* endpoints; rate limited per IP\n20 requests a minute per client IP (ADR 0010)")
   Component(cmd, "SignOutCommandHandler", "MediatR command handler", "Revokes the refresh token named by the\ncookie")
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
 }

@@ -1,0 +1,77 @@
+@if (created(); as address) {
+  <hm-auth-card heading="Check your inbox">
+    <span intro
+      >We sent a confirmation link to <strong>{{ address }}</strong
+      >. It works for 24 hours.</span
+    >
+    <hm-alert tone="success" heading="Account created">
+      Open the link to start listening. Wrong address? <a href="/sign-up" (click)="startAgain($event)">Start again</a>.
+    </hm-alert>
+    <a hmButton="primary" [block]="true" [large]="true" routerLink="/sign-in">I’ve confirmed my email</a>
+  </hm-auth-card>
+} @else {
+  <hm-auth-card heading="Create your free account">
+    <span intro>Save playlists, follow artists and keep your place across devices.</span>
+    <form class="stack" novalidate (submit)="submit($event)">
+      @for (n of [attempt()]; track n) {
+        @if (summary().length) {
+          <hm-error-summary [errors]="summary()" />
+        }
+      }
+      @if (failed()) {
+        <hm-alert tone="danger" heading="We couldn’t create your account">
+          Something went wrong on our side. Nothing was saved; try again in a moment.
+        </hm-alert>
+      }
+      <hm-text-field
+        label="Display name"
+        [fieldId]="ids.displayName"
+        autocomplete="nickname"
+        [required]="true"
+        [readonly]="busy()"
+        [error]="errors()['displayName'] ?? ''"
+        [(value)]="displayName"
+      />
+      <hm-text-field
+        label="Email"
+        [fieldId]="ids.email"
+        type="email"
+        autocomplete="email"
+        [required]="true"
+        [readonly]="busy()"
+        [error]="errors()['email'] ?? ''"
+        [(value)]="email"
+      />
+      <hm-text-field
+        label="Password"
+        [fieldId]="ids.password"
+        type="password"
+        autocomplete="new-password"
+        help="At least 10 characters"
+        [required]="true"
+        [readonly]="busy()"
+        [error]="errors()['password'] ?? ''"
+        [(value)]="password"
+      />
+      <hm-checkbox
+        label="I agree to the terms and the community rules"
+        hint="Hummi is free. You can listen without an account, but saving needs one."
+        [fieldId]="ids.acceptedTerms"
+        [disabled]="busy()"
+        [error]="errors()['acceptedTerms'] ?? ''"
+        [(checked)]="acceptedTerms"
+      />
+      <button hmButton="primary" [block]="true" [large]="true" type="submit" [busy]="busy()" [disabled]="busy()">
+        @if (busy()) {
+          <span class="spinner" aria-hidden="true"></span>Create account…
+        } @else {
+          Create account
+        }
+      </button>
+    </form>
+    <p footer class="text-muted" style="margin-top: var(--space-4); text-align: center">
+      Already have an account?
+      <a routerLink="/sign-in" [queryParams]="returnUrl() ? { returnUrl: returnUrl() } : {}">Sign in</a>
+    </p>
+  </hm-auth-card>
+}
