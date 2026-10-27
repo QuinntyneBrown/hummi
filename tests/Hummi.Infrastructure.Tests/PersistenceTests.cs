@@ -23,6 +23,7 @@ public sealed class MigrationTests
 
         Assert.Contains(db.Database.GetMigrations(), m => m.EndsWith("_AddCatalogueAndPlays", StringComparison.Ordinal));
         Assert.Contains(db.Database.GetMigrations(), m => m.EndsWith("_AddGenres", StringComparison.Ordinal));
+        Assert.Contains(db.Database.GetMigrations(), m => m.EndsWith("_AddCataloguePages", StringComparison.Ordinal));
         Assert.False(db.Database.HasPendingModelChanges());
     }
 }

@@ -24,5 +24,5 @@ test('an unknown route shows the not-found page', async ({ page }) => {
   const shell = new ShellPage(page);
   await shell.goto('/no-such-page');
 
-  await expect(shell.main.getByRole('heading', { name: 'Page not found' })).toBeVisible();
+  await expect(shell.main.getByRole('heading', { name: 'We couldn’t find that page' })).toBeVisible();
 });

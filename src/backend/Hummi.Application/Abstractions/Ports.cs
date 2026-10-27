@@ -15,6 +15,8 @@ public interface IHummiDbContext
 
     DbSet<Genre> Genres { get; }
 
+    DbSet<Album> Albums { get; }
+
     DbSet<PlayEvent> PlayEvents { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

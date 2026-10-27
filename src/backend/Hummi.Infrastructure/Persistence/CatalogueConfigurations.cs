@@ -11,6 +11,10 @@ internal sealed class ArtistConfiguration : IEntityTypeConfiguration<Artist>
         builder.ToTable("Artists");
         builder.Property(a => a.Id).ValueGeneratedNever();
         builder.Property(a => a.Name).HasMaxLength(200).IsRequired();
+        builder.Property(a => a.Slug).HasMaxLength(200).IsRequired();
+        builder.Property(a => a.ModelName).HasMaxLength(100).IsRequired();
+        builder.Property(a => a.Description).HasMaxLength(2000).IsRequired();
+        builder.HasIndex(a => a.Slug).IsUnique();
     }
 }
 
@@ -22,6 +26,12 @@ internal sealed class TrackConfiguration : IEntityTypeConfiguration<Track>
         builder.Property(t => t.Id).ValueGeneratedNever();
         builder.Property(t => t.Title).HasMaxLength(300).IsRequired();
         builder.Property(t => t.CoverUrl).HasMaxLength(2048);
+        builder.Property(t => t.Slug).HasMaxLength(300).IsRequired();
+        builder.Property(t => t.Waveform).HasMaxLength(256).IsRequired();
+        builder.HasIndex(t => t.Slug).IsUnique();
+        builder.HasOne<Album>().WithMany().HasForeignKey(t => t.AlbumId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(t => new { t.AlbumId, t.AlbumPosition });
+        builder.HasIndex(t => new { t.ArtistId, t.PlayCount });
         builder.HasOne(t => t.Artist).WithMany().HasForeignKey(t => t.ArtistId).OnDelete(DeleteBehavior.Restrict);
         builder.Ignore(t => t.IsPlayable);
         builder.Ignore(t => t.AudioPath);
@@ -30,6 +40,20 @@ internal sealed class TrackConfiguration : IEntityTypeConfiguration<Track>
         builder.HasIndex(t => t.PlayCount);
         builder.HasIndex(t => new { t.GenreId, t.AddedAt });
         builder.HasIndex(t => new { t.GenreId, t.PlayCount });
+    }
+}
+
+internal sealed class AlbumConfiguration : IEntityTypeConfiguration<Album>
+{
+    public void Configure(EntityTypeBuilder<Album> builder)
+    {
+        builder.ToTable("Albums");
+        builder.Property(a => a.Id).ValueGeneratedNever();
+        builder.Property(a => a.Slug).HasMaxLength(300).IsRequired();
+        builder.Property(a => a.Title).HasMaxLength(300).IsRequired();
+        builder.HasOne<Artist>().WithMany().HasForeignKey(a => a.ArtistId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(a => a.Slug).IsUnique();
+        builder.HasIndex(a => a.ArtistId);
     }
 }
 

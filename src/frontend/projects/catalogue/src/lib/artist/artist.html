@@ -1,0 +1,76 @@
+@let state = artist.state();
+@if (isNotFound(state)) {
+  <hm-catalogue-not-found />
+} @else {
+  @switch (state.status) {
+    @case ('loading') {
+      <hm-page-header heading="Artist" />
+      <div class="stack" aria-busy="true" aria-label="Loading artist">
+        <hm-skeleton shape="rect" width="100%" height="12rem" />
+        <ol class="track-list" aria-hidden="true">
+          @for (row of rows; track row) {
+            <li class="track">
+              <span></span>
+              <hm-skeleton shape="rect" width="3rem" height="3rem" />
+              <div><hm-skeleton width="50%" /><hm-skeleton width="30%" /></div>
+              <span></span>
+            </li>
+          }
+        </ol>
+      </div>
+    }
+    @case ('error') {
+      <hm-page-header heading="Artist" />
+      <hm-error-block heading="This artist didn’t load" (retry)="artist.reload()" />
+    }
+    @case ('ready') {
+      @if (state.status === 'ready') {
+        @let a = state.value;
+        <hm-page-header [heading]="a.name" [subtitle]="listeners(a.monthlyListeners)" />
+        @if (a.popular.length) {
+          <hm-hero label="Artist" [coverUrl]="a.coverUrl" [round]="true">
+            <span class="overline">Artist · {{ a.modelName }}</span>
+            <p class="text-muted">{{ a.description }}</p>
+            <div class="cluster">
+              <button hmButton="primary" type="button" (click)="player.playFrom(a.popular, 0)">
+                <hm-icon name="play" />Play
+              </button>
+              <button hmButton type="button" [pressed]="a.following"><hm-icon name="plus" />Follow</button>
+              <button hmButton type="button"><hm-icon name="share" />Share</button>
+            </div>
+          </hm-hero>
+          <hm-shelf heading="Popular">
+            <hm-track-list
+              [tracks]="a.popular"
+              label="Popular tracks"
+              [currentTrackId]="player.current()?.id ?? null"
+              [playing]="player.playing()"
+              (playTrack)="player.playFrom(a.popular, $event)"
+            />
+          </hm-shelf>
+          @if (a.releases.length) {
+            <hm-shelf heading="Releases">
+              <div class="card-grid">
+                @for (album of a.releases; track album.slug) {
+                  <hm-media-tile
+                    [link]="'/albums/' + album.slug"
+                    [title]="album.title"
+                    [meta]="releaseMeta(album)"
+                    [coverUrl]="album.coverUrl"
+                  />
+                }
+              </div>
+            </hm-shelf>
+          }
+        } @else {
+          <hm-empty-state
+            heading="No tracks released yet"
+            [text]="a.name + ' hasn’t published anything. Follow to hear when they do.'"
+          >
+            <button hmButton="primary" type="button" [pressed]="a.following"><hm-icon name="plus" />Follow</button>
+          </hm-empty-state>
+        }
+      }
+    }
+  }
+}

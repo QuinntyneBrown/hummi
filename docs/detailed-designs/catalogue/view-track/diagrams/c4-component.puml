@@ -11,7 +11,7 @@ Container_Boundary(spa, "Hummi web application") {
 Container_Boundary(api, "Hummi.Api") {
   Component(ctl, "TracksController", "ASP.NET Core controller", "Returns 200 TrackDetailDto or 404\nProblemDetails")
   Component(q, "GetTrackQueryHandler", "MediatR query handler", "Loads the track with artist, album and\ngenre, adds More from or Similar tracks, and\nsets Playable")
-  Component(track, "Track", "Domain entity", "IsPlayable() returns false when Status is\nWithdrawn (L2-009)")
+  Component(track, "Track", "Domain entity", "IsPlayable is false once Withdrawn\n(L2-009)")
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
 }
 ContainerDb(db, "Hummi database", "Azure SQL", "Tracks, artists, albums and genres")
@@ -20,6 +20,6 @@ Rel(client, ctl, "GET /api/tracks/slow-orbit")
 Rel(ctl, q, "Send GetTrackQuery")
 Rel(q, ctx, "Load track with artist, album, genre")
 Rel(ctx, db, "SELECT")
-Rel(q, track, "IsPlayable()")
+Rel(q, track, "IsPlayable")
 Rel(page, dialogs, "open(AddToPlaylist | Share | Report)\n(L2-008)")
 @enduml

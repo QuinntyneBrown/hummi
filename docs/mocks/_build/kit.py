@@ -64,7 +64,7 @@ TRACKS = [
     ("feathers-up", "Feathers Up", "kaiso-collective", "Mas on the Avenue", "Soca", "3:42", "CC0", "128,904"),
     ("road-march-riddim", "Road March Riddim", "lady-tamboo", "Road March Riddim", "Soca", "4:05", "CC0", "96,311"),
     ("wine-slow", "Wine Slow", "marisol-vega", "Slow Wine", "Soca", "3:34", "CC-BY", "212,450"),
-    ("jouvert-morning", "J’ouvert Morning", "kaiso-collective", "Mas on the Avenue", "Soca", "3:58", "CC-BY", "174,022"),
+    ("jouvert-morning", "J’ouvert Morning", "kaiso-collective", "Mas on the Avenue", "Soca", "3:58", "CC0", "174,022"),
     ("big-truck-energy", "Big Truck Energy", "lady-tamboo", "Road March Riddim", "Soca", "3:21", "CC-BY-SA", "88,730"),
     ("sunrise-on-ariapita", "Sunrise on Ariapita", "marisol-vega", "Slow Wine", "Soca", "4:17", "CC-BY-SA", "61,208"),
     ("chrome-copper", "Chrome & Copper", "panorama-players", "Panyard Sessions", "Steelpan", "5:12", "CC-BY", "40,115"),

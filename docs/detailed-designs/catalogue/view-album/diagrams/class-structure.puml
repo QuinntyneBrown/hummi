@@ -14,18 +14,23 @@ title Class structure — View an album
 
 class Album {
   +Guid Id
+  +string Slug
   +string Title
   +int Year
   +Guid ArtistId
-  +IReadOnlyList<AlbumTrack> Tracks
-  +Publish(): Result
+  +bool Published
+  +Publish(tracks: IReadOnlyCollection<Track>)
 }
-class AlbumTrack {
-  +Guid TrackId
-  +int Position
+class Track {
+  +Guid? AlbumId
+  +int AlbumPosition
+  +int DurationSeconds
+  +Licence Licence
 }
 class AlbumDetailDto {
+  +string Slug
   +string Title
+  +int Year
   +ArtistRefDto Artist
   +string Summary
   +IReadOnlyList<TrackSummaryDto> Tracks
@@ -33,7 +38,7 @@ class AlbumDetailDto {
 class GetAlbumQueryHandler {
   +Handle(q: GetAlbumQuery): Task<Result<AlbumDetailDto>>
 }
-Album "1" *-- "1..*" AlbumTrack
+Album "1" o-- "1..*" Track : AlbumId, AlbumPosition
 GetAlbumQueryHandler --> Album : loads
 GetAlbumQueryHandler ..> AlbumDetailDto : returns
 @enduml

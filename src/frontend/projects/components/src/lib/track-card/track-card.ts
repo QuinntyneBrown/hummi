@@ -14,7 +14,7 @@ import { TrackItem, formatDuration } from '../track/track-item';
       <div class="card-track__art">
         <a
           class="card-track__cover"
-          [routerLink]="['/tracks', track().id]"
+          [routerLink]="['/tracks', track().slug]"
           [attr.aria-label]="track().title + ', ' + track().artistName"
         >
           <div class="cover cover--c1" [class.cover--art]="!!track().coverUrl" aria-hidden="true">
@@ -42,7 +42,7 @@ import { TrackItem, formatDuration } from '../track/track-item';
           <hm-icon name="more" />
         </button>
       </div>
-      <a class="card-track__title" [routerLink]="['/tracks', track().id]">
+      <a class="card-track__title" [routerLink]="['/tracks', track().slug]">
         @if (current()) {
           <hm-equalizer [live]="playing()" />
         }

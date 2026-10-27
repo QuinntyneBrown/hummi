@@ -62,6 +62,30 @@ public sealed class DemoSeederTests : IDisposable
     }
 
     [Fact]
+    public async Task Seeded_catalogue_fills_the_track_artist_album_and_licence_pages()
+    {
+        await db.Database.EnsureCreatedAsync();
+        await DemoSeeder.SeedAsync(db, mediaRoot, TimeProvider.System);
+
+        var track = (await new Hummi.Application.Catalogue.GetTrackQueryHandler(db)
+            .Handle(new Hummi.Application.Catalogue.GetTrackQuery("feathers-up"), default)).Value!;
+        var artist = (await new Hummi.Application.Catalogue.GetArtistQueryHandler(db)
+            .Handle(new Hummi.Application.Catalogue.GetArtistQuery("kaiso-collective"), default)).Value!;
+        var album = (await new Hummi.Application.Catalogue.GetAlbumQueryHandler(db)
+            .Handle(new Hummi.Application.Catalogue.GetAlbumQuery("mas-on-the-avenue"), default)).Value!;
+
+        Assert.Equal("Mas on the Avenue", track.Album!.Title);
+        Assert.Equal("openmusic-3b", track.GeneratedWith);
+        Assert.Equal("CC0 1.0 (public domain)", track.LicenceLabel);
+        Assert.Equal(64, track.Waveform.Count);
+        Assert.Equal(["J’ouvert Morning"], track.MoreFromArtist.Select(t => t.Title));
+        Assert.StartsWith("A soca band", artist.Description);
+        Assert.Equal("mas-on-the-avenue", Assert.Single(artist.Releases).Slug);
+        Assert.Equal("2026 · 2 tracks · 8 min · CC0 1.0 (public domain)", album.Summary);
+        Assert.Contains(await db.Tracks.ToListAsync(), t => t.Licence == Hummi.Domain.Catalogue.Licence.CcBySa4);
+    }
+
+    [Fact]
     public async Task Seeding_twice_adds_nothing_the_second_time()
     {
         await DemoSeeder.SeedAsync(db, mediaRoot, TimeProvider.System);

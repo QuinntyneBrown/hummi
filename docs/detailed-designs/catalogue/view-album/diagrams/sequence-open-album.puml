@@ -30,9 +30,9 @@ box "Backend — Hummi Infrastructure" #FFF4E5
   participant "HummiDbContext" as ctx
   database "Hummi database" as db
 end box
-u -> page : Open /albums/night-garden
-page -> client : get("night-garden")
-client -> ctl : GET /api/albums/night-garden
+u -> page : Open /albums/mas-on-the-avenue
+page -> client : get("mas-on-the-avenue")
+client -> ctl : GET /api/albums/mas-on-the-avenue
 ctl -> q : Send GetAlbumQuery
 q -> ctx : Album with tracks by Position
 ctx -> db : SELECT
@@ -41,7 +41,7 @@ ctx --> q : Album
 q --> ctl : Result<AlbumDetailDto>
 ctl --> client : 200 "2026 · 2 tracks · 8 min · CC0 1.0 (public domain)" (L2-011)
 client --> page : Album
-page --> u : Header "Lumen Fox · Album", actions, track list (L2-011)
+page --> u : Header "Kaiso Collective · Album", actions, track list (L2-011)
 u -> page : Activate Play
 page -> player : playList(album.tracks, 0)
 @enduml

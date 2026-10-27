@@ -45,14 +45,14 @@ alt no track
   client --> page : Not found
   page --> u : Not found page (L2-009, L2-044)
 else track found
-  q -> track : IsPlayable()
+  q -> track : IsPlayable
   track --> q : true, or false when Withdrawn (L2-009)
   q -> ctx : More from artist, or similar playable tracks when withdrawn
   q --> ctl : Result<TrackDetailDto>
   ctl --> client : 200 TrackDetailDto
   client --> page : Track
-  page --> u : Header "Track · 4:12", actions, waveform, Details, More from (L2-008)
+  page --> u : Header "Track · 3:42", actions, waveform, Details, More from (L2-008)
 end
 u -> page : Activate Add to playlist, Share or Report this track
-page -> dialogs : open(AddToPlaylist | Share | Report) (L2-008)
+page -> dialogs : open(AddToPlaylist | Share | Report) (L2-008; wired by later journeys)
 @enduml

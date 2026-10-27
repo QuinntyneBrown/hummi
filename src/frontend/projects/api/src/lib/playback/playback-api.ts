@@ -8,6 +8,8 @@ import { toResult } from '../api-result';
 /** One track as every track-returning endpoint lists it. */
 export interface TrackSummaryDto {
   id: string;
+  /** The track's segment of /tracks/{slug}. */
+  slug: string;
   title: string;
   artistName: string;
   durationSeconds: number;

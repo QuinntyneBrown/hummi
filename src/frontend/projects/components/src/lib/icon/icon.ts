@@ -18,6 +18,8 @@ const PATHS = {
   refresh: '<path d="M20 11a8 8 0 1 0-2 5.3M20 4v7h-7"/>',
   search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
   home: '<path d="M3 12 12 3l9 9M5 10v10h14V10"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  flag: '<path d="M5 21V4h12l-2 4 2 4H5"/>',
   shuffle: '<path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M19 4l2 3-2 3M19 14l2 3-2 3"/>',
 } as const;
 

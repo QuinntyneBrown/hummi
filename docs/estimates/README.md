@@ -1,14 +1,14 @@
 # Estimates
 
 - Overall effort: 132 days
-- Complete: 14%
+- Complete: 22%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
 | [interface](interface.md) | 11 days | 44% |
-| [system-feedback](system-feedback.md) | 17 days | 14% |
+| [system-feedback](system-feedback.md) | 17 days | 20% |
 | [accounts](accounts.md) | 19 days | 0% |
-| [catalogue](catalogue.md) | 10 days | 0% |
+| [catalogue](catalogue.md) | 10 days | 97% |
 | [discovery](discovery.md) | 12 days | 57% |
 | [playback](playback.md) | 13 days | 35% |
 | [library](library.md) | 22 days | 0% |

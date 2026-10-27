@@ -16,7 +16,7 @@ The slice is one read query; a scheduled job keeps the monthly listener count cu
 
 **Frontend — Hummi web application (Angular)**
 
-- **`ArtistPage`** — Routed component in @hummi/catalogue. Renders the header, Play, Follow (`hm-toggle-button`) and Share, the Popular `hm-track-list` and the Releases shelf of `hm-album-tile`; empty state via `hm-empty-state`
+- **`ArtistPage`** — Routed component in @hummi/catalogue. Renders the header, `hm-hero` with Play, Follow (`hmButton` with `pressed`) and Share, the Popular `hm-track-list` and the Releases shelf of `hm-media-tile`; empty state via `hm-empty-state`. Follow and Share are wired by the library and sharing journeys
 - **`ArtistsApi`** — Typed HTTP service in @hummi/api. Calls `GET /api/artists/{slug}`
 
 **Backend — Hummi.Api application**
@@ -25,11 +25,11 @@ The slice is one read query; a scheduled job keeps the monthly listener count cu
 
 **Backend — Hummi.Worker application**
 
-- **`MonthlyListenersJob`** — Hosted background job. Recomputes `Artist.MonthlyListeners` from play events of the last 30 days. Schedule: <TO SUPPLY>
+- **`MonthlyListenersJob`** — Hosted background job. Sends `RefreshMonthlyListenersCommand` when the worker starts and then every hour. The handler counts, per artist, the distinct signed-in listeners whose play events of the last 30 days hit the artist's tracks; anonymous plays cannot be told apart and are not counted
 
 **Backend — Hummi Application and Domain**
 
-- **`GetArtistQueryHandler`** — MediatR query handler. Loads the artist, popular tracks by play count, releases and the `Following` flag. Popular list length: <TO SUPPLY>
+- **`GetArtistQueryHandler`** — MediatR query handler. Loads the artist, the 5 most played playable tracks as Popular, the published albums newest first as Releases (year and playable track count), and the `Following` flag, false until follows exist. No playable tracks means the empty state
 
 **Backend — Hummi Infrastructure**
 
@@ -42,7 +42,7 @@ The feature realizes the following level-2 (L2) requirements. Each L2 requiremen
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-010` | `L1-003` | **Artist page.** 1. Given the artist Lumen Fox, when a listener opens `/artists/lumen-fox`, then the heading is "Lumen Fox", the subtitle is "48,210 monthly listeners", the overline is "Artist · openmusic-3b" and the artist description is shown.<br>2. Given the artist page, when it loads, then it shows "Play", "Follow" (not pressed) and "Share" buttons, a "Popular" track list and a "Releases" shelf of album tiles with year and track count (e.g. "Night Garden", "2026 · 2 tracks").<br>3. Given an artist with no published tracks, when the page loads, then it shows "No tracks released yet" with "Lumen Fox hasn’t published anything. Follow to hear when they do." and a "Follow" button. |
+| `L2-010` | `L1-003` | **Artist page.** 1. Given the artist Kaiso Collective, when a listener opens `/artists/kaiso-collective`, then the heading is "Kaiso Collective", the subtitle is "48,210 monthly listeners", the overline is "Artist · openmusic-3b" and the artist description is shown.<br>2. Given the artist page, when it loads, then it shows "Play", "Follow" (not pressed) and "Share" buttons, a "Popular" track list and a "Releases" shelf of album tiles with year and track count (e.g. "Mas on the Avenue", "2026 · 2 tracks").<br>3. Given an artist with no published tracks, when the page loads, then it shows "No tracks released yet" with "Kaiso Collective hasn’t published anything. Follow to hear when they do." and a "Follow" button. |
 
 ## Diagrams
 

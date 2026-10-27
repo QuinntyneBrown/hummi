@@ -19,6 +19,7 @@ class Artist {
   +string Description
   +string ModelName
   +int MonthlyListeners
+  +SetMonthlyListeners(count: int)
 }
 class Album {
   +Guid Id
@@ -26,10 +27,12 @@ class Album {
   +string Title
   +int Year
   +Guid ArtistId
+  +bool Published
 }
 class ArtistDetailDto {
+  +string Slug
   +string Name
-  +string Overline
+  +string ModelName
   +int MonthlyListeners
   +string Description
   +bool Following
@@ -39,11 +42,23 @@ class ArtistDetailDto {
 class GetArtistQueryHandler {
   +Handle(q: GetArtistQuery): Task<Result<ArtistDetailDto>>
 }
+class AlbumTileDto {
+  +string Slug
+  +string Title
+  +int Year
+  +int TrackCount
+}
 class MonthlyListenersJob {
+  +Interval: TimeSpan = 1 hour
   +ExecuteAsync(ct: CancellationToken): Task
+}
+class RefreshMonthlyListenersCommandHandler {
+  +Handle(c: RefreshMonthlyListenersCommand): Task<Result<int>>
 }
 Artist "1" --> "*" Album : releases
 GetArtistQueryHandler --> Artist : loads
 GetArtistQueryHandler ..> ArtistDetailDto : returns
-MonthlyListenersJob --> Artist : updates MonthlyListeners
+ArtistDetailDto --> AlbumTileDto
+MonthlyListenersJob ..> RefreshMonthlyListenersCommandHandler : sends command
+RefreshMonthlyListenersCommandHandler --> Artist : updates MonthlyListeners
 @enduml

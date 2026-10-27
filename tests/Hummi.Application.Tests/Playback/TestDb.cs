@@ -16,6 +16,8 @@ internal sealed class TestDb : DbContext, IHummiDbContext
 
     public DbSet<Track> Tracks => Set<Track>();
 
+    public DbSet<Album> Albums => Set<Album>();
+
     public DbSet<Genre> Genres => Set<Genre>();
 
     public DbSet<PlayEvent> PlayEvents => Set<PlayEvent>();

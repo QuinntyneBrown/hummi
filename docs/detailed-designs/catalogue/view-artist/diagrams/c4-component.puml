@@ -4,7 +4,7 @@ LAYOUT_WITH_LEGEND()
 title Components — View an artist
 
 Container_Boundary(spa, "Hummi web application") {
-  Component(page, "ArtistPage", "Routed component in @hummi/catalogue", "Renders the header, Play, Follow\n(hm-toggle-button) and Share, the Popular\nhm-track-list and the Releases shelf of\nhm-album-tile; empty state via\nhm-empty-state")
+  Component(page, "ArtistPage", "Routed component in @hummi/catalogue", "Renders the header, hm-hero with Play,\nFollow (hmButton pressed) and Share, the\nPopular hm-track-list and the Releases shelf\nof hm-media-tile; empty state via\nhm-empty-state")
   Component(client, "ArtistsApi", "Typed HTTP service in @hummi/api", "Calls GET /api/artists/{slug}")
 }
 Container_Boundary(api, "Hummi.Api") {
@@ -13,7 +13,7 @@ Container_Boundary(api, "Hummi.Api") {
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
 }
 Container_Boundary(wk, "Hummi.Worker") {
-  Component(job, "MonthlyListenersJob", "Hosted background job", "Recomputes Artist.MonthlyListeners from play\nevents of the last 30 days")
+  Component(job, "MonthlyListenersJob", "Hosted background job", "Hourly, sends RefreshMonthlyListenersCommand:\ndistinct signed-in listeners of the last 30 days")
 }
 ContainerDb(db, "Hummi database", "Azure SQL", "Artists, albums, tracks, follows and play\nevents")
 Rel(page, client, "get('lumen-fox')")

@@ -13,6 +13,8 @@ public sealed class HummiDbContext(DbContextOptions<HummiDbContext> options) : D
 
     public DbSet<Genre> Genres => Set<Genre>();
 
+    public DbSet<Album> Albums => Set<Album>();
+
     public DbSet<PlayEvent> PlayEvents => Set<PlayEvent>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>

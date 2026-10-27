@@ -22,17 +22,72 @@ namespace Hummi.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Hummi.Domain.Catalogue.Album", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ArtistId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Published")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArtistId");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Albums", (string)null);
+                });
+
             modelBuilder.Entity("Hummi.Domain.Catalogue.Artist", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("ModelName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("MonthlyListeners")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
 
                     b.ToTable("Artists", (string)null);
                 });
@@ -194,6 +249,12 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset>("AddedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid?>("AlbumId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AlbumPosition")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("ArtistId")
                         .HasColumnType("uniqueidentifier");
 
@@ -207,13 +268,26 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("GenreId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("Licence")
+                        .HasColumnType("int");
+
                     b.Property<long>("PlayCount")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
+
+                    b.Property<byte[]>("Waveform")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("varbinary(256)");
 
                     b.Property<bool>("Withdrawn")
                         .HasColumnType("bit");
@@ -222,15 +296,29 @@ namespace Hummi.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("AddedAt");
 
-                    b.HasIndex("ArtistId");
-
                     b.HasIndex("PlayCount");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.HasIndex("AlbumId", "AlbumPosition");
+
+                    b.HasIndex("ArtistId", "PlayCount");
 
                     b.HasIndex("GenreId", "AddedAt");
 
                     b.HasIndex("GenreId", "PlayCount");
 
                     b.ToTable("Tracks", (string)null);
+                });
+
+            modelBuilder.Entity("Hummi.Domain.Catalogue.Album", b =>
+                {
+                    b.HasOne("Hummi.Domain.Catalogue.Artist", null)
+                        .WithMany()
+                        .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Hummi.Domain.Catalogue.PlayEvent", b =>
@@ -244,6 +332,11 @@ namespace Hummi.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Hummi.Domain.Catalogue.Track", b =>
                 {
+                    b.HasOne("Hummi.Domain.Catalogue.Album", null)
+                        .WithMany()
+                        .HasForeignKey("AlbumId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Hummi.Domain.Catalogue.Artist", "Artist")
                         .WithMany()
                         .HasForeignKey("ArtistId")

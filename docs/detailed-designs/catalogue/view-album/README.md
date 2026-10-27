@@ -15,7 +15,7 @@ The slice is one read query. The publish invariant lives in the `Album` entity.
 
 **Frontend — Hummi web application (Angular)**
 
-- **`AlbumPage`** — Routed component in @hummi/catalogue. Renders the header, Play, Add to playlist and Share, the summary line and `hm-track-list`
+- **`AlbumPage`** — Routed component in @hummi/catalogue. Renders the header, Play, Add to playlist and Share, `hm-track-list` and the summary line. Add to playlist and Share are wired by later journeys
 - **`AlbumsApi`** — Typed HTTP service in @hummi/api. Calls `GET /api/albums/{slug}`
 - **`PlayerStore`** — Signal store in @hummi/api. Owns the queue, the current track, position and play state, and drives the `HTMLAudioElement`
 
@@ -25,8 +25,8 @@ The slice is one read query. The publish invariant lives in the `Album` entity.
 
 **Backend — Hummi Application and Domain**
 
-- **`GetAlbumQueryHandler`** — MediatR query handler. Loads the album with ordered tracks and builds the summary; total minutes round up <TO SUPPLY: rounding rule>
-- **`Album`** — Domain entity. `Publish()` fails unless the album holds at least one track (`L2-011`)
+- **`GetAlbumQueryHandler`** — MediatR query handler. Loads a published album with its playable tracks in `AlbumPosition` order and builds the summary: minutes are the total seconds divided by 60, rounded up (460 s is 8 min); the licence is the one every track shares, otherwise "mixed licences". An unpublished or unknown album is 404
+- **`Album`** — Domain entity. `Publish(tracks)` fails unless it is given at least one track, all of them the album's own (`L2-011`)
 
 **Backend — Hummi Infrastructure**
 
@@ -39,7 +39,7 @@ The feature realizes the following level-2 (L2) requirements. Each L2 requiremen
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-011` | `L1-003` | **Album page.** 1. Given the album Night Garden, when a listener opens `/albums/night-garden`, then the heading is "Night Garden" and the subtitle is "Lumen Fox · Album" with the artist linked.<br>2. Given the album page, when it loads, then it shows "Play", "Add to playlist" and "Share" buttons, the album track list, and the summary "{year} · {n} tracks · {minutes} min · {licence}" (e.g. "2026 · 2 tracks · 8 min · CC0 1.0 (public domain)").<br>3. Given any album, when it is published, then it has at least one track; the album page has no empty state. |
+| `L2-011` | `L1-003` | **Album page.** 1. Given the album Mas on the Avenue, when a listener opens `/albums/mas-on-the-avenue`, then the heading is "Mas on the Avenue" and the subtitle is "Kaiso Collective · Album" with the artist linked.<br>2. Given the album page, when it loads, then it shows "Play", "Add to playlist" and "Share" buttons, the album track list, and the summary "{year} · {n} tracks · {minutes} min · {licence}" (e.g. "2026 · 2 tracks · 8 min · CC0 1.0 (public domain)").<br>3. Given any album, when it is published, then it has at least one track; the album page has no empty state. |
 
 ## Diagrams
 
@@ -63,7 +63,7 @@ The Angular application is delivered by the `web` container, which also proxies 
 
 ### Class structure
 
-`Album` composes one or more `AlbumTrack` positions and enforces the at-least-one-track rule in `Publish()`.
+A `Track` joins an `Album` through `AlbumId` and `AlbumPosition`; `Album.Publish(tracks)` enforces the at-least-one-track rule.
 
 ![Class diagram for view an album](diagrams/class-structure.png)
 
