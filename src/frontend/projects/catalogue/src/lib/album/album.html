@@ -43,6 +43,7 @@
           [currentTrackId]="player.current()?.id ?? null"
           [playing]="player.playing()"
           (playTrack)="player.playFrom(a.tracks, $event)"
+          (more)="overlays.openTrackMenu($event)"
         />
         <p class="text-caption album-summary">{{ a.summary }}</p>
       }

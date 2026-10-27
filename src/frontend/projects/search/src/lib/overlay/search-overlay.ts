@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, outpu
 import {
   ApiProblem,
   GenresApi,
+  PlayerOverlays,
   PlayerStore,
   REQUEST_TIMEOUT_MS,
   SearchApi,
@@ -58,6 +59,7 @@ export class SearchOverlayComponent {
   private readonly store = inject(SearchStore);
   protected readonly recent = inject(RecentSearchesStore);
   protected readonly player = inject(PlayerStore);
+  protected readonly overlays = inject(PlayerOverlays);
   protected readonly genres = apiResource(() => inject(GenresApi).directory());
   /** Close or Escape; the shell closes the layer and returns focus to the header. */
   readonly closed = output<void>();

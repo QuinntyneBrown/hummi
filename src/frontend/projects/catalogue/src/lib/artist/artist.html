@@ -46,6 +46,7 @@
               [currentTrackId]="player.current()?.id ?? null"
               [playing]="player.playing()"
               (playTrack)="player.playFrom(a.popular, $event)"
+              (more)="overlays.openTrackMenu($event)"
             />
           </hm-shelf>
           @if (a.releases.length) {

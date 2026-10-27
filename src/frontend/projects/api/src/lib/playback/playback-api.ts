@@ -16,6 +16,9 @@ export interface TrackSummaryDto {
   coverUrl: string | null;
   /** The signed-in listener likes it; always false for a visitor. */
   liked: boolean;
+  /** The genre it is listed under ("Playing from", "Then, more", "Go to"); null while unclassified. */
+  genreSlug?: string | null;
+  genreName?: string | null;
 }
 
 /** GET /api/home: the Recently added shelf and the Top 10 on Hummi this week. */

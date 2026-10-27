@@ -16,27 +16,26 @@ skinparam package {
 }
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "AppShellComponent" as shell
   participant "ShortcutService" as keys
   participant "PlayerStore" as player
-  participant "DialogService" as dialogs
-  participant "LibraryApi" as like
-  participant "Router" as router
-  participant "ShortcutsDialogComponent" as dlg
+  participant "PlayerOverlays" as overlays
+  participant "SearchStore" as search
 end box
-u -> keys : keydown
-keys -> keys : isTextField(event.target)
-alt text field focused
-  keys --> u : Key types into the field, no shortcut (L2-017)
+u -> shell : keydown
+shell -> keys : handle(event)
+alt text field focused, Ctrl/Alt/Meta, or Space on a focused control
+  keys --> u : No shortcut; the key types or activates the control (L2-017)
 else Space
   keys -> player : toggle() (L2-017)
-else ArrowRight / ArrowLeft
-  keys -> player : next() / previous() (L2-017)
-else L
-  keys -> like : like(currentTrack) (L2-017)
+else → or ←
+  keys -> player : next() or previous() (L2-017)
 else Q
-  keys -> router : navigate /queue (L2-017)
+  keys -> overlays : openQueue() (L2-017)
+else /
+  keys -> search : openWith() (L2-017)
 else ?
-  keys -> dialogs : open(ShortcutsDialogComponent)
-  dialogs -> dlg : Render "Work while the page is focused and no text field is." and six rows (L2-017)
+  keys -> keys : dialogOpen = true (L2-017)
+  shell --> u : Keyboard shortcuts dialog; page behind inert (L2-047)
 end
 @enduml

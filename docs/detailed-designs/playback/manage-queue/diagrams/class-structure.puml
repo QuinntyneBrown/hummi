@@ -13,25 +13,32 @@ hide empty members
 title Class structure — Manage the queue
 
 class PlayerStore {
-  +upNext: Computed<TrackSummaryDto[]>
-  +upNextDurationSeconds: Computed<number>
-  +playNext(track: TrackSummaryDto): void
+  +queue: Signal<TrackSummaryDto[]>
+  +upNext: Signal<TrackSummaryDto[]>
+  +addToQueue(track): void
+  +playNext(track): void
+  +removeUpNext(index): void
   +clearUpNext(): void
 }
-class SavedQueue {
-  +Guid ListenerId
-  +IReadOnlyList<Guid> TrackIds
-  +int CurrentIndex
-  +DateTimeOffset UpdatedAt
+class PlayerOverlays {
+  +queueOpen: Signal<boolean>
+  +trackMenu: Signal<TrackMenuState | null>
+  +openQueue(): void
+  +openTrackMenu(track, opener): void
 }
-class SaveQueueCommand {
-  +IReadOnlyList<Guid> TrackIds
-  +int CurrentIndex
+class QueuePanelComponent {
+  +more: Signal<TrackSummaryDto[]>
 }
-class SaveQueueCommandHandler {
-  +Handle(c: SaveQueueCommand): Task<Result>
+class TrackMenuHostComponent {
+  +playNext(menu): void
+  +addToQueue(menu): void
 }
-SaveQueueCommandHandler ..> SaveQueueCommand : handles
-SaveQueueCommandHandler --> SavedQueue : upserts
-PlayerStore ..> SaveQueueCommand : syncs via QueueApi
+class ToastService {
+  +show(message, options): void
+}
+QueuePanelComponent ..> PlayerStore
+QueuePanelComponent ..> PlayerOverlays
+TrackMenuHostComponent ..> PlayerStore
+TrackMenuHostComponent ..> ToastService
+TrackMenuHostComponent ..> PlayerOverlays
 @enduml

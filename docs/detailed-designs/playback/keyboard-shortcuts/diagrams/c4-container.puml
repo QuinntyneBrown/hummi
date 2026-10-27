@@ -7,10 +7,7 @@ Person(listener, "Listener", "Uses Hummi in a browser")
 System_Boundary(hummi, "Hummi") {
   Container(web, "web", "Caddy", "Serves the Angular build, terminates TLS, proxies /api and /media")
   Container(spa, "Hummi web application", "Angular", "Maps keys to player actions")
-  Container(api, "Hummi.Api", "ASP.NET Core", "Receives likes")
 }
 Rel(listener, web, "Opens", "HTTPS")
 Rel(web, spa, "Delivers")
-Rel(spa, web, "Calls /api", "JSON/HTTPS")
-Rel(web, api, "Proxies", "HTTP")
 @enduml

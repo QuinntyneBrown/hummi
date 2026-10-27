@@ -6,13 +6,13 @@ title Containers — Manage the queue
 Person(listener, "Listener", "Uses Hummi in a browser")
 System_Boundary(hummi, "Hummi") {
   Container(web, "web", "Caddy", "Serves the Angular build, terminates TLS, proxies /api and /media")
-  Container(spa, "Hummi web application", "Angular", "Renders and edits the queue")
-  Container(api, "Hummi.Api", "ASP.NET Core", "Stores signed-in listeners' queues")
-  ContainerDb(db, "Hummi database", "Azure SQL, EF Core", "Catalogue, accounts, library and notifications")
+  Container(spa, "Hummi web application", "Angular", "Renders and edits the queue in the browser")
+  Container(api, "Hummi.Api", "ASP.NET Core", "Lists the genre's tracks for Then, more")
+  ContainerDb(media, "media volume", "Docker volume /data/media", "Audio files")
 }
 Rel(listener, web, "Opens", "HTTPS")
 Rel(web, spa, "Delivers")
-Rel(spa, web, "Calls /api", "JSON/HTTPS")
+Rel(spa, web, "Calls /api and /media", "JSON/HTTPS")
 Rel(web, api, "Proxies", "HTTP")
-Rel(api, db, "Reads and writes", "EF Core")
+Rel(api, media, "Streams files from", "byte ranges")
 @enduml

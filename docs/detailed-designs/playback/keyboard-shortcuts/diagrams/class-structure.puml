@@ -12,21 +12,19 @@ skinparam class {
 hide empty members
 title Class structure — Use keyboard shortcuts
 
-class ShortcutService {
-  -bindings: Map<string, () => void>
-  +onKeydown(e: KeyboardEvent): void
-  -isTextField(target: EventTarget): boolean
-}
 class ShortcutBinding {
-  +key: string
+  +keys: string[]
   +label: string
-  +run: () => void
+  +action: string
+}
+class ShortcutService {
+  +dialogOpen: Signal<boolean>
+  +handle(event: KeyboardEvent): void
+  +closeDialog(): void
 }
 class ShortcutsDialogComponent {
-  +bindings: ShortcutBinding[]
+  +items: DescriptionItem[]
 }
-ShortcutService "1" *-- "6" ShortcutBinding
-ShortcutService ..> PlayerStore
-ShortcutService ..> DialogService
-ShortcutsDialogComponent ..> ShortcutBinding : lists
+ShortcutService o-- "6" ShortcutBinding : SHORTCUTS
+ShortcutsDialogComponent ..> ShortcutBinding : lists SHORTCUTS
 @enduml

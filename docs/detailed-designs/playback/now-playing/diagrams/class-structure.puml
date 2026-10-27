@@ -12,21 +12,33 @@ skinparam class {
 hide empty members
 title Class structure — Show Now playing
 
-class NowPlayingPage {
-  +track: Computed<TrackSummaryDto | null>
-  +mainLabel(): "Play" | "Pause"
+class NowPlayingComponent {
+  -cameFromApp: boolean
+  +close(): void
+  +openQueue(): void
+  +openMenu(): void
+}
+class PlayerLayerComponent {
+  +track: TrackItem | null
+  +shuffle: boolean
+  +repeat: boolean
+  +upNext: TrackItem[]
+  +resumeFrom: number | null
 }
 class PlayerStore {
+  +current: Signal<TrackSummaryDto | null>
+  +upNext: Signal<TrackSummaryDto[]>
   +shuffle: Signal<boolean>
   +repeat: Signal<boolean>
-  +resumeAtSeconds: Signal<number | null>
+  +resumeFrom: Signal<number | null>
   +toggleShuffle(): void
   +toggleRepeat(): void
-  +resume(): void
+  -unshuffled: TrackSummaryDto[] | null
 }
 class ConnectivityService {
   +online: Signal<boolean>
 }
-NowPlayingPage ..> PlayerStore : reads and commands
-PlayerStore --> ConnectivityService : resumes on online
+NowPlayingComponent *-- PlayerLayerComponent : renders
+NowPlayingComponent ..> PlayerStore : reads and commands
+PlayerStore --> ConnectivityService : stalls offline, resumes online
 @enduml
