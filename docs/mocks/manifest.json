@@ -348,6 +348,20 @@
       }
     },
     {
+      "id": "saved",
+      "kind": "page",
+      "title": "Saved on this device",
+      "states": [
+        "default",
+        "empty"
+      ],
+      "route": "/saved",
+      "not_applicable": {
+        "loading": "Read from this device at once.",
+        "error": "Nothing is fetched; the list is on this device."
+      }
+    },
+    {
       "id": "share",
       "kind": "dialog",
       "title": "Share",

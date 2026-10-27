@@ -4,7 +4,8 @@ LAYOUT_WITH_LEGEND()
 title Components — Reset a password
 
 Container_Boundary(spa, "Hummi web application") {
-  Component(page, "ResetPasswordPage", "Routed component in @hummi/accounts", "Renders the request form, Check your inbox\nstate and danger alert; a\nchoose-new-password form handles the link\n<TO SUPPLY: mock for that form>")
+  Component(page, "ResetPasswordPage", "Routed component in @hummi/accounts", "Renders the request form, Check your inbox\nstate and danger alert")
+  Component(newpw, "NewPasswordPage", "Routed component in @hummi/accounts", "Redeems the link: Choose a new password,\nPassword changed or This link has expired")
   Component(client, "AuthApi", "Typed HTTP service in @hummi/api", "Calls the anonymous /api/auth/* endpoints")
 }
 Container_Boundary(api, "Hummi.Api") {

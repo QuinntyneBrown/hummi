@@ -152,7 +152,15 @@ def errpage(code, title, text, ic, actions):
 not_found = errpage("404", "We couldn’t find that page", "The link may be old or mistyped. The track or playlist might also have been removed by its owner.", "search", btn("Go to Home", "primary", href=P("home")) + btn("Search Hummi", "", href=P("search")))
 forbidden = errpage("403", "You don’t have access to this", "This playlist is private. Ask the owner to share it with you, or sign in with the account they invited.", "lock", btn("Go to Home", "primary", href=P("home")) + btn("Switch account", "", href=P("sign-in")))
 server_error = errpage("500", "Something broke on our side", "We’ve been told and we’re fixing it. Nothing you saved is lost; try again in a minute.", "alert", btn("Try again", "primary", "refresh", href="default.html") + btn("Go to Home", "", href=P("home")))
-offline_page = errpage("Offline", "You’re offline", "Hummi can’t reach the network. Tracks you saved on this device still play; everything else will load when you’re back.", "offline", btn("Retry", "primary", "refresh", href="default.html") + btn("Open saved tracks", "", href=P("library")))
+offline_page = errpage("Offline", "You’re offline", "Hummi can’t reach the network. Tracks you saved on this device still play; everything else will load when you’re back.", "offline", btn("Retry", "primary", "refresh", href="default.html") + btn("Open saved tracks", "", href=P("saved")))
+
+
+def saved(state):
+    ids = ["feathers-up", "panyard-nights", "wine-slow"]
+    c = {"default": track_list(ids, label="Saved on this device"),
+         "empty": empty("music", "Nothing saved yet", "Tracks you play are kept on this device so they play offline too.", btn("Browse genres", "primary", href=P("browse")))}
+    return frame(state, "", "Saved on this device", "3 tracks · the last 25 you played" if state == "default" else "0 tracks · the last 25 you played", c,
+                 banner=alert("warning", "You’re offline", "Showing saved tracks. Reconnect to stream anything new.").replace('class="alert alert--warning"', 'class="alert alert--warning banner"'))
 
 
 NA_STATIC = {"loading": "Static form; nothing is fetched before it is shown.", "empty": "A form has no collection that could be empty."}
@@ -171,4 +179,5 @@ SCREENS = [
     dict(id="forbidden", kind="page", title="Forbidden", route="/403", states=["default"], na=NA_ERR, render=forbidden, desc="403 screen for private content"),
     dict(id="server-error", kind="page", title="Server error", route="/500", states=["default"], na=NA_ERR, render=server_error, desc="500 screen"),
     dict(id="offline", kind="page", title="Offline", route="/offline", states=["default"], na=NA_ERR, render=offline_page, desc="Offline screen"),
+    dict(id="saved", kind="page", title="Saved on this device", route="/saved", states=["default", "empty"], na={"loading": "Read from this device at once.", "error": "Nothing is fetched; the list is on this device."}, render=saved, desc="Tracks kept on this device for offline listening"),
 ]
