@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View the library
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "LibraryPage", "Routed component in @hummi/library", "Renders the header with New playlist,\nhm-tabs, hm-playlist-tile grid, liked\nhm-track-list, hm-artist-tile grid and the\nempty and signed-out states")
+  Component(session, "SessionStore", "Signal store in @hummi/api", "Holds the signed-in listener, the access\ntoken and the signed-in/signed-out state the\nshell reads")
+  Component(client, "LibraryApi", "Typed HTTP service in @hummi/api", "Calls the authorized /api/me/* library\nendpoints")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "LibraryController", "ASP.NET Core controller", "GET /api/me/library; [Authorize]")
+  Component(q, "GetLibraryQueryHandler", "MediatR query handler", "Returns counts, owned and saved playlists,\nliked tracks and followed artists")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Playlists, saved playlists, likes and\nfollows")
+Rel(page, session, "isSignedIn()")
+Rel(page, client, "getLibrary()")
+Rel(client, ctl, "GET /api/me/library")
+Rel(ctl, q, "Send GetLibraryQuery(listenerId)")
+Rel(q, ctx, "Owned and saved playlists, likes,\nfollows")
+Rel(ctx, db, "SELECT")
+@enduml

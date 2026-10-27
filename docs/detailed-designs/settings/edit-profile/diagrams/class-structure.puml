@@ -1,0 +1,50 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Edit the profile
+
+enum ThemePreference {
+  Device
+  Light
+  Dark
+}
+class ListenerSettings {
+  +Guid ListenerId
+  +bool AutoplaySimilar = true
+  +bool Crossfade = false
+  +bool NotifyNewReleases = true
+  +bool ProductNews = false
+  +ThemePreference Theme = Device
+}
+ListenerSettings --> ThemePreference
+
+class Listener {
+  +string DisplayName
+  +string Email
+  +Rename(name): Result
+}
+class UpdateSettingsCommand {
+  +string DisplayName
+  +string Email
+  +bool AutoplaySimilar
+  +bool Crossfade
+  +bool NotifyNewReleases
+  +bool ProductNews
+  +ThemePreference Theme
+}
+class UpdateSettingsCommandHandler {
+  +Handle(c): Task<Result<SettingsDto>>
+}
+UpdateSettingsCommandHandler ..> UpdateSettingsCommand : handles
+UpdateSettingsCommandHandler --> Listener : updates
+UpdateSettingsCommandHandler --> ListenerSettings : updates
+@enduml

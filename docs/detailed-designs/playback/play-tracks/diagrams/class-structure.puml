@@ -1,0 +1,60 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Play tracks
+
+enum PlayState {
+  Idle
+  Loading
+  Playing
+  Paused
+  Stalled
+}
+class PlayerStore {
+  +queue: Signal<TrackSummaryDto[]>
+  +state: Signal<PlayState>
+  +position: Signal<number>
+  +duration: Signal<number | null>
+  +current: Computed<TrackSummaryDto | null>
+  +playFrom(tracks, index): void
+  +toggle(): void
+  +next(): void
+  +previous(): void
+}
+class PlayerBarComponent <<hm-player-bar>> {
+  +track: input<TrackItem>
+  +playing: input<boolean>
+  +stalled: input<boolean>
+}
+class RecordPlayCommand {
+  +Guid TrackId
+  +Guid? ListenerId
+}
+class RecordPlayCommandHandler {
+  +Handle(c: RecordPlayCommand): Task<Result>
+}
+class PlayEvent {
+  +Guid Id
+  +Guid TrackId
+  +Guid? ListenerId
+  +DateTimeOffset PlayedAt
+}
+class Track {
+  +long PlayCount
+  +RegisterPlay(): void
+}
+PlayerStore --> PlayState
+PlayerBarComponent ..> PlayerStore : reads
+RecordPlayCommandHandler ..> RecordPlayCommand : handles
+RecordPlayCommandHandler ..> PlayEvent : creates
+RecordPlayCommandHandler --> Track : RegisterPlay()
+@enduml

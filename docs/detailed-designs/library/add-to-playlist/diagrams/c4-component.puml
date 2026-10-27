@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Add a track to playlists
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(dlg, "AddToPlaylistDialog", "Dialog component in @hummi/library", "Renders hm-dialog with hm-checkbox per\nplaylist, New playlist link, Cancel and\nSave; busy, error and no-playlists states")
+  Component(gate, "SignInGate", "Service in @hummi/api", "Checks SessionStore before a save action and\nopens the Sign in to save this dialog when\nsigned out (L2-032)")
+  Component(client, "PlaylistsApi", "Typed HTTP service in @hummi/api", "Calls the /api/playlists endpoints")
+  Component(toast, "ToastService", "Service in @hummi/components", "Queues hm-toast notifications in the toast\nregion (L2-041)")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "PlaylistsController", "ASP.NET Core controller", "Authorized /api/playlists endpoints; maps\nresults through ProblemDetailsMapper")
+  Component(cmd, "SetTrackMembershipCommandHandler", "MediatR command handler", "Loads the listed owned playlists, adds or\nremoves the track on each, and commits once")
+  Component(pl, "Playlist", "Domain aggregate", "AddTrack returns the new position; owner\ncheck on every change")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Playlists and entries")
+Rel(dlg, gate, "requireSession() (L2-032)")
+Rel(dlg, client, "getMine(trackId)")
+Rel(client, ctl, "GET\n/api/playlists/mine?containing={trackId}")
+Rel(ctl, cmd, "Send SetTrackMembershipCommand")
+Rel(cmd, pl, "AddTrack / RemoveTracks per playlist")
+Rel(cmd, ctx, "SaveChanges in one transaction")
+Rel(ctx, db, "INSERT, DELETE")
+Rel(dlg, toast, "success 'Added to Focus' '“Slow\nOrbit” is now track 12.' with Undo\n(L2-020)")
+@enduml

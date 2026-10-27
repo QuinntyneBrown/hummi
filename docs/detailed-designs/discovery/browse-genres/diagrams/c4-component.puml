@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Browse genres
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "BrowsePage", "Routed component in @hummi/discovery", "Renders the header, the Moods shelf with\nhm-chip and the All genres grid with\nhm-genre-tile; the error state uses\nhm-error-block")
+  Component(client, "GenresApi", "Typed HTTP service in @hummi/api", "Calls GET /api/genres")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "GenresController", "ASP.NET Core controller", "Exposes GET /api/genres and GET\n/api/genres/{slug}/tracks")
+  Component(q, "GetGenreDirectoryQueryHandler", "MediatR query handler", "Returns each genre with its published-track\ncount, the moods and the total openly\nlicensed track count")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Genres, moods and published tracks")
+Rel(page, client, "getDirectory()")
+Rel(client, ctl, "GET /api/genres")
+Rel(ctl, q, "Send GetGenreDirectoryQuery")
+Rel(q, ctx, "Count published tracks per genre")
+Rel(ctx, db, "SELECT ... GROUP BY GenreId")
+@enduml

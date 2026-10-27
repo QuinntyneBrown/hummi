@@ -1,0 +1,37 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Show loading and error states
+
+class ResourceState<T> {
+  +status: "loading" | "ready" | "error"
+  +value?: T
+  +problem?: ApiProblem
+}
+class ApiResource<T> {
+  +state: Signal<ResourceState<T>>
+  +reload(): void
+}
+class ApiProblem {
+  +status: number
+  +title: string
+  +traceId: string
+}
+class ErrorBlockComponent <<hm-error-block>> {
+  +title: input<string>
+  +text: input<string>
+  +retry: output<void>
+}
+ApiResource --> ResourceState
+ResourceState --> ApiProblem
+ErrorBlockComponent ..> ApiResource : retry() -> reload()
+@enduml

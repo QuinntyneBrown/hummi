@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Like tracks and follow artists
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(btn, "Like or Follow button", "`hm-icon-button` / `hm-toggle-button` in @hummi/components", "Reflects aria-pressed and the label "Like\n{title}" or "Remove like from {title}"")
+  Component(store, "LibraryStore", "Signal store in @hummi/api", "Holds liked track ids and followed artist\nids; applies optimistic toggles and reverts\non failure")
+  Component(gate, "SignInGate", "Service in @hummi/api", "Checks SessionStore before a save action and\nopens the Sign in to save this dialog when\nsigned out (L2-032)")
+  Component(client, "LibraryApi", "Typed HTTP service in @hummi/api", "Calls the authorized /api/me/* library\nendpoints")
+  Component(toast, "ToastService", "Service in @hummi/components", "Queues hm-toast notifications in the toast\nregion (L2-041)")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "LibraryController", "ASP.NET Core controller", "PUT/DELETE /api/me/likes/{trackId} and\n/api/me/follows/{artistId}; [Authorize]")
+  Component(cmd, "LikeTrackCommandHandler", "MediatR command handlers", "LikeTrackCommand, UnlikeTrackCommand,\nFollowArtistCommand, UnfollowArtistCommand;\neach inserts or deletes one row if needed")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Likes and follows, unique on (ListenerId,\nTargetId)")
+Rel(btn, gate, "requireSession()")
+Rel(btn, store, "toggleLike(track)")
+Rel(store, client, "like(trackId)")
+Rel(client, ctl, "PUT /api/me/likes/{trackId}")
+Rel(ctl, cmd, "Send LikeTrackCommand")
+Rel(cmd, ctx, "Insert Like if absent")
+Rel(ctx, db, "INSERT")
+Rel(store, toast, "danger 'Couldn’t like the track'\nwith Retry (L2-018)")
+@enduml

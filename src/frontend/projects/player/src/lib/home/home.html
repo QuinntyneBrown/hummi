@@ -1,0 +1,53 @@
+<h1 class="visually-hidden">Home</h1>
+@let state = home.state();
+@switch (state.status) {
+  @case ('loading') {
+    <hm-shelf heading="Recently added" [rail]="true" [busy]="true">
+      @for (card of cards; track card) {
+        <div class="card-track" aria-hidden="true">
+          <hm-skeleton shape="card" />
+          <hm-skeleton />
+          <hm-skeleton />
+        </div>
+      }
+    </hm-shelf>
+    <hm-shelf heading="Top 10 on Hummi this week" [busy]="true">
+      <ol class="track-list" aria-hidden="true">
+        @for (row of rows; track row) {
+          <li class="track">
+            <span></span>
+            <hm-skeleton shape="rect" width="3rem" height="3rem" />
+            <div><hm-skeleton width="50%" /><hm-skeleton width="30%" /></div>
+            <span></span>
+          </li>
+        }
+      </ol>
+    </hm-shelf>
+  }
+  @case ('error') {
+    <hm-error-block (retry)="home.reload()" />
+  }
+  @case ('ready') {
+    @if (state.status === 'ready') {
+      <hm-shelf heading="Recently added" note="Fresh this week" [rail]="true">
+        @for (track of state.value.recentlyAdded; track track.id; let i = $index) {
+          <hm-track-card
+            [track]="track"
+            [current]="track.id === player.current()?.id"
+            [playing]="player.playing()"
+            (playTrack)="player.playFrom(state.value.recentlyAdded, i)"
+          />
+        }
+      </hm-shelf>
+      <hm-shelf heading="Top 10 on Hummi this week" note="Most played across the islands">
+        <hm-track-list
+          [tracks]="state.value.topTen"
+          label="Top 10 on Hummi this week"
+          [currentTrackId]="player.current()?.id ?? null"
+          [playing]="player.playing()"
+          (playTrack)="player.playFrom(state.value.topTen, $event)"
+        />
+      </hm-shelf>
+    }
+  }
+}

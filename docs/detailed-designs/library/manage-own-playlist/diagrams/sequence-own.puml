@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Open and edit an owned playlist
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "PlaylistPage" as page
+  participant "SelectionModel" as sel
+  participant "PlaylistsApi" as client
+  participant "DialogService" as dialogs
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "PlaylistsController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "GetPlaylistQueryHandler" as q
+  participant "RemovePlaylistEntriesCommandHandler" as cmd
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+u -> page : Open /playlists/{id}
+page -> client : get(id)
+client -> ctl : GET /api/playlists/{id}
+ctl -> q : Send GetPlaylistQuery
+q -> ctx : Load playlist with entries
+ctx -> db : SELECT
+ctl --> client : 200 PlaylistDetailDto(IsOwner = true)
+client --> page : Playlist
+alt no entries
+  page --> u : "Nothing here yet", Browse genres, Share only (L2-023)
+else
+  page --> u : "24 tracks · 1 h 32 min · private", Play, Share, Rename, Delete (L2-023)
+end
+u -> page : Select two rows
+page -> sel : select(a, b)
+page --> u : "2 tracks selected" with Remove from playlist, Add to another playlist (L2-023)
+alt Remove from playlist
+  page -> client : removeEntries(id, [a, b])
+  client -> ctl : DELETE /api/playlists/{id}/entries
+  ctl -> cmd : Send RemovePlaylistEntriesCommand
+  cmd -> ctx : Remove entries, renumber positions
+else Add to another playlist
+  page -> dialogs : open(AddToPlaylistDialog, selected tracks) (L2-023)
+end
+@enduml

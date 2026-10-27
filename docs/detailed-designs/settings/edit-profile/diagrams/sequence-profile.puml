@@ -1,0 +1,52 @@
+@startuml
+title UML sequence behaviour — Save the profile
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "SettingsPage" as page
+  participant "SettingsApi" as client
+  participant "SessionStore" as session
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "SettingsController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "UpdateSettingsValidator" as val
+  participant "UpdateSettingsCommandHandler" as cmd
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+u -> page : Open /settings
+page -> client : get()
+client -> ctl : GET /api/me/settings
+ctl --> client : 200 SettingsDto
+page --> u : "Priya Natarajan · priya@example.com", Profile section, Save changes, Sign out (L2-033)
+u -> page : Clear display name, Save changes
+page --> u : "Display name can’t be empty" (L2-033)
+u -> page : Enter name, Save changes
+page -> page : Read-only, "Saving…" disabled (L2-033)
+page -> client : update(dto)
+client -> ctl : PUT /api/me/settings
+ctl -> val : Validate
+ctl -> cmd : Send UpdateSettingsCommand
+cmd -> ctx : Update Listener and ListenerSettings
+ctx -> db : UPDATE
+ctl --> client : 200 SettingsDto
+client -> session : Update displayName
+page --> u : "Settings saved" "Your changes apply on every device you’re signed in on." (L2-033)
+@enduml

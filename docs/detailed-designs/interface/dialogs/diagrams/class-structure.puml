@@ -1,0 +1,30 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Behave as accessible dialogs
+
+class DialogService {
+  +open<T, R>(component: Type<T>, data?): DialogRef<R>
+}
+class DialogRef<R> {
+  +closed: Observable<R | undefined>
+  +close(result?: R): void
+}
+class DialogComponent <<hm-dialog>> {
+  +title: input<string>
+  +description: input<string>
+  +busy: input<boolean>
+  -onCancel(e: Event): void
+}
+DialogService ..> DialogRef : returns
+DialogService ..> DialogComponent : hosts
+@enduml

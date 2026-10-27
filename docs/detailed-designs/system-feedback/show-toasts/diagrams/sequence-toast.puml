@@ -1,0 +1,37 @@
+@startuml
+title UML sequence behaviour — Raise, pause and act on a toast
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "Feature component" as feat
+  participant "ToastService" as toast
+  participant "ToastRegionComponent" as region
+  participant "ToastTimer" as timer
+end box
+feat -> toast : show({tone: success, title: "Added to Focus", action: Undo})
+toast -> region : Push toast
+region --> u : Polite live region; danger tone uses role="alert" (L2-041)
+region -> region : More than 3? Collapse older into "+{n} more" (L2-041)
+toast -> timer : Start 8 s (not for danger) (L2-041)
+u -> region : Hover or focus the toast
+region -> timer : pause() (L2-041)
+alt Undo or Retry
+  u -> region : Activate action
+  region -> feat : action.run() reverts or retries (L2-041)
+else timer expires
+  timer -> toast : dismiss(id)
+end
+@enduml

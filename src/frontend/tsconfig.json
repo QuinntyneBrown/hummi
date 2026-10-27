@@ -3,7 +3,8 @@
   "compilerOptions": {
     "paths": {
       "@hummi/api": ["./projects/api/src/public-api.ts"],
-      "@hummi/components": ["./projects/components/src/public-api.ts"]
+      "@hummi/components": ["./projects/components/src/public-api.ts"],
+      "@hummi/player": ["./projects/player/src/public-api.ts"]
     },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,

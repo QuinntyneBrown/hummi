@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour — Open a track page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "TrackPage" as page
+  participant "TracksApi" as client
+  participant "DialogService" as dialogs
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "TracksController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "GetTrackQueryHandler" as q
+  participant "Track" as track
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+u -> page : Open /tracks/slow-orbit
+page -> client : get("slow-orbit")
+client -> ctl : GET /api/tracks/slow-orbit
+ctl -> q : Send GetTrackQuery
+q -> ctx : Load track with artist, album, genre
+ctx -> db : SELECT
+db --> ctx : Row or none
+ctx --> q : Track or null
+alt no track
+  q --> ctl : Result.NotFound
+  ctl --> client : 404 ProblemDetails
+  client --> page : Not found
+  page --> u : Not found page (L2-009, L2-044)
+else track found
+  q -> track : IsPlayable()
+  track --> q : true, or false when Withdrawn (L2-009)
+  q -> ctx : More from artist, or similar playable tracks when withdrawn
+  q --> ctl : Result<TrackDetailDto>
+  ctl --> client : 200 TrackDetailDto
+  client --> page : Track
+  page --> u : Header "Track · 4:12", actions, waveform, Details, More from (L2-008)
+end
+u -> page : Activate Add to playlist, Share or Report this track
+page -> dialogs : open(AddToPlaylist | Share | Report) (L2-008)
+@enduml

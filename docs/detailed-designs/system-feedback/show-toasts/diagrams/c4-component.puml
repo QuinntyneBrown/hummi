@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Show toasts
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(feat, "Feature component", "Any feature library", "Calls ToastService.show(...) after an action")
+  Component(toast, "ToastService", "Service in @hummi/components", "Queues hm-toast notifications in the toast\nregion (L2-041)")
+  Component(region, "ToastRegionComponent", "`hm-toast-region` in @hummi/components", "Renders at most 3 hm-toast and a "+{n} more"\ncollapse, newest at the bottom")
+  Component(timer, "ToastTimer", "Class in @hummi/components", "Counts down 8 s; pauses on\nmouseenter/focusin and resumes on leave")
+}
+Rel(feat, toast, "show({tone: success, title: 'Added\nto Focus', action: Undo})")
+Rel(toast, region, "Push toast")
+Rel(toast, timer, "Start 8 s (not for danger) (L2-041)")
+Rel(region, timer, "pause() (L2-041)")
+Rel(region, feat, "action.run() reverts or retries\n(L2-041)")
+Rel(timer, toast, "dismiss(id)")
+@enduml

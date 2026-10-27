@@ -1,0 +1,32 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Use keyboard shortcuts
+
+class ShortcutService {
+  -bindings: Map<string, () => void>
+  +onKeydown(e: KeyboardEvent): void
+  -isTextField(target: EventTarget): boolean
+}
+class ShortcutBinding {
+  +key: string
+  +label: string
+  +run: () => void
+}
+class ShortcutsDialogComponent {
+  +bindings: ShortcutBinding[]
+}
+ShortcutService "1" *-- "6" ShortcutBinding
+ShortcutService ..> PlayerStore
+ShortcutService ..> DialogService
+ShortcutsDialogComponent ..> ShortcutBinding : lists
+@enduml

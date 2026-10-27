@@ -1,0 +1,503 @@
+{
+  "project": "Hummi",
+  "screens": [
+    {
+      "id": "home",
+      "kind": "page",
+      "title": "Home",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "offline",
+        "partial",
+        "kids"
+      ],
+      "route": "/"
+    },
+    {
+      "id": "browse",
+      "kind": "page",
+      "title": "Browse",
+      "states": [
+        "default",
+        "loading",
+        "error"
+      ],
+      "route": "/browse",
+      "not_applicable": {
+        "empty": "Genres and moods are fixed catalogue categories; the list is never empty."
+      }
+    },
+    {
+      "id": "genre",
+      "kind": "page",
+      "title": "Genre",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ],
+      "route": "/genres/:slug"
+    },
+    {
+      "id": "search",
+      "kind": "page",
+      "title": "Search",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "no-results",
+        "error"
+      ],
+      "route": "/search"
+    },
+    {
+      "id": "track",
+      "kind": "page",
+      "title": "Track",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "unavailable"
+      ],
+      "route": "/tracks/:id",
+      "not_applicable": {
+        "empty": "A track page always has its track; a missing track is the 404 screen."
+      }
+    },
+    {
+      "id": "artist",
+      "kind": "page",
+      "title": "Artist",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ],
+      "route": "/artists/:id"
+    },
+    {
+      "id": "album",
+      "kind": "page",
+      "title": "Album",
+      "states": [
+        "default",
+        "loading",
+        "error"
+      ],
+      "route": "/albums/:id",
+      "not_applicable": {
+        "empty": "An album exists only when it has at least one track."
+      }
+    },
+    {
+      "id": "playlist",
+      "kind": "page",
+      "title": "Playlist",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "selected",
+        "read-only"
+      ],
+      "route": "/playlists/:id"
+    },
+    {
+      "id": "library",
+      "kind": "page",
+      "title": "Library",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "signed-out"
+      ],
+      "route": "/library"
+    },
+    {
+      "id": "now-playing",
+      "kind": "page",
+      "title": "Now playing",
+      "states": [
+        "default",
+        "paused",
+        "loading",
+        "empty",
+        "error"
+      ],
+      "route": "/now-playing"
+    },
+    {
+      "id": "queue",
+      "kind": "page",
+      "title": "Queue",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ],
+      "route": "/queue"
+    },
+    {
+      "id": "shared-track",
+      "kind": "page",
+      "title": "Shared track",
+      "states": [
+        "default",
+        "loading",
+        "error"
+      ],
+      "route": "/s/:code",
+      "not_applicable": {
+        "empty": "A shared link points at exactly one track."
+      }
+    },
+    {
+      "id": "sign-in",
+      "kind": "page",
+      "title": "Sign in",
+      "states": [
+        "default",
+        "invalid",
+        "submitting",
+        "error"
+      ],
+      "route": "/sign-in",
+      "not_applicable": {
+        "loading": "Static form; nothing is fetched before it is shown.",
+        "empty": "A form has no collection that could be empty."
+      }
+    },
+    {
+      "id": "sign-up",
+      "kind": "page",
+      "title": "Sign up",
+      "states": [
+        "default",
+        "invalid",
+        "submitting",
+        "error",
+        "success"
+      ],
+      "route": "/sign-up",
+      "not_applicable": {
+        "loading": "Static form; nothing is fetched before it is shown.",
+        "empty": "A form has no collection that could be empty."
+      }
+    },
+    {
+      "id": "reset-password",
+      "kind": "page",
+      "title": "Reset password",
+      "states": [
+        "default",
+        "invalid",
+        "submitting",
+        "error",
+        "success"
+      ],
+      "route": "/reset-password",
+      "not_applicable": {
+        "loading": "Static form; nothing is fetched before it is shown.",
+        "empty": "A form has no collection that could be empty."
+      }
+    },
+    {
+      "id": "verify-email",
+      "kind": "page",
+      "title": "Verify email",
+      "states": [
+        "default",
+        "error",
+        "success"
+      ],
+      "route": "/verify-email",
+      "not_applicable": {
+        "loading": "Its default state is the loading state: it confirms the token on arrival.",
+        "empty": "No collection."
+      }
+    },
+    {
+      "id": "settings",
+      "kind": "page",
+      "title": "Settings",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success"
+      ],
+      "route": "/settings",
+      "not_applicable": {
+        "empty": "Settings always have values."
+      }
+    },
+    {
+      "id": "notifications",
+      "kind": "page",
+      "title": "Notifications",
+      "states": [
+        "default",
+        "unread",
+        "read",
+        "loading",
+        "empty",
+        "error"
+      ],
+      "route": "/notifications"
+    },
+    {
+      "id": "licence",
+      "kind": "page",
+      "title": "Licence and credit",
+      "states": [
+        "default",
+        "loading",
+        "error"
+      ],
+      "route": "/tracks/:id/licence",
+      "not_applicable": {
+        "empty": "Every track has a licence."
+      }
+    },
+    {
+      "id": "not-found",
+      "kind": "page",
+      "title": "Not found",
+      "states": [
+        "default"
+      ],
+      "route": "/404",
+      "not_applicable": {
+        "loading": "Error screen; it renders immediately.",
+        "empty": "Error screen; it has no collection.",
+        "error": "This screen is itself the error state."
+      }
+    },
+    {
+      "id": "forbidden",
+      "kind": "page",
+      "title": "Forbidden",
+      "states": [
+        "default"
+      ],
+      "route": "/403",
+      "not_applicable": {
+        "loading": "Error screen; it renders immediately.",
+        "empty": "Error screen; it has no collection.",
+        "error": "This screen is itself the error state."
+      }
+    },
+    {
+      "id": "server-error",
+      "kind": "page",
+      "title": "Server error",
+      "states": [
+        "default"
+      ],
+      "route": "/500",
+      "not_applicable": {
+        "loading": "Error screen; it renders immediately.",
+        "empty": "Error screen; it has no collection.",
+        "error": "This screen is itself the error state."
+      }
+    },
+    {
+      "id": "offline",
+      "kind": "page",
+      "title": "Offline",
+      "states": [
+        "default"
+      ],
+      "route": "/offline",
+      "not_applicable": {
+        "loading": "Error screen; it renders immediately.",
+        "empty": "Error screen; it has no collection.",
+        "error": "This screen is itself the error state."
+      }
+    },
+    {
+      "id": "share",
+      "kind": "dialog",
+      "title": "Share",
+      "states": [
+        "default",
+        "success",
+        "embed"
+      ],
+      "opens_from": "track",
+      "not_applicable": {
+        "invalid": "The dialog has no typed input to validate.",
+        "busy": "No server call; it never waits."
+      }
+    },
+    {
+      "id": "add-to-playlist",
+      "kind": "dialog",
+      "title": "Add to playlist",
+      "states": [
+        "default",
+        "empty",
+        "busy",
+        "failed"
+      ],
+      "opens_from": "track",
+      "not_applicable": {
+        "invalid": "Only existing choices, nothing typed."
+      }
+    },
+    {
+      "id": "create-playlist",
+      "kind": "dialog",
+      "title": "New playlist",
+      "states": [
+        "default",
+        "rename",
+        "busy",
+        "invalid",
+        "failed"
+      ],
+      "opens_from": "library"
+    },
+    {
+      "id": "delete-playlist",
+      "kind": "dialog",
+      "title": "Delete playlist",
+      "states": [
+        "default",
+        "confirm",
+        "busy",
+        "failed"
+      ],
+      "opens_from": "playlist",
+      "not_applicable": {
+        "invalid": "The confirm button stays disabled until the name matches; there is no error to show."
+      }
+    },
+    {
+      "id": "report-track",
+      "kind": "dialog",
+      "title": "Report track",
+      "states": [
+        "default",
+        "invalid",
+        "busy",
+        "failed",
+        "success"
+      ],
+      "opens_from": "track"
+    },
+    {
+      "id": "sign-in-required",
+      "kind": "dialog",
+      "title": "Sign in required",
+      "states": [
+        "default"
+      ],
+      "opens_from": "track",
+      "not_applicable": {
+        "invalid": "The dialog has no typed input to validate.",
+        "busy": "No server call; it never waits."
+      }
+    },
+    {
+      "id": "shortcuts",
+      "kind": "dialog",
+      "title": "Keyboard shortcuts",
+      "states": [
+        "default"
+      ],
+      "opens_from": "home",
+      "not_applicable": {
+        "invalid": "The dialog has no typed input to validate.",
+        "busy": "No server call; it never waits."
+      }
+    },
+    {
+      "id": "account-menu",
+      "kind": "dialog",
+      "title": "Account menu",
+      "states": [
+        "default",
+        "kids-on"
+      ],
+      "opens_from": "home",
+      "not_applicable": {
+        "invalid": "The dialog has no typed input to validate.",
+        "busy": "No server call; it never waits."
+      }
+    },
+    {
+      "id": "track-menu",
+      "kind": "dialog",
+      "title": "Track menu",
+      "states": [
+        "default",
+        "saved",
+        "from-player"
+      ],
+      "opens_from": "home",
+      "not_applicable": {
+        "invalid": "The dialog has no typed input to validate.",
+        "busy": "No server call; it never waits."
+      }
+    },
+    {
+      "id": "sign-out",
+      "kind": "dialog",
+      "title": "Sign out",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "opens_from": "settings",
+      "not_applicable": {
+        "invalid": "No typed input."
+      }
+    },
+    {
+      "id": "toast",
+      "kind": "notification",
+      "title": "Toast",
+      "states": [
+        "info",
+        "success",
+        "play-next",
+        "removed",
+        "album-added",
+        "downloads"
+      ],
+      "opens_from": "playlist",
+      "not_applicable": {
+        "warning": "The design has one confirmation pill; problems are shown as banners (L2-042) or inline error blocks.",
+        "danger": "The design has one confirmation pill; failures are shown as banners (L2-042) or inline error blocks."
+      }
+    },
+    {
+      "id": "banner",
+      "kind": "notification",
+      "title": "Banner",
+      "states": [
+        "info",
+        "success",
+        "warning",
+        "danger",
+        "persistent"
+      ],
+      "opens_from": "home"
+    }
+  ]
+}

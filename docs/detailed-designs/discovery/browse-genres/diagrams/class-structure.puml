@@ -1,0 +1,51 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Browse genres
+
+class Genre {
+  +Guid Id
+  +string Slug
+  +string Name
+  +string Description
+  +string TileColourToken
+}
+class Mood {
+  +string Label
+  +Guid GenreId
+}
+class GenreDirectoryDto {
+  +int GenreCount
+  +int OpenlyLicensedTrackCount
+  +IReadOnlyList<MoodDto> Moods
+  +IReadOnlyList<GenreTileDto> Genres
+}
+class GenreTileDto {
+  +string Slug
+  +string Name
+  +int TrackCount
+}
+class MoodDto {
+  +string Label
+  +string GenreSlug
+}
+class GetGenreDirectoryQuery
+class GetGenreDirectoryQueryHandler {
+  +Handle(q: GetGenreDirectoryQuery): Task<Result<GenreDirectoryDto>>
+}
+GetGenreDirectoryQueryHandler ..> GetGenreDirectoryQuery : handles
+GetGenreDirectoryQueryHandler ..> Genre : reads
+GetGenreDirectoryQueryHandler ..> GenreDirectoryDto : returns
+GenreDirectoryDto "1" *-- "*" GenreTileDto
+GenreDirectoryDto "1" *-- "*" MoodDto
+Mood "*" --> "1" Genre : opens
+@enduml

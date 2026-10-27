@@ -1,0 +1,45 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Show toasts
+
+enum ToastTone {
+  info
+  success
+  warning
+  danger
+}
+class Toast {
+  +id: string
+  +tone: ToastTone
+  +title: string
+  +text: string
+  +action?: ToastAction
+}
+class ToastAction {
+  +label: "Undo" | "Retry" | string
+  +run: () => void
+}
+class ToastService {
+  +toasts: Signal<Toast[]>
+  +show(t: Omit<Toast, "id">): string
+  +dismiss(id: string): void
+}
+class ToastTimer {
+  +pause(): void
+  +resume(): void
+}
+Toast --> ToastTone
+Toast o-- ToastAction
+ToastService "1" *-- "*" Toast
+ToastService ..> ToastTimer : one per non-danger toast
+@enduml

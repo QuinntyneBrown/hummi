@@ -1,0 +1,54 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Create and rename a playlist
+
+class Playlist {
+  +Guid Id
+  +Guid OwnerId
+  +string Name
+  +bool IsPublic
+  +IReadOnlyList<PlaylistEntry> Entries
+  +{static} Create(owner: Guid, name: PlaylistName, isPublic: bool): Playlist
+  +Rename(by: Guid, name: PlaylistName): Result
+  +AddTrack(by: Guid, trackId: Guid): Result<int>
+  +RemoveTracks(by: Guid, entryIds: Guid[]): Result
+  +Delete(by: Guid): Result
+  +CanView(listener: Guid?): bool
+}
+class PlaylistEntry {
+  +Guid Id
+  +Guid TrackId
+  +int Position
+}
+class PlaylistName <<value object>> {
+  +string Value
+  +{static} Create(raw: string): Result<PlaylistName>
+}
+Playlist "1" *-- "*" PlaylistEntry
+Playlist --> PlaylistName
+
+class CreatePlaylistCommand {
+  +string Name
+  +bool IsPublic
+}
+class RenamePlaylistCommand {
+  +Guid PlaylistId
+  +string Name
+}
+class CreatePlaylistCommandHandler {
+  +Handle(c: CreatePlaylistCommand): Task<Result<Guid>>
+}
+CreatePlaylistCommandHandler ..> CreatePlaylistCommand : handles
+CreatePlaylistCommandHandler ..> Playlist : creates
+RenamePlaylistCommand ..> PlaylistName
+@enduml

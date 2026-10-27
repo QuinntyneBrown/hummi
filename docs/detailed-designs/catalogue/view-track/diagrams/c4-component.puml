@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View a track
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "TrackPage", "Routed component in @hummi/catalogue", "Renders hm-page-header, the action bar,\nhm-waveform, the Details hm-description-list\nand the More from shelf; a withdrawn track\nshows hm-alert (warning) and the Similar\ntracks shelf")
+  Component(client, "TracksApi", "Typed HTTP service in @hummi/api", "Calls GET /api/tracks/{slug}")
+  Component(dialogs, "DialogService", "Service in @hummi/components", "Opens hm-dialog components as modal overlays\nand returns a typed close result (L2-047)")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "TracksController", "ASP.NET Core controller", "Returns 200 TrackDetailDto or 404\nProblemDetails")
+  Component(q, "GetTrackQueryHandler", "MediatR query handler", "Loads the track with artist, album and\ngenre, adds More from or Similar tracks, and\nsets Playable")
+  Component(track, "Track", "Domain entity", "IsPlayable() returns false when Status is\nWithdrawn (L2-009)")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Tracks, artists, albums and genres")
+Rel(page, client, "get('slow-orbit')")
+Rel(client, ctl, "GET /api/tracks/slow-orbit")
+Rel(ctl, q, "Send GetTrackQuery")
+Rel(q, ctx, "Load track with artist, album, genre")
+Rel(ctx, db, "SELECT")
+Rel(q, track, "IsPlayable()")
+Rel(page, dialogs, "open(AddToPlaylist | Share | Report)\n(L2-008)")
+@enduml

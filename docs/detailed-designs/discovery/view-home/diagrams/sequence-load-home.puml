@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour — Load Home
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "HomePage" as page
+  participant "HomeStore" as store
+  participant "HomeApi" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "HomeController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "GetHomeShelfQueryHandler" as q
+  participant "FeaturedMixBuilder" as mix
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+u -> page : Open /
+page -> store : load()
+store -> client : getSummary(), getFeatured(), getRecent(), getNew(), getArtists()
+client -> ctl : GET /api/home/* (five parallel requests)
+ctl -> q : Send shelf query
+q -> ctx : Read play events, follows and tracks
+ctx -> db : SELECT
+db --> ctx : Rows
+ctx --> q : Entities
+q -> mix : Build featured mix (L2-001)
+mix --> q : Seed track and similar tracks
+q --> ctl : Result<ShelfDto>
+ctl --> client : 200 JSON per shelf
+client --> store : Shelf data
+alt summary.HasHistory is false
+  store --> page : Empty state "Your Home fills up as you listen" (L2-002)
+else one shelf request fails
+  store --> page : That shelf failed, others ready (L2-002)
+  u -> page : Try again on the shelf
+  page -> store : retry(newThisWeek)
+else all shelves ready
+  store --> page : Greeting, hero, Continue listening, New this week, Artists to follow (L2-001)
+end
+page --> u : Render Home
+@enduml

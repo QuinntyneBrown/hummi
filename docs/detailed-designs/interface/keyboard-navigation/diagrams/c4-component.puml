@@ -1,0 +1,11 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Navigate and fill forms by keyboard
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(form, "Feature form", "Reactive form in a feature library", "Calls ErrorSummary.focus() on invalid submit")
+  Component(sum, "ErrorSummaryComponent", "`hm-error-summary` in @hummi/components", "Lists errors; each link focuses its field;\nfields get aria-invalid and aria-describedby")
+}
+Rel(form, sum, "focus() (L2-048)")
+@enduml

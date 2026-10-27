@@ -1,0 +1,37 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Set playback preferences
+
+enum ThemePreference {
+  Device
+  Light
+  Dark
+}
+class ListenerSettings {
+  +Guid ListenerId
+  +bool AutoplaySimilar = true
+  +bool Crossfade = false
+  +bool NotifyNewReleases = true
+  +bool ProductNews = false
+  +ThemePreference Theme = Device
+}
+ListenerSettings --> ThemePreference
+
+class PlayerStore {
+  +autoplay: Signal<boolean>
+  +crossfade: Signal<boolean>
+  -onQueueEnd(): void
+  -onNearTrackEnd(remaining: number): void
+}
+PlayerStore ..> ListenerSettings : loaded from SettingsDto
+@enduml

@@ -1,0 +1,39 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — View an album
+
+class Album {
+  +Guid Id
+  +string Title
+  +int Year
+  +Guid ArtistId
+  +IReadOnlyList<AlbumTrack> Tracks
+  +Publish(): Result
+}
+class AlbumTrack {
+  +Guid TrackId
+  +int Position
+}
+class AlbumDetailDto {
+  +string Title
+  +ArtistRefDto Artist
+  +string Summary
+  +IReadOnlyList<TrackSummaryDto> Tracks
+}
+class GetAlbumQueryHandler {
+  +Handle(q: GetAlbumQuery): Task<Result<AlbumDetailDto>>
+}
+Album "1" *-- "1..*" AlbumTrack
+GetAlbumQueryHandler --> Album : loads
+GetAlbumQueryHandler ..> AlbumDetailDto : returns
+@enduml

@@ -1,4 +1,5 @@
 using Hummi.Application.Abstractions;
+using Hummi.Domain.Catalogue;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hummi.Infrastructure.Persistence;
@@ -6,6 +7,12 @@ namespace Hummi.Infrastructure.Persistence;
 /// <summary>EF Core context over the Hummi database (SQL Server). LINQ only, so all SQL is parameterised.</summary>
 public sealed class HummiDbContext(DbContextOptions<HummiDbContext> options) : DbContext(options), IHummiDbContext
 {
+    public DbSet<Artist> Artists => Set<Artist>();
+
+    public DbSet<Track> Tracks => Set<Track>();
+
+    public DbSet<PlayEvent> PlayEvents => Set<PlayEvent>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HummiDbContext).Assembly);
 }

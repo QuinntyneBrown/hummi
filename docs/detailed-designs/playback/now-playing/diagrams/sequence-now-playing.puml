@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — Open Now playing and recover from a dropped connection
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "NowPlayingPage" as page
+  participant "PlayerStore" as player
+  participant "HTMLAudioElement" as audio
+  participant "ConnectivityService" as net
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "MediaController" as mctl
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  database "media volume" as media
+end box
+u -> page : Open /now-playing
+page -> player : currentTrack()
+alt nothing playing
+  player --> page : null
+  page --> u : "Nothing is playing" with Browse genres (L2-015)
+else track loaded
+  player --> page : Track, position, state
+  page -> mctl : GET /media/tracks/{id}/peaks.json
+  mctl -> media : Read peaks
+  mctl --> page : Peaks
+  page --> u : Cover, title, waveform, controls; main control "Pause" or "Play" (L2-015)
+end
+u -> page : Activate Shuffle
+page -> player : toggleShuffle() (L2-015)
+audio --> player : error while streaming
+player -> net : online()
+net --> player : false
+player -> player : resumeAtSeconds = position
+player --> page : Danger alert "Playback stopped" (L2-015)
+net --> player : online event
+player -> audio : currentTime = resumeAtSeconds; play() (L2-015)
+@enduml

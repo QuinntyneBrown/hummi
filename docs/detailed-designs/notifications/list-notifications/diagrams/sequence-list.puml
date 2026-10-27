@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — Create and list notifications
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "NotificationsPage" as page
+  participant "NotificationsApi" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "NotificationsController" as ctl
+end box
+box "Backend — Hummi.Worker application" #D1FADF
+  participant "PlayMilestoneJob" as job
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "GetNotificationsQueryHandler" as q
+  participant "NotificationEventHandlers" as evt
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+evt -> ctx : On TrackPublished, add Notification(NewRelease) per follower
+ctx -> db : INSERT
+job -> ctx : Add Notification(PlayMilestone)
+u -> page : Open /notifications
+page -> client : list()
+client -> ctl : GET /api/me/notifications
+ctl -> q : Send GetNotificationsQuery
+q -> ctx : Newest first
+ctx -> db : SELECT
+ctl --> client : 200 NotificationDto[]
+alt none
+  page --> u : "You’re all caught up" with Find artists to follow (L2-036)
+else
+  page --> u : "Lumen Fox released Glass Rain." · "2 hours ago" ... (L2-036)
+end
+@enduml

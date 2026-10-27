@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Like a track
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "Like or Follow button" as btn
+  participant "LibraryStore" as store
+  participant "SignInGate" as gate
+  participant "LibraryApi" as client
+  participant "ToastService" as toast
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "LibraryController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "LikeTrackCommandHandler" as cmd
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+u -> btn : Activate "Like Slow Orbit"
+btn -> gate : requireSession()
+alt signed out
+  gate --> u : Sign in to save this dialog (L2-032)
+else signed in
+  btn -> store : toggleLike(track)
+  store --> btn : pressed, label "Remove like from Slow Orbit" (L2-018)
+  store -> client : like(trackId)
+  client -> ctl : PUT /api/me/likes/{trackId}
+  ctl -> cmd : Send LikeTrackCommand
+  cmd -> ctx : Insert Like if absent
+  ctx -> db : INSERT
+  alt saved
+    ctl --> client : 204
+  else connection dropped
+    client --> store : Network error
+    store --> btn : Revert to not pressed
+    store -> toast : danger "Couldn’t like the track" with Retry (L2-018)
+  end
+end
+@enduml

@@ -1,0 +1,33 @@
+@startuml
+title UML sequence behaviour — Pause, skip and lose the connection
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "PlayerBarComponent" as bar
+  participant "PlayerStore" as player
+  participant "HTMLAudioElement" as audio
+end box
+u -> bar : Activate Pause
+bar -> player : toggle()
+player -> audio : pause()
+player --> bar : Button reads Play (L2-013)
+u -> bar : Activate Next track
+bar -> player : next()
+player -> audio : src = next queued track (L2-013)
+audio --> player : stalled / error while offline
+player -> player : state = Stalled, keep position
+player --> bar : Meta "Playback stopped. Check your connection." (L2-013)
+@enduml

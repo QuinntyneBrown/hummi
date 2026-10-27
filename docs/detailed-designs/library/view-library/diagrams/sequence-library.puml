@@ -1,0 +1,55 @@
+@startuml
+title UML sequence behaviour — Open Library
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "LibraryPage" as page
+  participant "SessionStore" as session
+  participant "LibraryApi" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "LibraryController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "GetLibraryQueryHandler" as q
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+u -> page : Open /library
+page -> session : isSignedIn()
+alt signed out
+  session --> page : false
+  page --> u : "Sign in to see your library" with Sign in and Create account (L2-019)
+else signed in
+  page -> client : getLibrary()
+  client -> ctl : GET /api/me/library
+  ctl -> q : Send GetLibraryQuery(listenerId)
+  q -> ctx : Owned and saved playlists, likes, follows
+  ctx -> db : SELECT
+  db --> ctx : Rows
+  ctx --> q : Entities
+  q --> ctl : Result<LibraryDto>
+  ctl --> client : 200 LibraryDto (current on every device, L2-019)
+  client --> page : Library
+  alt all counts zero
+    page --> u : "Your library is empty" (L2-019)
+  else
+    page --> u : "3 playlists · 41 liked tracks · 6 artists", Playlists tab (L2-019)
+  end
+end
+@enduml

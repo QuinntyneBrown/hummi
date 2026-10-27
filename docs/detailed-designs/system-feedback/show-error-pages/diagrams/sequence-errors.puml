@@ -1,0 +1,39 @@
+@startuml
+title UML sequence behaviour — Route to an error page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "errorPageInterceptor" as int
+  participant "Router" as router
+  participant "NotFoundPage, ForbiddenPage, ServerErrorPage" as pages
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "ExceptionHandlingMiddleware" as mw
+  participant "ILogger" as log
+end box
+u -> router : Open a URL
+alt unknown route
+  router -> pages : NotFoundPage "We couldn’t find that page" (L2-044)
+else API returns 404 / 403
+  int -> router : navigate NotFound or Forbidden, skipLocationChange (L2-044, L2-045)
+  router -> pages : "You don’t have access to this", Switch account -> /sign-in (L2-045)
+else unhandled server exception
+  mw -> log : LogError with trace id (L2-046)
+  mw --> int : 500 ProblemDetails
+  int -> router : navigate ServerError
+  router -> pages : "Something broke on our side", Try again reloads (L2-046)
+end
+@enduml

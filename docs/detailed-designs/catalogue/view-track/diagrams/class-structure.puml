@@ -1,0 +1,65 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — View a track
+
+enum TrackStatus {
+  Published
+  Withdrawn
+}
+enum Licence {
+  Cc0
+  CcBy4
+  CcBySa4
+}
+class Track {
+  +Guid Id
+  +string Slug
+  +string Title
+  +Guid ArtistId
+  +Guid AlbumId
+  +Guid GenreId
+  +int DurationSeconds
+  +Licence Licence
+  +string ModelName
+  +long PlayCount
+  +TrackStatus Status
+  +string WaveformPeaksUrl
+  +IsPlayable(): bool
+}
+Track --> TrackStatus
+Track --> Licence
+
+class GetTrackQuery {
+  +string Slug
+  +Guid? ListenerId
+}
+class GetTrackQueryHandler {
+  +Handle(q: GetTrackQuery): Task<Result<TrackDetailDto>>
+}
+class TrackDetailDto {
+  +string Title
+  +ArtistRefDto Artist
+  +AlbumRefDto Album
+  +string Genre
+  +string GeneratedWith
+  +string LicenceLabel
+  +long Plays
+  +bool Playable
+  +bool Liked
+  +IReadOnlyList<TrackSummaryDto> MoreFromArtist
+  +IReadOnlyList<TrackSummaryDto> Similar
+}
+GetTrackQueryHandler ..> GetTrackQuery : handles
+GetTrackQueryHandler --> Track : loads
+GetTrackQueryHandler ..> TrackDetailDto : returns
+@enduml

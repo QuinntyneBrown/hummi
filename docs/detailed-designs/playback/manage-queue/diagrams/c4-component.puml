@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Manage the queue
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "QueuePage", "Routed component in @hummi/player", "Renders the Now playing section, Next up\nhm-track-list, Clear queue and the empty\nstate")
+  Component(menu, "TrackActionsMenu", "`hm-menu` content in @hummi/components", "Offers Add to queue among row actions")
+  Component(player, "PlayerStore", "Signal store in @hummi/api", "Owns the queue, the current track, position\nand play state, and drives the\nHTMLAudioElement")
+  Component(toast, "ToastService", "Service in @hummi/components", "Queues hm-toast notifications in the toast\nregion (L2-041)")
+  Component(session, "SessionStore", "Signal store in @hummi/api", "Holds the signed-in listener, the access\ntoken and the signed-in/signed-out state the\nshell reads")
+  Component(client, "QueueApi", "Typed HTTP service in @hummi/api", "GET and PUT /api/me/queue")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "QueueController", "ASP.NET Core controller", "Authorized /api/me/queue endpoints")
+  Component(cmd, "SaveQueueCommandHandler", "MediatR command handler", "Replaces the listener's stored queue (track\nids and current index)")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Saved queues")
+Rel(menu, player, "playNext(track)")
+Rel(menu, toast, "info 'Added to queue' / '“Glass\nRain” plays after the current\ntrack.' (L2-016)")
+Rel(player, session, "isSignedIn()")
+Rel(player, client, "save(queue)")
+Rel(client, ctl, "PUT /api/me/queue")
+Rel(ctl, cmd, "Send SaveQueueCommand")
+Rel(cmd, ctx, "Upsert SavedQueue")
+Rel(ctx, db, "MERGE")
+Rel(page, player, "upNext()")
+@enduml

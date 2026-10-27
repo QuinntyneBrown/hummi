@@ -1,0 +1,33 @@
+@startuml
+title UML sequence behaviour — Open and dismiss a dialog
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "DialogService" as dialogs
+  participant "DialogComponent" as dlg
+  participant "Feature dialog" as content
+end box
+content -> dialogs : open(ShareDialog)
+dialogs -> dlg : showModal(); app root gets inert (L2-047)
+dlg --> u : Focus first control; labelled and described (L2-047)
+u -> dlg : Escape
+alt busy
+  dlg -> dlg : preventDefault(); Cancel disabled (L2-047)
+else not busy
+  dlg -> dialogs : close(undefined), nothing saved (L2-047)
+  dialogs -> dlg : Remove inert, restore focus to opener
+end
+@enduml

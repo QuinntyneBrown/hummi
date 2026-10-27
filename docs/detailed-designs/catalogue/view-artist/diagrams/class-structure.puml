@@ -1,0 +1,49 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — View an artist
+
+class Artist {
+  +Guid Id
+  +string Slug
+  +string Name
+  +string Description
+  +string ModelName
+  +int MonthlyListeners
+}
+class Album {
+  +Guid Id
+  +string Slug
+  +string Title
+  +int Year
+  +Guid ArtistId
+}
+class ArtistDetailDto {
+  +string Name
+  +string Overline
+  +int MonthlyListeners
+  +string Description
+  +bool Following
+  +IReadOnlyList<TrackSummaryDto> Popular
+  +IReadOnlyList<AlbumTileDto> Releases
+}
+class GetArtistQueryHandler {
+  +Handle(q: GetArtistQuery): Task<Result<ArtistDetailDto>>
+}
+class MonthlyListenersJob {
+  +ExecuteAsync(ct: CancellationToken): Task
+}
+Artist "1" --> "*" Album : releases
+GetArtistQueryHandler --> Artist : loads
+GetArtistQueryHandler ..> ArtistDetailDto : returns
+MonthlyListenersJob --> Artist : updates MonthlyListeners
+@enduml

@@ -1,0 +1,41 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Share a link
+
+enum ShareTargetType {
+  Track
+  Playlist
+}
+class ShareLink {
+  +string Code
+  +ShareTargetType TargetType
+  +Guid TargetId
+  +Guid? CreatedBy
+  +DateTimeOffset CreatedAt
+  +Url(baseUrl: string): string
+}
+class GetOrCreateShareLinkCommand {
+  +ShareTargetType Type
+  +Guid TargetId
+}
+class GetOrCreateShareLinkCommandHandler {
+  +Handle(c): Task<Result<ShareLinkDto>>
+}
+interface IShareCodeGenerator {
+  +Next(): string
+}
+ShareLink --> ShareTargetType
+GetOrCreateShareLinkCommandHandler ..> GetOrCreateShareLinkCommand : handles
+GetOrCreateShareLinkCommandHandler --> IShareCodeGenerator : uses
+GetOrCreateShareLinkCommandHandler ..> ShareLink : finds or creates
+@enduml

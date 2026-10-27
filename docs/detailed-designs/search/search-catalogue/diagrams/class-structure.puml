@@ -1,0 +1,53 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Search the catalogue
+
+enum SearchResultType {
+  All
+  Track
+  Artist
+  Playlist
+}
+class SearchCatalogueQuery {
+  +string Text
+  +SearchResultType Type
+}
+class SearchCatalogueQueryHandler {
+  +Handle(q: SearchCatalogueQuery): Task<Result<SearchResultsDto>>
+}
+interface ISearchIndex {
+  +SearchAsync(text: string, type: SearchResultType, take: int): Task<IReadOnlyList<SearchHit>>
+}
+class SqlSearchIndex
+class SearchHit {
+  +SearchResultType Type
+  +Guid Id
+  +double Rank
+}
+class SearchResultsDto {
+  +int Total
+  +IReadOnlyList<TrackSummaryDto> Tracks
+  +IReadOnlyList<ArtistTileDto> Artists
+  +IReadOnlyList<PlaylistTileDto> Playlists
+}
+class RecentSearchesStore {
+  +items: Signal<string[]>
+  +add(query: string): void
+}
+SearchCatalogueQuery --> SearchResultType
+SearchCatalogueQueryHandler ..> SearchCatalogueQuery : handles
+SearchCatalogueQueryHandler --> ISearchIndex : uses
+ISearchIndex <|.. SqlSearchIndex
+ISearchIndex ..> SearchHit : returns
+SearchCatalogueQueryHandler ..> SearchResultsDto : returns
+@enduml

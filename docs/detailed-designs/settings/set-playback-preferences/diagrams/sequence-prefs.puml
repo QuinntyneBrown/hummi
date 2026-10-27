@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour — Apply playback preferences
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "SettingsPage" as page
+  participant "PlayerStore" as player
+  participant "Second HTMLAudioElement" as audio2
+  participant "PlaybackApi" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "TracksController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "GetSimilarTracksQueryHandler" as q
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+end box
+u -> page : Toggle Autoplay similar tracks / Crossfade, Save changes
+page -> player : applySettings(autoplay, crossfade)
+player -> player : Queue ends
+alt autoplay on
+  player -> client : similar(lastTrackId)
+  client -> ctl : GET /api/tracks/{id}/similar
+  ctl -> q : Send GetSimilarTracksQuery
+  q -> ctx : Similar playable tracks
+  ctl --> client : Tracks
+  player -> player : Append and keep playing (L2-034)
+else autoplay off
+  player -> player : Stop (L2-034)
+end
+opt crossfade on
+  player -> audio2 : Start next track before current ends, ramp volumes (L2-034)
+end
+@enduml

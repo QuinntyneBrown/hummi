@@ -1,0 +1,35 @@
+@startuml
+title UML sequence behaviour — Render the shell at two widths
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "ShellComponent" as shell
+  participant "TopNavComponent" as nav
+  participant "SessionStore" as session
+end box
+shell -> session : signedIn()
+shell -> nav : links, open=false
+alt wide (64rem and up)
+  nav --> u : Home, Soca, Kids, Steelpan, Your library beside the logo (L2-050)
+else narrow
+  nav --> u : Links hidden, "Open navigation" aria-expanded=false (L2-050)
+  u -> nav : Activate "Open navigation"
+  nav -> shell : menuToggle
+  shell -> nav : open=true
+  nav --> u : Links shown, aria-expanded=true (L2-050)
+end
+shell --> u : Shelves, track lists and player bar reflow with no horizontal page scroll (L2-050)
+@enduml

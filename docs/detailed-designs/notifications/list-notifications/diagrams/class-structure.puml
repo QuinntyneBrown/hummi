@@ -1,0 +1,51 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — List notifications
+
+enum NotificationKind {
+  NewRelease
+  PlaylistShared
+  PlayMilestone
+  ProductChange
+}
+class Notification {
+  +Guid Id
+  +Guid ListenerId
+  +NotificationKind Kind
+  +string PayloadJson
+  +DateTimeOffset CreatedAt
+  +DateTimeOffset? ReadAt
+  +MarkRead(now): void
+}
+Notification --> NotificationKind
+
+class NotificationDto {
+  +Guid Id
+  +NotificationKind Kind
+  +string Text
+  +IReadOnlyList<LinkDto> Links
+  +DateTimeOffset CreatedAt
+  +bool Unread
+}
+class TrackPublished <<domain event>> {
+  +Guid TrackId
+  +Guid ArtistId
+}
+class NotificationEventHandlers {
+  +Handle(e: TrackPublished): Task
+  +Handle(e: PlaylistShared): Task
+}
+NotificationEventHandlers ..> TrackPublished : handles
+NotificationEventHandlers ..> Notification : creates
+GetNotificationsQueryHandler ..> NotificationDto : returns
+@enduml

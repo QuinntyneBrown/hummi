@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Show loading and error states
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "Any data page", "Routed component in a feature library", "Switches on resource.status() to render\nhm-skeleton, content or hm-error-block")
+  Component(res, "apiResource", "Function in @hummi/api", "Wraps an API call in a signal-based\nResourceState<T> with reload()")
+  Component(client, "Typed API service", "Service in @hummi/api", "Returns Observable<T> and maps\nProblemDetails to ApiProblem")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "Any controller", "ASP.NET Core controller", "Returns data or ProblemDetails")
+  Component(mw, "ExceptionHandlingMiddleware", "ASP.NET Core middleware", "Converts unhandled exceptions to 500\nProblemDetails and logs them with a trace id\n(L2-046)")
+}
+Rel(page, res, "apiResource(() => api.get())")
+Rel(res, client, "get()")
+Rel(client, ctl, "GET /api/...")
+Rel(ctl, mw, "Unhandled exception")
+@enduml

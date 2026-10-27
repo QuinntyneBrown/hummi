@@ -1,0 +1,46 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — View a genre
+
+enum GenreTrackSort {
+  Newest
+  MostPlayed
+}
+class GetGenreTracksQuery {
+  +string GenreSlug
+  +GenreTrackSort Sort
+  +int Page
+}
+class GetGenreTracksQueryValidator
+class GetGenreTracksQueryHandler {
+  +Handle(q: GetGenreTracksQuery): Task<Result<GenreTracksDto>>
+}
+class GenreTracksDto {
+  +string Name
+  +string Description
+  +int TrackCount
+  +IReadOnlyList<TrackSummaryDto> Tracks
+}
+class Track {
+  +Guid Id
+  +Guid GenreId
+  +DateTimeOffset PublishedAt
+  +long PlayCount
+  +TrackStatus Status
+}
+GetGenreTracksQuery --> GenreTrackSort
+GetGenreTracksQueryValidator ..> GetGenreTracksQuery : validates
+GetGenreTracksQueryHandler ..> GetGenreTracksQuery : handles
+GetGenreTracksQueryHandler ..> Track : reads
+GetGenreTracksQueryHandler ..> GenreTracksDto : returns
+@enduml

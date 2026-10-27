@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Delete a playlist
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(dlg, "DeletePlaylistDialog", "Dialog component in @hummi/library", "Renders the warning, the confirmation\nhm-text-field, Cancel and a danger hm-button\nenabled only on an exact match")
+  Component(client, "PlaylistsApi", "Typed HTTP service in @hummi/api", "Calls the /api/playlists endpoints")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "PlaylistsController", "ASP.NET Core controller", "Authorized /api/playlists endpoints; maps\nresults through ProblemDetailsMapper")
+  Component(cmd, "DeletePlaylistCommandHandler", "MediatR command handler", "Checks ownership, deletes the playlist, its\nentries, SavedPlaylist rows and ShareLink\nrows")
+  Component(pl, "Playlist", "Domain aggregate", "Delete(by) returns Forbidden for a non-owner")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Playlists, entries, saved playlists and\nshare links")
+Rel(dlg, client, "delete(id)")
+Rel(client, ctl, "DELETE /api/playlists/{id}")
+Rel(ctl, cmd, "Send DeletePlaylistCommand")
+Rel(cmd, pl, "Delete(listenerId)")
+Rel(cmd, ctx, "Remove playlist, entries, saved\ncopies, share links")
+Rel(ctx, db, "DELETE in one transaction (L2-022)")
+@enduml

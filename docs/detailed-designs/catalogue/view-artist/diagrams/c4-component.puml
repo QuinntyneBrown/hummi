@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View an artist
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "ArtistPage", "Routed component in @hummi/catalogue", "Renders the header, Play, Follow\n(hm-toggle-button) and Share, the Popular\nhm-track-list and the Releases shelf of\nhm-album-tile; empty state via\nhm-empty-state")
+  Component(client, "ArtistsApi", "Typed HTTP service in @hummi/api", "Calls GET /api/artists/{slug}")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "ArtistsController", "ASP.NET Core controller", "Returns 200 ArtistDetailDto or 404\nProblemDetails")
+  Component(q, "GetArtistQueryHandler", "MediatR query handler", "Loads the artist, popular tracks by play\ncount, releases and the Following flag")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+Container_Boundary(wk, "Hummi.Worker") {
+  Component(job, "MonthlyListenersJob", "Hosted background job", "Recomputes Artist.MonthlyListeners from play\nevents of the last 30 days")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Artists, albums, tracks, follows and play\nevents")
+Rel(page, client, "get('lumen-fox')")
+Rel(client, ctl, "GET /api/artists/lumen-fox")
+Rel(ctl, q, "Send GetArtistQuery")
+Rel(q, ctx, "Artist, popular tracks, releases,\nfollow")
+Rel(ctx, db, "SELECT")
+Rel(job, ctx, "Recount distinct listeners in last\n30 days")
+@enduml

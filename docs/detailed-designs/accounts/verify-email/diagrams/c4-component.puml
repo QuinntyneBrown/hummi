@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Verify an email address
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "VerifyEmailPage", "Routed component in @hummi/accounts", "Shows the indeterminate hm-progress\n"Confirming email", then confirmed or\nexpired state")
+  Component(banner, "ShellBannerHost", "Shell component in the hummi application", "Shows the email-confirmation hm-banner while\nSessionStore.listener().emailConfirmed is\nfalse")
+  Component(client, "AuthApi", "Typed HTTP service in @hummi/api", "Calls the anonymous /api/auth/* endpoints")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "AuthController", "ASP.NET Core controller", "/api/auth/* endpoints; rate limited per IP\n<TO SUPPLY: limits>")
+  Component(cmd, "ConfirmEmailCommandHandler", "MediatR command handler", "Finds the token by hash, checks expiry\nagainst IClock, marks it used and calls\nListener.ConfirmEmail")
+  Component(resend, "ResendConfirmationCommandHandler", "MediatR command handler", "Invalidates open tokens and issues a new\n24-hour token")
+  Component(clock, "IClock", "Application port", "Supplies the current UTC time so time rules\nare testable")
+  Component(mail, "IEmailSender", "Application port", "SendAsync(EmailMessage); implemented by an\nSMTP adapter in Infrastructure")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Listeners and email tokens")
+Rel(page, client, "confirm(token)")
+Rel(client, ctl, "POST /api/auth/confirm-email")
+Rel(ctl, cmd, "Send ConfirmEmailCommand")
+Rel(cmd, clock, "UtcNow")
+Rel(cmd, ctx, "Token by hash")
+Rel(ctx, db, "UPDATE")
+Rel(banner, client, "resend()")
+Rel(ctl, resend, "Send ResendConfirmationCommand")
+Rel(resend, mail, "Send new link")
+@enduml

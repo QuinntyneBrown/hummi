@@ -44,9 +44,10 @@ hummi/
 │   ├── journeys.md             user journeys with effort
 │   ├── deployment.md           production host, deploy workflow, rollback
 │   ├── screen-composition.md   which design-system components compose each screen
+│   ├── responsive-design.md    responsive design best practices and how they apply to Hummi
 │   ├── specs/                  L1.md and L2.md requirements
 │   ├── mocks/                  generated HTML mocks (_build/ holds the Python sources)
-│   ├── design-system/          tokens and components extracted from the mocks
+│   ├── design-system/          tokens and components extracted from the mocks (_build/ holds the Python sources)
 │   ├── detailed-designs/       {subsystem}/{feature}/README.md + diagrams/
 │   ├── estimates/              README.md + one file per subsystem
 │   ├── prompts/                ready-to-run implementation prompts, NN-journey.md in build order

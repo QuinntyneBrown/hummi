@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Show banners
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(host, "ShellBannerHost", "Shell component in the hummi application", "Renders hm-banner items; danger uses\nrole=alert, others role=status")
+  Component(svc, "BannerService", "Service in @hummi/api", "Computes active banners from status,\nConnectivityService, PlayerStore and\nSessionStore")
+  Component(client, "StatusApi", "Typed HTTP service in @hummi/api", "Calls GET /api/status")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "StatusController", "ASP.NET Core controller", "GET /api/status; anonymous; returns the\nmaintenance window from configuration")
+}
+Rel(svc, client, "status()")
+Rel(client, ctl, "GET /api/status")
+Rel(host, svc, "dismiss(key)")
+@enduml

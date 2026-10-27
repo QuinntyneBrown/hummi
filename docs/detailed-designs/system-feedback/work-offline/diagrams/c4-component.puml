@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Work offline
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(audiocache, "SavedAudioCache", "Service in @hummi/api", "Stores and reads audio in a Cache Storage\nbucket; exposes isSaved(trackId)")
+  Component(player, "PlayerStore", "Signal store in @hummi/api", "Owns the queue, the current track, position\nand play state, and drives the\nHTMLAudioElement")
+  Component(net, "ConnectivityService", "Service in @hummi/api", "Online signal")
+}
+Rel(player, net, "online()")
+Rel(player, audiocache, "isSaved(id)")
+@enduml

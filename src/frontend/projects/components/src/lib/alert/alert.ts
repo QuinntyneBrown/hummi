@@ -13,30 +13,6 @@ export type AlertTone = 'info' | 'success' | 'warning' | 'danger';
       <ng-content />
     </div>
   `,
-  styles: `
-    .alert {
-      padding: var(--space-3) var(--space-4);
-      border: 1px solid var(--color-border);
-      border-left-width: 4px;
-      border-radius: var(--radius-md);
-      background: var(--color-surface);
-    }
-    .alert--info {
-      border-left-color: var(--color-info);
-    }
-    .alert--success {
-      border-left-color: var(--color-success);
-    }
-    .alert--warning {
-      border-left-color: var(--color-warning);
-    }
-    .alert--danger {
-      border-left-color: var(--color-danger);
-    }
-    strong {
-      display: block;
-    }
-  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlertComponent {

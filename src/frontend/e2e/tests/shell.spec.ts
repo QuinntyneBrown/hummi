@@ -7,7 +7,7 @@ test('the shell renders the brand and the home page', async ({ page }) => {
 
   await expect(shell.brand).toBeVisible();
   await expect(shell.brand.locator('hm-logo svg')).toBeVisible();
-  await expect(shell.main.getByRole('heading', { name: 'Hummi' })).toBeVisible();
+  await expect(shell.main.getByRole('heading', { name: 'Home', level: 1 })).toBeAttached();
 });
 
 test('the favicon is the coral tile', async ({ page }) => {

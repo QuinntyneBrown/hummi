@@ -1,0 +1,26 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Prompt to sign in
+
+class SignInGate {
+  +requireSession(): boolean
+}
+class SignInPromptDialog {
+  +result: "dismiss" | "sign-in" | "sign-up"
+}
+class SessionStore {
+  +isSignedIn: Signal<boolean>
+}
+SignInGate --> SessionStore : reads
+SignInGate ..> SignInPromptDialog : opens
+@enduml

@@ -4,18 +4,19 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve hummi",
-    "build:libs": "ng build api && ng build components",
+    "build:libs": "ng build api && ng build components && ng build player",
     "build:app": "ng build hummi",
     "build:all": "npm run build:libs && npm run build:app",
     "format": "prettier --write .",
-    "lint": "prettier --check . && eslint .",
+    "lint": "prettier --check . && eslint . && npm run styles:check",
     "backend:restore": "dotnet restore ../backend/Hummi.sln",
     "backend:format": "dotnet format ../backend/Hummi.sln --no-restore --verify-no-changes",
     "backend:build": "dotnet build ../backend/Hummi.sln --no-restore -warnaserror",
     "backend:test": "dotnet test ../backend/Hummi.sln --no-build",
     "backend:verify": "npm run backend:restore && npm run backend:format && npm run backend:build && npm run backend:test",
     "test:e2e": "playwright test",
-    "verify": "npm run backend:verify && npm run lint && npm run build:all && npm run test:e2e"
+    "verify": "npm run backend:verify && npm run lint && npm run build:all && npm run test:e2e",
+    "styles:check": "node -e \"const f=require('fs');for(const[a,b]of[['../../docs/design-system/tokens/tokens.css','projects/components/src/styles/tokens.css'],['../../docs/design-system/assets/components.css','projects/components/src/styles/components.css']])if(f.readFileSync(a,'utf8')!==f.readFileSync(b,'utf8')){console.error(b+' differs from '+a+'; copy it over again');process.exit(1)}\""
   },
   "private": true,
   "packageManager": "npm@11.19.1",

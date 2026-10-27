@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View someone else's playlist
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "PlaylistPage", "Routed component in @hummi/library", "In read-only mode shows Play, Save to my\nlibrary, Share and the info hm-alert "This\nplaylist belongs to {owner}"")
+  Component(client, "PlaylistsApi", "Typed HTTP service in @hummi/api", "Calls the /api/playlists endpoints")
+  Component(gate, "SignInGate", "Service in @hummi/api", "Checks SessionStore before a save action and\nopens the Sign in to save this dialog when\nsigned out (L2-032)")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "PlaylistsController", "ASP.NET Core controller", "Authorized /api/playlists endpoints; maps\nresults through ProblemDetailsMapper")
+  Component(q, "GetPlaylistQueryHandler", "MediatR query handler", "Calls Playlist.CanView(listener); Forbidden\nwhen false")
+  Component(save, "SavePlaylistCommandHandler", "MediatR command handler", "Adds a SavedPlaylist row for the listener")
+  Component(pl, "Playlist", "Domain aggregate", "CanView allows the owner, any listener when\npublic, and grantees of a share")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+Rel(page, client, "get(id)")
+Rel(client, ctl, "GET /api/playlists/{id}")
+Rel(ctl, q, "Send GetPlaylistQuery")
+Rel(q, pl, "CanView(priya)")
+Rel(page, gate, "requireSession()")
+Rel(ctl, save, "Send SavePlaylistCommand")
+Rel(save, ctx, "Insert SavedPlaylist")
+Rel(ctl, pl, "Rename(priya, ...)")
+@enduml

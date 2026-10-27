@@ -1,0 +1,18 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Sign out
+
+Person(listener, "Listener", "Uses Hummi in a browser")
+System_Boundary(hummi, "Hummi") {
+  Container(web, "web", "Caddy", "Serves the Angular build, terminates TLS, proxies /api and /media")
+  Container(spa, "Hummi web application", "Angular", "Renders auth pages and dialogs")
+  Container(api, "Hummi.Api", "ASP.NET Core", "Manages accounts, tokens and sessions")
+  ContainerDb(db, "Hummi database", "Azure SQL, EF Core", "Catalogue, accounts, library and notifications")
+}
+Rel(listener, web, "Opens", "HTTPS")
+Rel(web, spa, "Delivers")
+Rel(spa, web, "Calls /api", "JSON/HTTPS")
+Rel(web, api, "Proxies", "HTTP")
+Rel(api, db, "Reads and writes", "EF Core")
+@enduml

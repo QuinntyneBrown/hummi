@@ -1,29 +1,20 @@
-.top-bar {
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-bg);
-}
-.top-bar__inner {
+/* The shell fills the window at every size: full width, at least full height, footer at the bottom.
+   main#main keeps the container's max width and centres inside it. */
+:host {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 3.5rem;
+  flex-direction: column;
+  min-height: 100dvh;
 }
-.brand {
-  display: inline-flex;
-  align-items: center;
-  --logo-height: 1.75rem;
-  border-radius: var(--radius-md);
-}
-.user {
-  color: var(--color-text-muted);
-}
-.footer {
-  padding-block: var(--space-5);
-  color: var(--color-text-muted);
-}
-.footer__inner {
+
+/* main#main grows to fill the space under the header; the first section starts clear of the header. */
+.app-main {
+  flex: 1;
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  --logo-height: 1.25rem;
+  flex-direction: column;
+  padding-top: var(--space-6);
+}
+
+/* The routed page takes the spare height, so the footer keeps its margin and sits at the bottom. */
+.app-main > router-outlet + * {
+  flex: 1 0 auto;
 }

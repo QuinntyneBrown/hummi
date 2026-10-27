@@ -1,0 +1,31 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Show error pages
+
+class NotFoundPage <<hm-error-page code=404>>
+class ForbiddenPage <<hm-error-page code=403>> {
+  +switchAccount(): void
+}
+class ServerErrorPage <<hm-error-page code=500>> {
+  +tryAgain(): void
+}
+class ErrorPageInterceptor {
+  +intercept(req, next): Observable<HttpEvent>
+}
+class ExceptionHandlingMiddleware {
+  +InvokeAsync(ctx: HttpContext): Task
+}
+ErrorPageInterceptor ..> NotFoundPage : 404
+ErrorPageInterceptor ..> ForbiddenPage : 403
+ErrorPageInterceptor ..> ServerErrorPage : 500
+@enduml

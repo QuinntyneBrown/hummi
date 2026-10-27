@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Share a link
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(dlg, "ShareDialog", "Dialog component in @hummi/sharing", "Renders hm-dialog with a read-only\nhm-text-field, Copy link, caption and Done;\nannounces copy status in a live region")
+  Component(clip, "Clipboard", "Angular CDK `Clipboard`", "Writes text to the system clipboard")
+  Component(client, "SharesApi", "Typed HTTP service in @hummi/api", "Calls POST /api/shares")
+  Component(toast, "ToastService", "Service in @hummi/components", "Queues hm-toast notifications in the toast\nregion (L2-041)")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "SharesController", "ASP.NET Core controller", "POST /api/shares returns the link for {type,\nid}; anonymous callers may share public\nitems")
+  Component(cmd, "GetOrCreateShareLinkCommandHandler", "MediatR command handler", "Returns the existing ShareLink or creates\none with a fresh code; refuses private\nplaylists of other owners")
+  Component(gen, "IShareCodeGenerator", "Application port", "Generates cryptographically random codes")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Share links, unique on Code and on\n(TargetType, TargetId)")
+Rel(dlg, client, "getLink(Track, id)")
+Rel(client, ctl, "POST /api/shares {type, id}")
+Rel(ctl, cmd, "Send GetOrCreateShareLinkCommand")
+Rel(cmd, ctx, "Find ShareLink by target")
+Rel(cmd, gen, "Next()")
+Rel(ctx, db, "INSERT")
+Rel(dlg, clip, "copy(url)")
+Rel(dlg, toast, "success 'Link copied' 'Anyone with\nit can listen.' with Undo (L2-025)")
+@enduml

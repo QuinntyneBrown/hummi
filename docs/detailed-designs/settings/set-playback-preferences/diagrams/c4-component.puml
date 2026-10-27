@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Set playback preferences
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "SettingsPage", "Routed component in @hummi/settings", "Playback hm-switch pair")
+  Component(player, "PlayerStore", "Signal store in @hummi/api", "Owns the queue, the current track, position\nand play state, and drives the\nHTMLAudioElement")
+  Component(audio2, "Second HTMLAudioElement", "Browser media element", "Plays the next track during a crossfade")
+  Component(client, "PlaybackApi", "Typed HTTP service in @hummi/api", "GET /api/tracks/{id}/similar")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "TracksController", "ASP.NET Core controller", "GET /api/tracks/{id}/similar")
+  Component(q, "GetSimilarTracksQueryHandler", "MediatR query handler", "Returns playable tracks of the same genre\nand mood, excluding recent plays")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+Rel(page, player, "applySettings(autoplay, crossfade)")
+Rel(player, client, "similar(lastTrackId)")
+Rel(client, ctl, "GET /api/tracks/{id}/similar")
+Rel(ctl, q, "Send GetSimilarTracksQuery")
+Rel(q, ctx, "Similar playable tracks")
+Rel(player, audio2, "Start next track before current\nends, ramp volumes (L2-034)")
+@enduml

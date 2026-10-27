@@ -1,0 +1,45 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Render track lists
+
+class TrackListComponent <<hm-track-list>> {
+  +tracks: input<TrackSummaryDto[]>
+  +currentTrackId: input<string | null>
+  +numbered: input<boolean>
+  +selectable: input<boolean>
+  +play: output<TrackSummaryDto>
+  +like: output<TrackSummaryDto>
+}
+class TrackRowComponent <<hm-track-row>> {
+  +track: input<TrackSummaryDto>
+  +position: input<number>
+  +current: input<boolean>
+  +likeLabel(): string
+  +meta(): string
+}
+class TrackSummaryDto {
+  +id: string
+  +slug: string
+  +title: string
+  +artistName: string
+  +durationSeconds: number
+  +coverUrl: string
+  +liked: boolean
+}
+class PlayerStore {
+  +currentTrack: Signal<TrackSummaryDto | null>
+}
+TrackListComponent "1" *-- "*" TrackRowComponent
+TrackRowComponent --> TrackSummaryDto
+TrackListComponent ..> PlayerStore : reads currentTrackId via host
+@enduml

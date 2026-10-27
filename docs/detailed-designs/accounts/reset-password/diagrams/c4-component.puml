@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Reset a password
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "ResetPasswordPage", "Routed component in @hummi/accounts", "Renders the request form, Check your inbox\nstate and danger alert; a\nchoose-new-password form handles the link\n<TO SUPPLY: mock for that form>")
+  Component(client, "AuthApi", "Typed HTTP service in @hummi/api", "Calls the anonymous /api/auth/* endpoints")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "AuthController", "ASP.NET Core controller", "/api/auth/* endpoints; rate limited per IP\n<TO SUPPLY: limits>")
+  Component(cmd, "RequestPasswordResetCommandHandler", "MediatR command handler", "Issues a 1-hour token and sends the email\nonly when the account exists; always returns\nsuccess unless sending fails")
+  Component(redeem, "ResetPasswordCommandHandler", "MediatR command handler", "Redeems the token, sets the new hash and\nrevokes all refresh tokens")
+  Component(mail, "IEmailSender", "Application port", "SendAsync(EmailMessage); implemented by an\nSMTP adapter in Infrastructure")
+  Component(clock, "IClock", "Application port", "Supplies the current UTC time so time rules\nare testable")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+Rel(page, client, "requestReset(email)")
+Rel(client, ctl, "POST /api/auth/password-reset")
+Rel(ctl, cmd, "Send RequestPasswordResetCommand")
+Rel(cmd, ctx, "Listener by email")
+Rel(cmd, mail, "Send reset link")
+Rel(ctl, redeem, "Send ResetPasswordCommand")
+Rel(redeem, clock, "UtcNow")
+Rel(redeem, ctx, "Redeem token; older than 1 hour\nfails (L2-030)")
+@enduml

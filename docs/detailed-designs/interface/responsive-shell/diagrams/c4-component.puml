@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Adapt the shell to the viewport
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(shell, "ShellComponent", "Shell component in the hummi application", "Skip link, header, main and player bar;\nholds navOpen")
+  Component(nav, "TopNavComponent", "`hm-top-nav` in @hummi/components", "Brand, Home, Soca, Kids, Steelpan,\nYour library and the Open navigation toggle")
+  Component(session, "SessionStore", "Signal store in @hummi/api", "Holds the signed-in listener, the access\ntoken and the signed-in/signed-out state the\nshell reads")
+}
+Rel(shell, session, "signedIn()")
+Rel(shell, nav, "links, open (L2-050)")
+Rel(nav, shell, "menuToggle")
+@enduml

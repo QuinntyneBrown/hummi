@@ -1,4 +1,5 @@
 using Hummi.Application.Abstractions;
+using Hummi.Infrastructure.Media;
 using Hummi.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,8 @@ public static class DependencyInjection
             options.UseSqlServer(configuration.GetConnectionString("Hummi")));
         services.AddScoped<IHummiDbContext>(sp => sp.GetRequiredService<HummiDbContext>());
         services.AddSingleton(TimeProvider.System);
+        var mediaRoot = configuration["MediaStorage:RootPath"] is { Length: > 0 } root ? root : Path.Combine(AppContext.BaseDirectory, "media");
+        services.AddSingleton<IMediaStore>(new LocalMediaStore(mediaRoot));
         return services;
     }
 }

@@ -1,0 +1,39 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — View the library
+
+class LibraryDto {
+  +int PlaylistCount
+  +int LikedCount
+  +int FollowingCount
+  +IReadOnlyList<PlaylistTileDto> Playlists
+  +IReadOnlyList<TrackSummaryDto> Liked
+  +IReadOnlyList<ArtistTileDto> Following
+}
+class PlaylistTileDto {
+  +Guid Id
+  +string Name
+  +int TrackCount
+  +string OwnerName
+}
+class SavedPlaylist {
+  +Guid ListenerId
+  +Guid PlaylistId
+}
+class GetLibraryQueryHandler {
+  +Handle(q: GetLibraryQuery): Task<Result<LibraryDto>>
+}
+GetLibraryQueryHandler ..> LibraryDto : returns
+GetLibraryQueryHandler ..> SavedPlaylist : reads
+LibraryDto "1" *-- "*" PlaylistTileDto
+@enduml

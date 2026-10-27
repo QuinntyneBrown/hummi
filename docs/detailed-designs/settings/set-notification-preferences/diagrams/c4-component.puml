@@ -1,0 +1,30 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Set notification preferences
+
+Container_Boundary(spa, "Hummi web application") {
+  Component(page, "SettingsPage", "Routed component in @hummi/settings", "Notifications hm-switch pair")
+  Component(client, "SettingsApi", "Typed HTTP service in @hummi/api", "Calls GET and PUT /api/me/settings")
+}
+Container_Boundary(api, "Hummi.Api") {
+  Component(ctl, "SettingsController", "ASP.NET Core controller", "/api/me/settings; [Authorize]")
+  Component(cmd, "UpdateSettingsCommandHandler", "MediatR command handler", "Stores the switches")
+  Component(mail, "IEmailSender", "Application port", "Sends email")
+  Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
+}
+Container_Boundary(wk, "Hummi.Worker") {
+  Component(job, "ReleaseDigestJob", "Hosted background job", "Weekly <TO SUPPLY: day and hour>; emails\neach opted-in listener with releases since\ntheir last digest")
+  Component(news, "ProductNewsSender", "Hosted background job", "Sends a product announcement only to\nlisteners with ProductNews on")
+}
+ContainerDb(db, "Hummi database", "Azure SQL", "Settings, follows, tracks and digest log")
+Rel(page, client, "update(settings)")
+Rel(client, ctl, "PUT /api/me/settings")
+Rel(ctl, cmd, "Send UpdateSettingsCommand")
+Rel(cmd, ctx, "Update ListenerSettings")
+Rel(job, ctx, "Listeners with NotifyNewReleases and\nlast digest ≥ 7 days ago (L2-035)")
+Rel(ctx, db, "SELECT")
+Rel(job, mail, "Send digest")
+Rel(news, ctx, "Listeners with ProductNews on\n(L2-035)")
+Rel(news, mail, "Send announcement")
+@enduml

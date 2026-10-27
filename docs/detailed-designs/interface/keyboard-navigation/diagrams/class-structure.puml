@@ -1,0 +1,31 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Navigate and fill forms by keyboard
+
+class ErrorSummaryComponent <<hm-error-summary>> {
+  +errors: input<FieldError[]>
+  +focus(): void
+}
+class FieldError {
+  +fieldId: string
+  +message: string
+}
+class TabsComponent <<hm-tabs>> {
+  +selected: model<string>
+  -onKeydown(e: KeyboardEvent): void
+}
+class IconButtonComponent <<hm-icon-button>> {
+  +label: input.required<string>
+}
+ErrorSummaryComponent "1" *-- "*" FieldError
+@enduml

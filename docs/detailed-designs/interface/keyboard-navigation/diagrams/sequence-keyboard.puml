@@ -1,0 +1,34 @@
+@startuml
+title UML sequence behaviour — Skip, navigate and correct a form
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "SkipLinkComponent" as skip
+  participant "SidebarNavComponent" as nav
+  participant "TabsComponent" as tabs
+  participant "Feature form" as form
+  participant "ErrorSummaryComponent" as sum
+end box
+u -> skip : Tab on page load
+skip --> u : "Skip to content" visible; Enter moves focus to main (L2-048)
+u -> nav : Tab through sidebar
+nav --> u : Current link has aria-current="page" (L2-048)
+u -> tabs : Arrow keys
+tabs --> u : Only selected tab in tab order (L2-048)
+u -> form : Submit with errors
+form -> sum : focus() (L2-048)
+sum --> u : "Fix 2 things to continue", links to invalid fields (L2-048)
+@enduml

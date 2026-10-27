@@ -1,0 +1,9 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Show loading and error states
+
+Person(listener, "Listener", "Discovers, plays and shares openly licensed AI-generated music")
+System(hummi, "Hummi", "Free streaming platform for open-source AI-generated music")
+Rel(listener, hummi, "Uses", "HTTPS")
+@enduml

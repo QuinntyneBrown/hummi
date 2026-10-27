@@ -1,0 +1,58 @@
+@startuml
+title UML sequence behaviour — Create an account
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "SignUpPage" as page
+  participant "AuthApi" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "AuthController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "RegisterListenerValidator" as val
+  participant "RegisterListenerCommandHandler" as cmd
+  participant "IPasswordHasher" as hash
+  participant "IEmailSender" as mail
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+participant "Email provider" as email
+u -> page : Submit the form
+page -> page : Client checks; summary "Fix {n} things to continue" (L2-027)
+page -> page : Fields read-only, "Create account…" disabled (L2-027)
+page -> client : register(dto)
+client -> ctl : POST /api/auth/register
+ctl -> val : Validate
+alt invalid
+  val --> ctl : Errors
+  ctl --> client : 400 ValidationProblemDetails (L2-027)
+else valid
+  ctl -> cmd : Send RegisterListenerCommand
+  cmd -> hash : Hash(password)
+  cmd -> ctx : Add Listener and EmailToken
+  ctx -> db : INSERT in one transaction
+  cmd -> mail : Send confirmation link
+  mail -> email : SMTP
+  ctl --> client : 202
+  page --> u : "Check your inbox" "...It works for 24 hours." (L2-027)
+else server failure
+  ctl --> client : 500, transaction rolled back
+  page --> u : "We couldn’t create your account", nothing saved (L2-027)
+end
+@enduml

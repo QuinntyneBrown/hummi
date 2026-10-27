@@ -9,41 +9,91 @@ TODAY = "Tue 27 Oct 2026"
 
 # ---------------------------------------------------------------- cast & catalog
 USERS = {
-    "me": {"name": "Priya Natarajan", "initials": "PN", "handle": "priya"},
+    "me": {"name": "Nadia Charles", "initials": "NC", "handle": "nadia"},
     "jonah": {"name": "Jonah Adeyemi", "initials": "JA", "handle": "jonah"},
     "mei": {"name": "Mei Rodríguez", "initials": "MR", "handle": "mei"},
 }
+CDN = "https://cdn.magicpatterns.com/patterns/generated-images/"
+# Cover art ids come from the Magic Patterns "Hummi home screen" design (data/tracks.ts).
+ART = {
+    "feathers-up": "9b9fc48a-3ebb-4459-991e-afb5a29c3e35",
+    "road-march-riddim": "1d827d81-fe98-4fe1-a3b2-b0aab725c8dd",
+    "jouvert-morning": "2ccf7ccc-f306-4b30-8bbb-fd5b6289ed11",
+    "big-truck-energy": "fe585510-ffc6-478e-81f0-6608a23b6665",
+    "sunrise-on-ariapita": "93469f13-cb45-4853-967e-5048ce0bb1b1",
+    "wine-slow": "58574127-daa6-4e91-a17d-e563a94583fc",
+    "chrome-copper": "f920aaff-78ab-483a-a248-4802cff6140b",
+    "mister-kaiso": "35d90c8b-d4da-48e9-b913-3796f30e0813",
+    "panyard-nights": "896df414-e435-4a74-b519-c4a5af63cda6",
+    "hummi-sings-hello": "131d21b3-bfa9-4bd0-9576-3763d62fb19e",
+    "billboard": "04f9bc2c-0fc7-4248-b4db-d0052c79a2fb",
+    "panny-the-pan": "6126bcb0-116f-4123-8335-825b39402296",
+    "conga-in-the-jungle": "9620f04e-71db-4d7c-9a40-3d49303f196e",
+    "fruit-salad-band": "e1d39d41-3fd0-407f-a429-d46d4b2b25eb",
+    "sound-system-sunday": "f0319604-bdd5-42cf-bb4a-f39c13616779",
+    "red-light-riddim": "24248a6d-cee8-4765-89e1-b91730787283",
+    "fisherman-dawn": "05fc0c86-9896-4d6d-94ae-66420bdec091",
+    "banana-leaf-rain": "e5921bbd-ca40-418c-8ca8-6300d8d1f0f0",
+}
+
+
+def art(key):
+    return CDN + ART[key] + ".jpg"
+
+
 ARTISTS = [
-    {"id": "lumen-fox", "name": "Lumen Fox", "genre": "Ambient", "model": "openmusic-3b", "listeners": "48,210", "cover": "c1"},
-    {"id": "paper-satellites", "name": "Paper Satellites", "genre": "Lo-fi", "model": "openmusic-3b", "listeners": "31,904", "cover": "c2"},
-    {"id": "nocturne-7", "name": "Nocturne 7", "genre": "Synthwave", "model": "synthbloom-1.5", "listeners": "22,576", "cover": "c5"},
-    {"id": "marlow", "name": "Marlow & the Machines", "genre": "Jazz", "model": "swingnet-open", "listeners": "12,038", "cover": "c3"},
-    {"id": "tidepool-choir", "name": "Tidepool Choir", "genre": "Folk", "model": "openmusic-3b", "listeners": "9,481", "cover": "c4"},
-    {"id": "velvet-static", "name": "Velvet Static", "genre": "Electronic", "model": "synthbloom-1.5", "listeners": "17,322", "cover": "c6"},
+    {"id": "kaiso-collective", "name": "Kaiso Collective", "genre": "Soca", "model": "openmusic-3b", "listeners": "48,210", "cover": art("feathers-up")},
+    {"id": "lady-tamboo", "name": "Lady Tamboo", "genre": "Soca", "model": "openmusic-3b", "listeners": "31,904", "cover": art("road-march-riddim")},
+    {"id": "marisol-vega", "name": "Marisol Vega", "genre": "Soca", "model": "synthbloom-1.5", "listeners": "22,576", "cover": art("wine-slow")},
+    {"id": "panorama-players", "name": "Panorama Players", "genre": "Steelpan", "model": "swingnet-open", "listeners": "12,038", "cover": art("chrome-copper")},
+    {"id": "lord-sundown", "name": "Lord Sundown", "genre": "Calypso", "model": "openmusic-3b", "listeners": "9,481", "cover": art("mister-kaiso")},
+    {"id": "laventille-steel", "name": "Laventille Steel Orchestra", "genre": "Steelpan", "model": "swingnet-open", "listeners": "17,322", "cover": art("panyard-nights")},
+    {"id": "little-hummi", "name": "Little Hummi", "genre": "Kids", "model": "openmusic-3b", "listeners": "8,904", "cover": art("hummi-sings-hello")},
+    {"id": "beach-band-buddies", "name": "Beach Band Buddies", "genre": "Kids", "model": "openmusic-3b", "listeners": "5,311", "cover": art("panny-the-pan")},
+    {"id": "iguana-crew", "name": "The Iguana Crew", "genre": "Kids", "model": "openmusic-3b", "listeners": "4,102", "cover": art("conga-in-the-jungle")},
+    {"id": "mango-co", "name": "Mango & Co.", "genre": "Kids", "model": "openmusic-3b", "listeners": "3,870", "cover": art("fruit-salad-band")},
+    {"id": "yard-frequency", "name": "Yard Frequency", "genre": "Dancehall", "model": "synthbloom-1.5", "listeners": "14,660", "cover": art("sound-system-sunday")},
+    {"id": "shanique", "name": "Shanique", "genre": "Dancehall", "model": "synthbloom-1.5", "listeners": "19,215", "cover": art("red-light-riddim")},
+    {"id": "quiet-harbour", "name": "Quiet Harbour", "genre": "Island chill", "model": "openmusic-3b", "listeners": "6,540", "cover": art("fisherman-dawn")},
+    {"id": "lofi-lagoon", "name": "lofi lagoon", "genre": "Island chill", "model": "openmusic-3b", "listeners": "11,008", "cover": art("banana-leaf-rain")},
 ]
 A = {a["id"]: a for a in ARTISTS}
 LICENCES = {"CC0": "CC0 1.0 (public domain)", "CC-BY": "CC BY 4.0", "CC-BY-SA": "CC BY-SA 4.0"}
 TRACKS = [
     # id, title, artist, album, genre, duration, licence, plays
-    ("slow-orbit", "Slow Orbit", "lumen-fox", "Night Garden", "Ambient", "4:12", "CC0", "128,904"),
-    ("glass-rain", "Glass Rain", "lumen-fox", "Night Garden", "Ambient", "3:48", "CC0", "96,311"),
-    ("paper-planes", "Paper Planes at 2 a.m.", "paper-satellites", "Study Hall", "Lo-fi", "2:56", "CC-BY", "212,450"),
-    ("cold-coffee", "Cold Coffee", "paper-satellites", "Study Hall", "Lo-fi", "3:05", "CC-BY", "174,022"),
-    ("neon-meridian", "Neon Meridian", "nocturne-7", "Overpass", "Synthwave", "3:41", "CC-BY-SA", "88,730"),
-    ("last-exit", "Last Exit to Everywhere", "nocturne-7", "Overpass", "Synthwave", "4:27", "CC-BY-SA", "61,208"),
-    ("blue-hour-bounce", "Blue Hour Bounce", "marlow", "Small Hours", "Jazz", "5:02", "CC-BY", "40,115"),
-    ("tidewater-waltz", "Tidewater Waltz", "tidepool-choir", "Salt & Slate", "Folk", "3:33", "CC0", "27,640"),
-    ("static-bloom", "Static Bloom", "velvet-static", "Signal Flowers", "Electronic", "3:58", "CC-BY", "55,903"),
-    ("a-very-long-title", "The Quiet Between Two Lighthouses, Revisited (Extended Dream Mix)", "marlow", "Small Hours", "Jazz", "7:19", "CC-BY", "1,204"),
+    ("feathers-up", "Feathers Up", "kaiso-collective", "Mas on the Avenue", "Soca", "3:42", "CC0", "128,904"),
+    ("road-march-riddim", "Road March Riddim", "lady-tamboo", "Road March Riddim", "Soca", "4:05", "CC0", "96,311"),
+    ("wine-slow", "Wine Slow", "marisol-vega", "Slow Wine", "Soca", "3:34", "CC-BY", "212,450"),
+    ("jouvert-morning", "J’ouvert Morning", "kaiso-collective", "Mas on the Avenue", "Soca", "3:58", "CC-BY", "174,022"),
+    ("big-truck-energy", "Big Truck Energy", "lady-tamboo", "Road March Riddim", "Soca", "3:21", "CC-BY-SA", "88,730"),
+    ("sunrise-on-ariapita", "Sunrise on Ariapita", "marisol-vega", "Slow Wine", "Soca", "4:17", "CC-BY-SA", "61,208"),
+    ("chrome-copper", "Chrome & Copper", "panorama-players", "Panyard Sessions", "Steelpan", "5:12", "CC-BY", "40,115"),
+    ("mister-kaiso", "Mister Kaiso", "lord-sundown", "Old Talk", "Calypso", "3:08", "CC0", "27,640"),
+    ("panyard-nights", "Panyard Nights", "laventille-steel", "Panyard Sessions", "Steelpan", "6:40", "CC-BY", "55,903"),
+    ("hummi-sings-hello", "Hummi Sings Hello", "little-hummi", "Hummi Sings Hello", "Kids", "2:12", "CC0", "33,018"),
+    ("panny-the-pan", "Panny the Pan", "beach-band-buddies", "Beach Songs", "Kids", "2:40", "CC0", "18,442"),
+    ("conga-in-the-jungle", "Conga in the Jungle", "iguana-crew", "Jungle Songs", "Kids", "2:55", "CC0", "12,970"),
+    ("fruit-salad-band", "Fruit Salad Band", "mango-co", "Fruit Salad", "Kids", "2:26", "CC0", "9,311"),
+    ("sound-system-sunday", "Sound System Sunday", "yard-frequency", "Dubplates", "Dancehall", "3:16", "CC-BY", "25,604"),
+    ("red-light-riddim", "Red Light Riddim", "shanique", "Red Light", "Dancehall", "3:02", "CC-BY", "47,893"),
+    ("fisherman-dawn", "Fisherman Dawn", "quiet-harbour", "Slow Tide", "Island chill", "4:48", "CC-BY-SA", "15,237"),
+    ("banana-leaf-rain", "Banana Leaf Rain", "lofi-lagoon", "Lagoon Tapes", "Island chill", "3:12", "CC-BY-SA", "21,775"),
+    ("a-very-long-title", "The Quiet Between Two Lighthouses, Revisited (Extended Panyard Mix)", "panorama-players", "Panyard Sessions", "Steelpan", "7:19", "CC-BY", "1,204"),
 ]
 T = {t[0]: dict(zip(["id", "title", "artist", "album", "genre", "dur", "licence", "plays"], t)) for t in TRACKS}
-NOW = "slow-orbit"
-GENRES = [("Ambient", "c1"), ("Lo-fi", "c2"), ("Synthwave", "c5"), ("Jazz", "c3"), ("Folk", "c4"), ("Electronic", "c6"),
-          ("Classical", "c2"), ("Cinematic", "c1"), ("Hip hop", "c6"), ("Chiptune", "c3")]
+NOW = "feathers-up"
+GENRES = [("Soca", "c1"), ("Kids", "c2"), ("Steelpan & Calypso", "c3"), ("Dancehall", "c5"), ("Island chill", "c4"), ("Parang", "c6"),
+          ("Chutney", "c1"), ("Reggae", "c4"), ("Zouk", "c3"), ("Rapso", "c2")]
+# Browse-by-sound tiles use a representative cover per genre.
+SOUND_ART = {"Soca": "feathers-up", "Kids": "hummi-sings-hello", "Steelpan & Calypso": "chrome-copper", "Dancehall": "red-light-riddim",
+             "Island chill": "fisherman-dawn", "Parang": "jouvert-morning", "Chutney": "wine-slow", "Reggae": "sound-system-sunday",
+             "Zouk": "banana-leaf-rain", "Rapso": "mister-kaiso"}
+QUEUE = ["red-light-riddim", "panyard-nights", "big-truck-energy", "fisherman-dawn"]
+MORE_SOCA = ["jouvert-morning", "sunrise-on-ariapita", "wine-slow", "road-march-riddim"]
 PLAYLISTS = [
-    ("late-night-coding", "Late-night coding", "me", 24, "c1"),
-    ("rain-on-the-window", "Rain on the window", "me", 18, "c2"),
-    ("sunday-kitchen", "Sunday kitchen", "mei", 31, "c4"),
+    ("late-night-coding", "Road trip to the north coast", "me", 24, art("big-truck-energy")),
+    ("rain-on-the-window", "Rainy-day panyard", "me", 18, art("panyard-nights")),
+    ("sunday-kitchen", "Sunday kitchen", "mei", 31, art("wine-slow")),
 ]
 
 # ---------------------------------------------------------------- icons
@@ -70,7 +120,14 @@ _I = {
     "link": '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
     "flag": '<path d="M5 21V4h12l-2 4 2 4H5"/>', "trash": '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
     "user": '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', "back": '<path d="m15 5-7 7 7 7"/>',
-    "chev": '<path d="m9 5 7 7-7 7"/>', "cc": '<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5a3 3 0 1 0 0 5"/>',
+    "chev": '<path d="m9 5 7 7-7 7"/>',
+    "clock": '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', "expand": '<path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/>',
+    "list-plus": '<path d="M4 6h12M4 12h8M4 18h8M17 14v6M14 17h6"/>', "list-end": '<path d="M4 6h16M4 12h16M4 18h8M16 16l3 2-3 2"/>',
+    "mic": '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>', "disc": '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/>',
+    "download": '<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>', "history": '<path d="M4 12a8 8 0 1 0 3-6.2L4 8M4 4v4h4M12 8v4l3 2"/>',
+    "copy": '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>', "code": '<path d="m8 8-5 4 5 4M16 8l5 4-5 4M14 5l-4 14"/>',
+    "message": '<path d="M4 5h16v11H9l-5 4z"/>', "upload": '<path d="M12 20V9M7 13l5-5 5 5M5 4h14"/>',
+    "arrow-up-right": '<path d="M7 17 17 7M8 7h9v9"/>', "skip": '<path d="M6 5v14M18 5 9 12l9 7z"/>', "cc": '<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5a3 3 0 1 0 0 5"/>',
     "keyboard": '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>',
     "logout": '<path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/>', "refresh": '<path d="M20 11a8 8 0 1 0-2 5.3M20 4v7h-7"/>',
 }
@@ -90,6 +147,11 @@ def set_pages_prefix(p):
     _ctx["pages"] = p
 
 
+def Dlg(sid, state="default"):
+    """Link to a dialog or overlay mock; works from pages/<id>/ and from dialogs/<id>/."""
+    return f"{_ctx['pages']}../dialogs/{sid}/{state}.html"
+
+
 def P(sid, state="default"):
     return f"{_ctx['pages']}{sid}/{state}.html"
 
@@ -97,6 +159,8 @@ def P(sid, state="default"):
 # ---------------------------------------------------------------- small blocks
 def cover(cls="c1", size="", label=None):
     s = f" cover--{size}" if size else ""
+    if cls.startswith("http"):
+        return f'<div class="cover cover--c1 cover--art{s}" aria-hidden="true"><img src="{cls}" alt="" loading="lazy">{icon("music")}</div>'
     return f'<div class="cover cover--{cls}{s}" aria-hidden="true">{icon("music")}</div>'
 
 
@@ -129,29 +193,61 @@ def track_list(tids, playing=None, label="Tracks", liked=()):
     return f'<ol class="track-list" aria-label="{esc(label)}">{rows}</ol>'
 
 
-def tile(tid_or_pl, kind="track"):
+def tile(tid_or_pl, kind="track", new=False, playing=False):
+    """A shelf card: artwork, hover play button, more-actions button, title and meta."""
+    cur = ' aria-current="true"' if playing else ""
+    badge = '<span class="card-track__new">New</span>' if new and not playing else ""
+    play = f'<span class="card-track__play">{icon("pause" if playing else "play", fill=True)}</span>'
     if kind == "track":
         t = T[tid_or_pl]; a = A[t["artist"]]
-        return (f'<a class="tile" href="{P("track")}">{cover(a["cover"])}<div class="tile__title truncate">{esc(t["title"])}</div>'
-                f'<div class="tile__meta truncate">{esc(a["name"])}</div></a>')
+        eq = '<span class="eq eq--live" role="img" aria-label="Playing"><span></span><span></span><span></span></span>' if playing else ""
+        more = f'<a class="card-track__more" href="{Dlg("track-menu")}" aria-haspopup="menu" aria-label="More actions for {esc(t["title"])}">{icon("more")}</a>'
+        return (f'<div class="card-track"{cur}><div class="card-track__art"><a class="card-track__cover" href="{P("track")}" aria-label="{esc(t["title"])}, {esc(a["name"])}">{cover(a["cover"])}</a>{badge}{play}{more}</div>'
+                f'<a class="card-track__title" href="{P("track")}">{eq}<span>{esc(t["title"])}</span></a>'
+                f'<span class="card-track__meta">{esc(a["name"])} · {t["dur"]}</span></div>')
     if kind == "artist":
         a = A[tid_or_pl]
-        return (f'<a class="tile" href="{P("artist")}"><div class="cover cover--{a["cover"]} round" aria-hidden="true">{icon("user")}</div>'
-                f'<div class="tile__title truncate">{esc(a["name"])}</div><div class="tile__meta">{a["listeners"]} monthly listeners</div></a>')
+        return (f'<div class="card-track card-track--round"><div class="card-track__art"><a class="card-track__cover" href="{P("artist")}" aria-label="{esc(a["name"])}">{cover(a["cover"])}</a></div>'
+                f'<a class="card-track__title" href="{P("artist")}"><span>{esc(a["name"])}</span></a><span class="card-track__meta">{a["listeners"]} monthly listeners</span></div>')
     pid, name, owner, n, cv = tid_or_pl
-    return (f'<a class="tile" href="{P("playlist")}">{cover(cv)}<div class="tile__title truncate">{esc(name)}</div>'
-            f'<div class="tile__meta">{n} tracks · {esc(USERS[owner]["name"])}</div></a>')
+    return (f'<div class="card-track"><div class="card-track__art"><a class="card-track__cover" href="{P("playlist")}" aria-label="{esc(name)}">{cover(cv)}</a>{play}</div>'
+            f'<a class="card-track__title" href="{P("playlist")}"><span>{esc(name)}</span></a><span class="card-track__meta">{n} tracks · {esc(USERS[owner]["name"])}</span></div>')
 
 
-def shelf(title, inner, more=None):
-    link = f'<a href="{more}">See all</a>' if more else ""
+def top_ten(tids):
+    out = ""
+    for i, t in enumerate(tids, 1):
+        wide = " top10__num--wide" if i == 10 else ""
+        out += f'<div class="top10"><span class="top10__num{wide}" aria-hidden="true">{i}</span>{tile(t)}</div>'
+    return out
+
+
+def billboard(kicker, title, artist, blurb, meta, image, lead, actions):
+    t = T[lead]; a = A[t["artist"]]
+    return (f'<section class="billboard" aria-label="Featured"><div class="billboard__text">'
+            f'<p class="billboard__kicker">{esc(kicker)}</p><h1 class="billboard__title">{esc(title)}</h1>'
+            f'<p class="billboard__artist">{esc(artist)}</p><p class="billboard__blurb">{esc(blurb)}</p><p class="billboard__meta">{esc(meta)}</p>'
+            f'<div class="billboard__actions">{actions}</div></div>'
+            f'<div class="billboard__media"><img src="{image}" alt="" loading="lazy">'
+            f'<div class="billboard__chip"><img src="{a["cover"]}" alt="" loading="lazy"><div><small>Opens with</small><strong>{esc(t["title"])}</strong></div></div></div></section>')
+
+
+def shelf(title, inner, more=None, note="", rail=False):
+    """A titled section. rail=True lays cards out as a horizontal scrolling carousel."""
+    link = f'<a class="shelf__more" href="{more}">See all</a>' if more else ""
+    nt = f'<span class="shelf__note">{esc(note)}</span>' if note else ""
     hid = "sh-" + "".join(c for c in title.lower() if c.isalnum())
-    return f'<section class="shelf" aria-labelledby="{hid}"><div class="cluster cluster--between"><h2 id="{hid}" style="font:var(--text-h3)">{esc(title)}</h2>{link}</div>{inner}</section>'
+    if rail:
+        nxt = icon("back").replace("<svg ", '<svg style="rotate:180deg" ', 1)
+        arrows = (f'<button class="shelf__arrow shelf__arrow--prev" type="button" aria-label="Previous">{icon("back")}</button>'
+                  f'<button class="shelf__arrow shelf__arrow--next" type="button" aria-label="Next">{nxt}</button>')
+        inner = f'<div class="shelf__rail">{arrows}<div class="shelf__track" tabindex="0" role="group" aria-label="{esc(title)}">{inner}</div></div>'
+    return f'<section class="shelf" aria-labelledby="{hid}"><div class="shelf__head"><h2 class="shelf__title" id="{hid}">{esc(title)}</h2>{nt}{link}</div>{inner}</section>'
 
 
 def skel_tiles(n=6):
-    one = '<div class="tile" aria-hidden="true"><div class="skeleton skeleton--rect" style="aspect-ratio:1"></div><div class="skeleton skeleton--text"></div><div class="skeleton skeleton--text"></div></div>'
-    return f'<div class="tile-grid" aria-busy="true" aria-label="Loading">{one * n}</div>'
+    one = '<div class="card-track" aria-hidden="true"><div class="skeleton skeleton--rect" style="aspect-ratio:1;border-radius:0.875rem"></div><div class="skeleton skeleton--text" style="margin-top:0.625rem"></div><div class="skeleton skeleton--text"></div></div>'
+    return f'<div class="shelf__track" aria-busy="true" aria-label="Loading">{one * n}</div>'
 
 
 def skel_rows(n=6):
@@ -190,7 +286,7 @@ def field(label, name, typ="text", value="", help="", error="", extra="", req=Fa
     dd = f' aria-describedby="{" ".join(desc)}"' if desc else ""
     r = " required" if req else ""
     h = f'<span class="field__help" id="{name}-help">{help}</span>' if help else ""
-    e = f'<span class="field__error" id="{name}-err">{icon("alert", "icon--sm")}{error}</span>' if error else ""
+    e = f'<span class="field__error" id="{name}-err">{error}</span>' if error else ""
     return (f'<div class="field"><label class="field__label" for="{name}">{label}</label>'
             f'<input class="input" id="{name}" name="{name}" type="{typ}" value="{esc(value)}"{inv}{dd}{r}{extra}>{h}{e}</div>')
 
@@ -221,48 +317,181 @@ def note(text, pos="top: 5rem; right: 1rem;"):
 
 
 # ---------------------------------------------------------------- app shell
-NAV = [("home", "Home", "home"), ("browse", "Browse", "compass"), ("search", "Search", "search"),
-       ("library", "Library", "library"), ("notifications", "Notifications", "bell")]
+NAV = [("home", "Home"), ("genre", "Soca"), ("genre", "Kids"), ("genre", "Steelpan"), ("library", "Your library")]
+KIDS_HIDDEN = ("Soca", "Steelpan")
 
 
-def player_bar(tid=NOW, playing=True, disabled=False, error=False):
+def scrubber(elapsed="1:14", total="3:42", pct=33, full=False):
+    cls = "scrubber scrubber--full" if full else "scrubber"
+    return (f'<div class="{cls}"><time>{elapsed}</time><div class="scrubber__track" role="progressbar" aria-label="Track position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{pct}">'
+            f'<div class="scrubber__fill" style="width:{pct}%"></div><div class="scrubber__thumb" style="left:{pct}%"></div></div><time>{total}</time></div>')
+
+
+def sbtn(label, ic, attrs="", cls="ibtn", href=None, fill=False):
+    if href:
+        return f'<a class="{cls}" href="{href}" aria-label="{esc(label)}"{attrs}>{icon(ic, fill=fill)}</a>'
+    return f'<button class="{cls}" type="button" aria-label="{esc(label)}"{attrs}>{icon(ic, fill=fill)}</button>'
+
+
+def player_bar(tid=NOW, playing=True, disabled=False, error=False, saved=False):
     t = T[tid]; a = A[t["artist"]]
-    pp = ibtn("Pause" if playing else "Play", "pause" if playing else "play", kind="primary", attrs=" disabled" if disabled else "")
     dis = " disabled" if disabled else ""
-    msg = f'<div class="track__meta" style="color:var(--color-danger-fg)">Playback stopped. Check your connection.</div>' if error else f'<div class="track__meta">{esc(a["name"])}</div>'
-    return (f'<section class="player" aria-label="Player">'
-            f'<a class="player__now" href="{P("now-playing")}">{cover(a["cover"], "sm")}<div style="min-width:0"><div class="track__title">{esc(t["title"])}</div>{msg}</div></a>'
-            f'<div class="player__controls">{ibtn("Previous track", "prev", dis)}{pp}{ibtn("Next track", "next", dis)}</div>'
-            f'<div class="player__scrub scrub"><span>1:24</span><div class="progress" role="progressbar" aria-label="Track position" aria-valuemin="0" aria-valuemax="252" aria-valuenow="84"><div class="progress__bar" style="width:33%"></div></div><span>{t["dur"]}</span></div>'
-            f'<div class="player__extra">{ibtn("Queue", "queue")}{ibtn("Volume", "volume")}</div></section>')
+    eq = '<span class="eq eq--live" role="img" aria-label="Playing"><span></span><span></span><span></span></span>' if playing and not error else ""
+    sub = f'<span class="pbar__artist" style="color:var(--color-danger-fg)">Playback stopped. Check your connection.</span>' if error else f'<span class="pbar__artist">{esc(a["name"])}</span>'
+    heart = sbtn(("Remove " if saved else "Save ") + t["title"] + (" from your library" if saved else " to your library"), "heart", f' aria-pressed="{"true" if saved else "false"}"')
+    return (f'<section class="pbar" aria-label="Player">'
+            f'<div class="pbar__now"><a class="pbar__art" href="{P("now-playing")}" aria-label="Open Now playing">{cover(a["cover"])}</a>'
+            f'<div class="pbar__text"><a class="pbar__title" href="{P("track")}">{eq}<span>{esc(t["title"])}</span></a>{sub}</div>'
+            f'{heart}{sbtn("More actions for " + t["title"], "more", " aria-haspopup=\"menu\"", href=Dlg("track-menu", "from-player"))}</div>'
+            f'<div class="pbar__centre"><div class="pbar__ctrl">{sbtn("Previous track", "skip", dis, fill=True)}'
+            f'{sbtn("Pause" if playing else "Play", "pause" if playing else "play", dis, cls="ibtn ibtn--play", fill=True)}'
+            f'{sbtn("Next track", "skip", dis + " style=\"rotate:180deg\"", fill=True)}</div>{scrubber("1:14", t["dur"], 33)}</div>'
+            f'<div class="pbar__side">{sbtn("Share", "share", href=Dlg("share"))}{sbtn("Queue", "queue", href=P("queue"))}'
+            f'<div class="volume">{icon("volume")}<div class="volume__track"><i></i></div></div>{sbtn("Expand", "expand", href=P("now-playing"))}</div></section>')
 
 
-def shell(active, main, player=True, player_kw=None, banner="", search_value="", signed_in=True, extra_after=""):
-    nav = ""
-    for sid, label, ic in NAV:
-        cur = ' aria-current="page"' if sid == active else ""
-        badge = ' <span class="badge badge--count" aria-label="3 unread">3</span>' if sid == "notifications" and signed_in else ""
-        nav += f'<a class="nav-link" href="{P(sid)}"{cur}>{icon(ic)}{label}{badge}</a>'
+def shell(active, main, player=True, player_kw=None, banner="", search_value="", signed_in=True, extra_after="", kids=False, solid=None, menu_open=False):
+    links = ""
+    for sid, label in NAV:
+        if kids and label in KIDS_HIDDEN:
+            continue
+        cur = ' aria-current="page"' if (sid == active and label in ("Home", "Your library")) else ""
+        links += f'<a class="topnav__link" href="{P(sid)}"{cur}>{label}</a>'
+    pill = (f'<a class="search-pill" href="{P("search")}" aria-label="Search songs and artists">{icon("search")}<span>Search songs and artists</span><kbd aria-hidden="true">/</kbd></a>'
+            f'<a class="ibtn search-icon" href="{P("search")}" aria-label="Search songs and artists">{icon("search")}</a>')
     if signed_in:
-        who = (f'<div class="sidebar__group">Account</div><a class="nav-link" href="{P("settings")}"'
-               f'{" aria-current=\"page\"" if active == "settings" else ""}>{icon("settings")}Settings</a>')
-        right = (f'<a class="btn btn--ghost btn--icon" href="{P("notifications")}" aria-label="Notifications, 3 unread">{icon("bell")}</a>'
-                 f'<a class="avatar avatar--sm" href="{P("settings")}" aria-label="Account: {USERS["me"]["name"]}">{USERS["me"]["initials"]}</a>')
+        exp = "true" if menu_open else "false"
+        right = (f'{pill}<a class="ibtn" href="{P("notifications")}" aria-label="Notifications, 3 unread">{icon("bell")}</a>'
+                 f'<a class="avatar avatar--nav" href="{Dlg("account-menu")}" aria-haspopup="menu" aria-expanded="{exp}" aria-label="Account: {USERS["me"]["name"]}">{USERS["me"]["initials"][0]}</a>')
     else:
-        who = ""
-        right = btn("Sign in", href=P("sign-in")) + btn("Sign up", "primary", href=P("sign-up"))
-    logo = (f'<a class="topbar__brand" href="{P("home")}" aria-label="Hummi home">'
-            f'<img class="logo logo--light" src="../../assets/brand/hummi-wordmark-coral.svg" alt="Hummi">'
-            f'<img class="logo logo--dark" src="../../assets/brand/hummi-wordmark-cream.svg" alt="" aria-hidden="true"></a>')
+        right = pill + btn("Sign in", href=P("sign-in")) + btn("Sign up", "primary", href=P("sign-up"))
+    logo = (f'<a class="topnav__brand" href="{P("home")}" aria-label="Hummi home">'
+            f'<img class="brand-logo brand-logo--light" src="../../assets/brand/hummi-wordmark-coral.svg" alt="Hummi">'
+            f'<img class="brand-logo brand-logo--dark" src="../../assets/brand/hummi-wordmark-cream.svg" alt="" aria-hidden="true"></a>')
+    solid = (active != "home") if solid is None else solid
     pl = player_bar(**(player_kw or {})) if player else ""
     cls = ' class="has-player"' if player else ""
-    return (f'<div{cls}><div class="sidebar-layout"><nav class="sidebar" aria-label="Primary"><div style="padding:var(--space-2) var(--space-3) var(--space-4)">{logo}</div>{nav}{who}</nav>'
-            f'<div>{banner}<header class="topbar">'
-            f'<button class="btn btn--ghost btn--icon topbar__menu" type="button" aria-label="Open navigation" aria-expanded="false">{icon("menu")}</button>'
-            f'<form class="search" role="search" action="{P("search")}"><label class="visually-hidden" for="q">Search tracks, artists and playlists</label>{icon("search")}'
-            f'<input class="input" id="q" type="search" placeholder="Search tracks, artists, playlists" value="{esc(search_value)}"></form>'
-            f'<span class="topbar__spacer"></span>{right}</header>'
-            f'<main id="main" class="container">{main}</main></div></div>{pl}</div>{extra_after}')
+    foot = ('<footer class="site-footer"><span>Every track on Hummi is free to stream and free to share.</span>'
+            '<span>hummi.fm — free music, made in the open.</span></footer>')
+    return (f'<div{cls}>{banner}<header class="topnav{" topnav--solid" if solid else ""}"><button class="ibtn topnav__menu" type="button" data-nav-toggle aria-label="Open navigation" aria-expanded="false">{icon("menu")}</button>'
+            f'{logo}<nav class="topnav__links" aria-label="Primary">{links}</nav><div class="topnav__end">{right}</div></header>'
+            f'<main id="main" class="container app-main">{main}{foot}</main>{pl}</div>{extra_after}')
+
+
+# ---------------------------------------------------------------- overlays
+def srow_song(tid, playing=False):
+    t = T[tid]; a = A[t["artist"]]
+    eq = '<span class="eq eq--live" role="img" aria-label="Playing"><span></span><span></span><span></span></span>' if playing else ""
+    cur = ' aria-current="true"' if playing else ""
+    return (f'<div class="srow"{cur}>{cover(a["cover"], "sm")}<div class="srow__text"><a class="srow__title" href="{P("track")}" style="color:inherit;text-decoration:none">{eq}<span>{esc(t["title"])}</span></a>'
+            f'<div class="srow__sub">{esc(a["name"])}</div></div><span class="srow__dur">{t["dur"]}</span>'
+            f'{sbtn("More actions for " + t["title"], "more", " aria-haspopup=\"menu\"", href=Dlg("track-menu"))}</div>')
+
+
+def search_overlay(state):
+    q = {"default": "pan", "loading": "pan", "error": "pan", "no-results": "rainfall in b-flat", "empty": ""}[state]
+    clear = '<button class="layer-search__clear" type="button">Clear</button>' if q else ""
+    bar = (f'<div class="layer-search__bar">{icon("search")}<input class="layer-search__input" id="q" type="search" placeholder="Search songs and artists" aria-label="Search songs and artists" value="{esc(q)}">'
+           f'{clear}<a class="layer-search__close" href="{P("home")}" aria-label="Close search">{icon("close")}</a></div>')
+    if state == "empty":
+        recent = "".join(f'<li><a href="{P("search")}">{icon("clock")}{esc(r)}</a></li>' for r in ["Kaiso Collective", "panorama", "lullaby", "Shanique"])
+        sounds = "".join(f'<a class="sound" href="{P("genre")}">{cover(art(SOUND_ART[g]))}<span class="sound__cap"><strong>{esc(g)}</strong><small>{n} tracks</small></span></a>'
+                         for (g, _), n in zip(GENRES[:5], [1204, 312, 188, 240, 156]))
+        body = (f'<div class="layer-search__body layer-search__body--empty"><section><h2 class="layer-h">Recent</h2><ul class="recent">{recent}</ul></section>'
+                f'<section><h2 class="layer-h">Browse by sound</h2><div class="sound-grid">{sounds}</div></section></div>')
+    elif state == "loading":
+        body = '<div class="layer-search__body" aria-busy="true">' + skel_rows(5) + "</div>"
+    elif state == "no-results":
+        body = (f'<div class="layer-empty"><strong>Nothing matches “{esc(q)}”</strong><p>Try an artist name, or a sound like soca, pan or lullaby.</p></div>')
+    elif state == "error":
+        body = '<div class="layer-search__body">' + error_block("Search isn’t working right now", "We couldn’t reach search. Your query is still in the box; try again in a moment.", retry_href="default.html") + "</div>"
+    else:
+        top = T["panyard-nights"]; ta = A[top["artist"]]
+        arts = "".join(f'<a class="srow srow--artist" href="{P("artist")}" style="color:inherit;text-decoration:none">{cover(A[x]["cover"], "sm")}<div class="srow__text"><div class="srow__title"><span>{esc(A[x]["name"])}</span></div></div>{icon("arrow-up-right")}</a>' for x in ["laventille-steel", "panorama-players"])
+        songs = "".join(srow_song(x, x == NOW) for x in ["panyard-nights", "chrome-copper", "a-very-long-title", "mister-kaiso"])
+        body = (f'<div class="layer-search__body layer-search__body--results"><section><h2 class="layer-h">Top result</h2>'
+                f'<a class="top-result" href="{P("track")}">{cover(ta["cover"])}<strong>{esc(top["title"])}</strong><span>{esc(ta["name"])} · {top["dur"]}</span></a></section>'
+                f'<div><section><h2 class="layer-h">Artists</h2>{arts}</section><section style="margin-top:var(--space-6)"><h2 class="layer-h">Songs</h2>{songs}</section></div></div>')
+    return f'<div class="scrim"></div><div class="layer-search" role="dialog" aria-modal="true" aria-label="Search" data-dismiss-on-escape>{bar}{body}</div>'
+
+
+def now_playing_overlay(state):
+    t = T[NOW]; a = A[t["artist"]]
+    playing = state != "paused"
+    top = (f'<div class="layer-player__top"><a class="pill-btn" href="{P("home")}">{icon("chev").replace("<svg ", "<svg style=\"rotate:90deg\" ", 1)}Close</a>'
+           f'<span class="layer-player__from">Playing from <b>{t["genre"]}</b></span><span style="width:5.75rem"></span></div>')
+    ctrl = (f'<div class="layer-player__ctrl">{sbtn("Shuffle", "shuffle", " aria-pressed=\"false\"", cls="ibtn ibtn--lg")}<div class="mid">'
+            f'{sbtn("Previous track", "skip", cls="ibtn ibtn--lg", fill=True)}{sbtn("Pause" if playing else "Play", "pause" if playing else "play", cls="ibtn ibtn--hero", fill=True)}'
+            f'{sbtn("Next track", "skip", " style=\"rotate:180deg\"", cls="ibtn ibtn--lg", fill=True)}</div>{sbtn("Repeat", "repeat", " aria-pressed=\"false\"", cls="ibtn ibtn--lg")}</div>')
+    acts = (f'<div class="layer-player__acts"><button class="pill-btn pill-btn--lg" type="button">{icon("heart")}Save</button>'
+            f'<a class="pill-btn pill-btn--lg" href="{Dlg("share")}">{icon("share")}Share</a><a class="pill-btn pill-btn--lg" href="{P("queue")}">{icon("queue")}Queue</a>'
+            f'<a class="ibtn ibtn--lg" style="background:color-mix(in srgb,var(--color-fg-default) 8%,transparent)" href="{Dlg("track-menu", "from-player")}" aria-haspopup="menu" aria-label="More actions for {esc(t["title"])}">{icon("more")}</a></div>')
+    nxt = "".join(f'<div class="srow">{cover(A[T[x]["artist"]]["cover"], "sm")}<div class="srow__text"><div class="srow__title"><span>{esc(T[x]["title"])}</span></div><div class="srow__sub">{esc(A[T[x]["artist"]]["name"])}</div></div><span class="srow__dur">{T[x]["dur"]}</span></div>' for x in QUEUE[:2])
+    body = (f'<div class="layer-player__body"><div class="layer-player__art">{cover(a["cover"])}</div><div><h2 class="layer-player__title">{esc(t["title"])}</h2>'
+            f'<p class="layer-player__artist">{esc(a["name"])}</p><div class="layer-player__scrub">{scrubber("1:14", t["dur"], 33, full=True)}</div>{ctrl}{acts}'
+            f'<div class="upnext"><h3 class="layer-h">Up next</h3>{nxt}</div></div></div>')
+    if state == "loading":
+        body = '<div class="layer-player__body" aria-busy="true"><div class="skeleton skeleton--rect layer-player__art" style="aspect-ratio:1"></div><div><div class="skeleton skeleton--title"></div><div class="skeleton skeleton--text"></div></div></div>'
+    elif state == "empty":
+        body = '<div class="layer-player__body">' + empty("music", "Nothing is playing", "Press play on any track and it shows up here with the waveform and queue.", btn("Browse genres", "primary", href=P("browse"))) + "</div>"
+    elif state == "error":
+        body = '<div class="layer-player__body" style="padding-block:0">' + alert("danger", "Playback stopped", "We lost the connection while streaming Feathers Up. We’ll resume from 1:14 once you’re back online.") + "</div>" + body
+    return f'<div class="layer-player" role="dialog" aria-modal="true" aria-label="Now playing" data-dismiss-on-escape>{top}{body}</div>'
+
+
+def queue_drawer(state):
+    t = T[NOW]; a = A[t["artist"]]
+    now = (f'<div class="q-row q-row--now">{cover(a["cover"], "sm")}<div class="srow__text"><div class="srow__title">'
+           f'<span class="eq eq--live" role="img" aria-label="Playing"><span></span><span></span><span></span></span><span>{esc(t["title"])}</span></div><div class="srow__sub">{esc(a["name"])}</div></div></div>')
+
+    def row(x, more=False):
+        tt = T[x]; aa = A[tt["artist"]]
+        end = f'<span class="srow__dur">{tt["dur"]}</span>' if more else sbtn("Remove " + tt["title"] + " from the queue", "close")
+        return (f'<div class="q-row{" q-row--more" if more else ""}">{cover(aa["cover"], "sm")}<div class="srow__text"><div class="srow__title"><span>{esc(tt["title"])}</span></div>'
+                f'<div class="srow__sub">{esc(aa["name"])}</div></div>{end}</div>')
+    if state == "empty":
+        nxt = '<p class="q-empty">Use Play next or Add to queue on any track to line it up here.</p>'
+        head_n = 0
+    elif state == "loading":
+        nxt = skel_rows(3); head_n = 0
+    elif state == "error":
+        nxt = error_block("Your queue didn’t load", "The server didn’t answer in time. Try again in a moment.", retry_href="default.html"); head_n = 0
+    else:
+        nxt = "".join(row(x) for x in QUEUE); head_n = len(QUEUE)
+    more = "".join(row(x, True) for x in MORE_SOCA) if state in ("default", "empty") else ""
+    clear = '<button type="button">Clear</button>' if head_n else ""
+    return (f'<aside class="drawer-queue" aria-label="Queue" data-dismiss-on-escape><div class="drawer-queue__head"><h2>Queue</h2>{sbtn("Close queue", "close", href=P("home"))}</div>'
+            f'<div class="drawer-queue__body"><div class="q-label"><span>Now playing</span></div>{now}<div class="q-label"><span>Up next{" · " + str(head_n) if head_n else ""}</span>{clear}</div>{nxt}'
+            f'{"<div class=q-label><span>Then, more Soca</span></div>" + more if more else ""}</div></aside>')
+
+
+def account_menu(kids=False):
+    u = USERS["me"]
+    chk = " checked" if kids else ""
+    items = [("library", "Your library", P("library")), ("history", "Listening history", P("library")), ("download", "Downloads", P("library")),
+             ("upload", "Share your own music", P("library")), ("settings", "Settings", P("settings"))]
+    li = "".join(f'<a class="mi" role="menuitem" href="{h}">{icon(i)}{l}</a>' for i, l, h in items)
+    return (f'<div class="menu-scrim"></div><div class="menu-panel menu-panel--account" role="menu" aria-label="Account" data-dismiss-on-escape>'
+            f'<div class="menu-id"><span class="avatar">{u["initials"][0]}</span><div><strong>{u["name"]}</strong><small>nadia@hummi.fm</small></div></div>'
+            f'<label class="kids-card"><span><strong>Kids mode</strong><small>Only show music made for kids</small></span><input class="tgl" type="checkbox" role="switch" aria-label="Kids mode"{chk}></label>'
+            f'{li}<hr class="menu-divider"><a class="mi" role="menuitem" href="{Dlg("sign-out")}">{icon("logout")}Sign out</a></div>')
+
+
+def track_menu(tid=NOW, saved=False, pos="top:21rem;left:10rem"):
+    t = T[tid]; a = A[t["artist"]]
+    save = (f'<button class="mi" role="menuitem" type="button" aria-pressed="true">{icon("heart")}Remove from library</button>' if saved
+            else f'<button class="mi" role="menuitem" type="button">{icon("heart")}Save to library</button>')
+    return (f'<div class="menu-scrim"></div><div class="menu-panel menu-panel--track" role="menu" aria-label="Track actions" style="{pos}" data-dismiss-on-escape>'
+            f'<div class="menu-head">{cover(a["cover"], "sm")}<div style="min-width:0"><strong>{esc(t["title"])}</strong><small>{esc(a["name"])} · {t["dur"]}</small></div></div>'
+            f'<button class="mi" role="menuitem" type="button">{icon("list-plus")}Play next</button><button class="mi" role="menuitem" type="button">{icon("list-end")}Add to queue</button>{save}'
+            f'<a class="mi" role="menuitem" href="{Dlg("share")}">{icon("share")}Share</a><hr class="menu-divider">'
+            f'<a class="mi" role="menuitem" href="{P("search")}">{icon("mic")}More from {esc(a["name"])}</a><a class="mi" role="menuitem" href="{P("genre")}">{icon("disc")}Go to {esc(t["genre"])}</a></div>')
+
+
+def toast_pill(msg, art_tid=None, undo=False):
+    lead = cover(A[T[art_tid]["artist"]]["cover"], "sm") if art_tid else '<span class="toast__dot" aria-hidden="true"></span>'
+    u = '<button class="toast__undo" type="button">Undo</button>' if undo else ""
+    return f'<div class="toast{" toast--undo" if undo else ""}">{lead}<span class="toast__msg">{msg}</span>{u}</div>'
 
 
 # ---------------------------------------------------------------- file skeleton
@@ -279,8 +508,8 @@ def document(kind, sid, state, screen_title, desc, body, states, depth_note=""):
 <meta name="mock:screen" content="{sid}">
 <meta name="mock:state" content="{state}">
 <meta name="description" content="{esc(desc)}">
-<link rel="stylesheet" href="../../assets/tokens.css">
-<link rel="stylesheet" href="../../assets/ui.css">
+<link rel="stylesheet" href="../../../design-system/tokens/tokens.css">
+<link rel="stylesheet" href="../../../design-system/assets/components.css">
 <link rel="stylesheet" href="../../assets/mock.css">
 </head>
 <body>

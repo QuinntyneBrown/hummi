@@ -1,0 +1,38 @@
+@startuml
+title UML sequence behaviour — Compute banners
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "ShellBannerHost" as host
+  participant "BannerService" as svc
+  participant "ConnectivityService" as net
+  participant "StatusApi" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "StatusController" as ctl
+end box
+svc -> client : status()
+client -> ctl : GET /api/status
+ctl --> client : Maintenance "Sunday 1 Nov, 02:00 to 02:30 UTC"
+svc --> host : "Scheduled maintenance. Hummi will be read-only on ..." (L2-042)
+net --> svc : offline
+svc --> host : "You’re offline. Showing saved tracks..." (L2-042)
+net --> svc : online
+svc --> host : "You’re back online. Your queue and likes are up to date." (L2-042)
+svc --> host : Streaming unreachable: "Playback can’t start..." danger, role=alert (L2-042)
+u -> host : Dismiss
+host -> svc : dismiss(key)
+@enduml

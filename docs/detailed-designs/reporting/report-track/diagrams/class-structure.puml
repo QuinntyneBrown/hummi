@@ -1,0 +1,49 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Report a track
+
+enum ReportReason {
+  CopiedWithoutPermission
+  WrongLicence
+  HarmfulContent
+  Other
+}
+enum ReportStatus {
+  Open
+  Upheld
+  Dismissed
+}
+class TrackReport {
+  +Guid Id
+  +Guid TrackId
+  -Guid ReporterId
+  +ReportReason Reason
+  +string Details
+  +ReportStatus Status
+  +DateTimeOffset CreatedAt
+  +Resolve(outcome, now): void
+}
+class ReportTrackCommand {
+  +Guid TrackId
+  +ReportReason Reason
+  +string Details
+}
+class ReportTrackCommandHandler {
+  +Handle(c): Task<Result>
+}
+TrackReport --> ReportReason
+TrackReport --> ReportStatus
+ReportTrackCommandHandler ..> ReportTrackCommand : handles
+ReportTrackCommandHandler ..> TrackReport : creates
+ResolveReportCommandHandler --> TrackReport : Resolve
+@enduml

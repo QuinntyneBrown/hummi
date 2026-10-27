@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Send a report
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam rectangle {
+  BorderColor #344054
+  FontColor #101828
+}
+skinparam package {
+  BorderColor #667085
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+actor "Listener" as u
+box "Frontend — Hummi web application (Angular)" #E0F2FE
+  participant "ReportTrackDialog" as dlg
+  participant "ReportsApi" as client
+end box
+box "Backend — Hummi.Api application" #D1FADF
+  participant "ReportsController" as ctl
+end box
+box "Backend — Hummi Application and Domain" #ECFDF3
+  participant "ReportTrackValidator" as val
+  participant "ReportTrackCommandHandler" as cmd
+  participant "ResolveReportCommandHandler" as res
+  participant "IEmailSender" as mail
+end box
+box "Backend — Hummi Infrastructure" #FFF4E5
+  participant "HummiDbContext" as ctx
+  database "Hummi database" as db
+end box
+participant "Email provider" as email
+u -> dlg : Report this track
+dlg --> u : "Report “Slow Orbit”" "...The artist isn’t told who reported." (L2-038)
+u -> dlg : Send report with no reason
+dlg --> u : "Choose a reason", nothing sent (L2-038)
+u -> dlg : Choose "Wrong licence", Send report
+dlg -> dlg : Choices disabled, details read-only, "Sending…" (L2-038)
+dlg -> client : report(id, reason, details)
+client -> ctl : POST /api/tracks/{id}/reports
+ctl -> val : Validate
+ctl -> cmd : Send ReportTrackCommand
+cmd -> ctx : Insert TrackReport(Open)
+ctx -> db : INSERT
+alt saved
+  ctl --> client : 201
+  dlg --> u : "Thanks, we’ll take a look" (L2-038)
+else failure
+  dlg --> u : "That didn’t work", answers kept (L2-038)
+end
+res -> ctx : Resolve report
+res -> mail : Email reporter the outcome (L2-038)
+mail -> email : SMTP
+@enduml

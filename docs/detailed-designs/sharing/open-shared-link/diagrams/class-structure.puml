@@ -1,0 +1,34 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Open a shared link
+
+class ResolveShareLinkQuery {
+  +string Code
+}
+class ResolveShareLinkQueryHandler {
+  +Handle(q): Task<Result<SharedItemDto>>
+}
+class SharedItemDto {
+  +ShareTargetType Type
+  +Guid TargetId
+  +TrackDetailDto Track
+}
+class ShareLink {
+  +string Code
+  +ShareTargetType TargetType
+  +Guid TargetId
+}
+ResolveShareLinkQueryHandler ..> ResolveShareLinkQuery : handles
+ResolveShareLinkQueryHandler --> ShareLink : resolves
+ResolveShareLinkQueryHandler ..> SharedItemDto : returns
+@enduml
