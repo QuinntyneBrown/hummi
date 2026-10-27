@@ -12,42 +12,46 @@ skinparam class {
 hide empty members
 title Class structure — Search the catalogue
 
-enum SearchResultType {
-  All
-  Track
-  Artist
-  Playlist
-}
 class SearchCatalogueQuery {
   +string Text
-  +SearchResultType Type
 }
 class SearchCatalogueQueryHandler {
   +Handle(q: SearchCatalogueQuery): Task<Result<SearchResultsDto>>
 }
 interface ISearchIndex {
-  +SearchAsync(text: string, type: SearchResultType, take: int): Task<IReadOnlyList<SearchHit>>
+  +SearchAsync(text: string, artistTake: int, trackTake: int): Task<SearchHits>
 }
 class SqlSearchIndex
-class SearchHit {
-  +SearchResultType Type
-  +Guid Id
-  +double Rank
+class SearchUnavailableException
+class SearchHits {
+  +IReadOnlyList<ArtistHitDto> Artists
+  +IReadOnlyList<TrackSummaryDto> Tracks
+}
+class ArtistHitDto {
+  +string Slug
+  +string Name
 }
 class SearchResultsDto {
-  +int Total
-  +IReadOnlyList<TrackSummaryDto> Tracks
-  +IReadOnlyList<ArtistTileDto> Artists
-  +IReadOnlyList<PlaylistTileDto> Playlists
+  +string Query
+  +TrackSummaryDto? TopResult
+  +IReadOnlyList<ArtistHitDto> Artists
+  +IReadOnlyList<TrackSummaryDto> Songs
 }
 class RecentSearchesStore {
   +items: Signal<string[]>
   +add(query: string): void
 }
-SearchCatalogueQuery --> SearchResultType
+class SearchStore {
+  +open: Signal<boolean>
+  +query: Signal<string>
+  +openWith(query: string): void
+  +close(): void
+}
 SearchCatalogueQueryHandler ..> SearchCatalogueQuery : handles
 SearchCatalogueQueryHandler --> ISearchIndex : uses
 ISearchIndex <|.. SqlSearchIndex
-ISearchIndex ..> SearchHit : returns
+ISearchIndex ..> SearchHits : returns
+SqlSearchIndex ..> SearchUnavailableException : throws
+SearchHits --> ArtistHitDto
 SearchCatalogueQueryHandler ..> SearchResultsDto : returns
 @enduml

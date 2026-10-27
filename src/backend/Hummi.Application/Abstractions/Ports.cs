@@ -31,3 +31,20 @@ public interface IMediaStore
 
 /// <summary>An open media file. The caller disposes <see cref="Content"/>.</summary>
 public sealed record MediaFile(Stream Content, string ContentType);
+
+/// <summary>
+/// The search port (ADR 0008): ranked songs and artists whose title or name contains the text. Only
+/// published tracks, and artists with at least one, are returned. Throws
+/// <see cref="SearchUnavailableException"/> when the index cannot be reached.
+/// </summary>
+public interface ISearchIndex
+{
+    Task<SearchHits> SearchAsync(string text, int artistTake, int trackTake, CancellationToken cancellationToken);
+}
+
+/// <summary>What the index found, best match first.</summary>
+public sealed record SearchHits(IReadOnlyList<Search.ArtistHitDto> Artists, IReadOnlyList<Playback.TrackSummaryDto> Tracks);
+
+/// <summary>The search index could not answer; the API reports 503 SEARCH_UNAVAILABLE.</summary>
+public sealed class SearchUnavailableException(Exception innerException)
+    : Exception("The search index is unreachable.", innerException);

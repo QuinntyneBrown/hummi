@@ -1,0 +1,92 @@
+<hm-search-layer [query]="query()" (queryChange)="typed($event)" (submitQuery)="submitted()" (dismiss)="dismiss()">
+  @switch (state().status) {
+    @case ('empty') {
+      <div class="layer-search__body layer-search__body--empty">
+        <hm-recent-searches [queries]="recent.items()" (choose)="repeat($event)" />
+        <section aria-labelledby="hm-sounds-heading">
+          <h2 class="layer-h" id="hm-sounds-heading">Browse by sound</h2>
+          <div class="sound-grid">
+            @for (genre of sounds(); track genre.slug) {
+              <hm-sound-tile
+                [slug]="genre.slug"
+                [name]="genre.name"
+                [tone]="genre.tone"
+                [trackCount]="genre.trackCount"
+                (choose)="choseSound()"
+              />
+            }
+          </div>
+        </section>
+      </div>
+    }
+    @case ('loading') {
+      <div class="layer-search__body" aria-busy="true" aria-label="Searching">
+        <ol class="track-list" aria-hidden="true">
+          @for (row of rows; track row) {
+            <li class="track">
+              <span></span>
+              <hm-skeleton shape="rect" width="3rem" height="3rem" />
+              <div><hm-skeleton width="50%" /><hm-skeleton width="30%" /></div>
+              <span></span>
+            </li>
+          }
+        </ol>
+      </div>
+    }
+    @case ('error') {
+      <div class="layer-search__body">
+        <hm-error-block
+          heading="Search isn’t working right now"
+          text="We couldn’t reach search. Your query is still in the box; try again in a moment."
+          (retry)="run()"
+        />
+      </div>
+    }
+    @case ('ready') {
+      @let results = ready()!;
+      @if (results.topResult; as top) {
+        <div class="layer-search__body layer-search__body--results">
+          <section aria-labelledby="hm-top-heading">
+            <h2 class="layer-h" id="hm-top-heading">Top result</h2>
+            <hm-top-result [track]="top" (choose)="chose()" />
+          </section>
+          <div>
+            @if (results.artists.length) {
+              <section aria-labelledby="hm-artists-heading">
+                <h2 class="layer-h" id="hm-artists-heading">Artists</h2>
+                @for (artist of results.artists; track artist.slug) {
+                  <hm-search-artist [slug]="artist.slug" [name]="artist.name" (choose)="chose()" />
+                }
+              </section>
+            }
+            <section class="search-songs" aria-labelledby="hm-songs-heading">
+              <h2 class="layer-h" id="hm-songs-heading">Songs</h2>
+              @for (song of results.songs; track song.id) {
+                <hm-search-song
+                  [track]="song"
+                  [current]="isCurrent(song.id)"
+                  [playing]="player.playing()"
+                  (choose)="chose()"
+                />
+              }
+            </section>
+          </div>
+        </div>
+      } @else if (results.artists.length) {
+        <div class="layer-search__body">
+          <section aria-labelledby="hm-artists-heading">
+            <h2 class="layer-h" id="hm-artists-heading">Artists</h2>
+            @for (artist of results.artists; track artist.slug) {
+              <hm-search-artist [slug]="artist.slug" [name]="artist.name" (choose)="chose()" />
+            }
+          </section>
+        </div>
+      } @else {
+        <div class="layer-empty" role="status">
+          <strong>Nothing matches “{{ results.query }}”</strong>
+          <p>Try an artist name, or a sound like soca, pan or lullaby.</p>
+        </div>
+      }
+    }
+  }
+</hm-search-layer>

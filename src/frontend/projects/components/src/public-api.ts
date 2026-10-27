@@ -25,3 +25,12 @@ export { TableComponent } from './lib/table/table';
 export { HeroComponent } from './lib/hero/hero';
 export { MediaTileComponent } from './lib/media-tile/media-tile';
 export { ErrorPageComponent, NOT_FOUND } from './lib/error-page/error-page';
+export { SearchPillComponent } from './lib/search-layer/search-pill';
+export { SearchLayerComponent } from './lib/search-layer/search-layer';
+export {
+  RecentSearchesComponent,
+  SearchArtistComponent,
+  SearchSongComponent,
+  SoundTileComponent,
+  TopResultComponent,
+} from './lib/search-layer/search-results';

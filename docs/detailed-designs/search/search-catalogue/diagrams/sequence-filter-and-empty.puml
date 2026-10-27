@@ -1,5 +1,5 @@
 @startuml
-title UML sequence behaviour — Filter by type and repeat a recent search
+title UML sequence behaviour — Open the overlay and repeat a recent search
 skinparam backgroundColor #FFFFFF
 skinparam shadowing false
 skinparam roundcorner 12
@@ -16,23 +16,27 @@ skinparam package {
 }
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
-  participant "SearchPage" as page
+  participant "SearchOverlayComponent" as overlay
   participant "RecentSearchesStore" as recent
+  participant "GenresApi" as genres
   participant "SearchApi" as client
 end box
 box "Backend — Hummi.Api application" #D1FADF
+  participant "GenresController" as gctl
   participant "SearchController" as ctl
 end box
-u -> page : Select the Tracks tab
-page -> client : search("rain", Track)
-client -> ctl : GET /api/search?q=rain&type=track
-ctl --> client : Track hits only (L2-006)
-client --> page : Results
-page --> u : Only tracks shown
-u -> page : Open /search with no query
-page -> recent : items()
-recent --> page : Previous queries
-page --> u : "Search Hummi", recent searches, Try a genre (L2-007)
-u -> page : Select a recent search
-page -> client : search(query, All)
+u -> overlay : Open search with an empty query
+overlay -> recent : items()
+recent --> overlay : Previous queries (localStorage)
+overlay -> genres : directory()
+genres -> gctl : GET /api/genres
+gctl --> genres : Genres with track counts
+overlay --> u : "Recent" and "Browse by sound" (L2-007)
+u -> overlay : Select a recent search
+overlay -> client : search(query)
+client -> ctl : GET /api/search?q=query
+ctl --> client : Results
+overlay --> u : Query filled, results shown (L2-007)
+u -> overlay : Select a genre tile
+overlay --> u : Genre page opens, layer closes (L2-007)
 @enduml

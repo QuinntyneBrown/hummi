@@ -8,7 +8,7 @@ Ordered by value to the user, highest first. Effort is in days and matches `docs
 | Play a track without an account | Visitor presses play on any track and hears it through the player bar | 13 |
 | Browse genres | Listener picks a genre from Browse, sorts its tracks and plays or shuffles them | 5 |
 | Explore catalogue pages | Listener opens track, artist, album and licence pages to learn and play | 10 |
-| Search the catalogue | Listener searches tracks, artists and playlists and filters results by type | 4 |
+| Search the catalogue | Listener searches songs and artists from the header search overlay and repeats recent searches | 4 |
 | Control what plays next | Listener uses Now playing, the queue and keyboard shortcuts to steer playback | 8 |
 | Create an account and sign in | Visitor signs up, confirms their email, signs in and signs out | 15 |
 | Reset a forgotten password | Listener requests a reset link by email and chooses a new password | 4 |
