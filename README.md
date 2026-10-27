@@ -109,7 +109,7 @@ Run each check from `src/frontend`.
 | `npm run build:all`      | Every library, then the application                  |
 | `npm run test:e2e`       | Playwright (Chromium) against the production build   |
 
-Backend tests use in-memory substitutes and never connect to a real database. Playwright tests serve the API through route fixtures and never start the backend. See [AGENTS.md](AGENTS.md#testing-rules-critical) for the full rules.
+Backend tests use in-memory substitutes and never connect to a real database. Playwright tests serve the API through route fixtures and never start the backend; an `/api` or `/media` call with no fake answers `501`. Architecture tests in `tests/Hummi.Api.Tests` and `tests/Hummi.Worker.Tests` enforce the layer direction. See [AGENTS.md](AGENTS.md#testing-rules-critical) for the full rules.
 
 ## Deployment
 

@@ -1,59 +1,30 @@
 # Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.4.
+The Angular workspace for Hummi. See [AGENTS.md](../../AGENTS.md#frontend-workspace-layout-mandatory) for the binding layout rules.
 
-## Development server
+## Projects
 
-To start a local development server, run:
+| Project               | Kind        | Purpose                                                        |
+| --------------------- | ----------- | -------------------------------------------------------------- |
+| `projects/hummi`      | application | Shell, routes and app config; owns no feature screens          |
+| `projects/api`        | library     | `@hummi/api`: the only code that calls the Hummi API           |
+| `projects/components` | library     | `@hummi/components`: design-system components and token styles |
 
-```bash
-ng serve
-```
+Feature libraries (`projects/<area>`) are added by later journeys, each with a `@hummi/<area>` alias in `tsconfig.json`.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Commands
 
-## Code scaffolding
+| Command             | Does                                                                               |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| `npm run verify`    | Everything CI runs: backend restore, format, build and tests, lint, build:all, e2e |
+| `npm start`         | Development server on http://localhost:4200, proxying `/api` and `/media`          |
+| `npm run build:all` | Builds `api`, `components`, then the application                                   |
+| `npm run lint`      | Prettier check and ESLint                                                          |
+| `npm run format`    | Prettier write                                                                     |
+| `npm run test:e2e`  | Playwright against the production build in `dist/hummi`                            |
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## End-to-end tests
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+`e2e/serve.mjs` serves the built application; the backend never runs. `e2e/fixtures.ts` answers every
+`/api` and `/media` call with a `page.route` fake: a call no test has faked gets `501` with code `NO_FAKE`,
+so a missing fake fails loudly. Page objects live in `e2e/pages/`, specs in `e2e/tests/`.
