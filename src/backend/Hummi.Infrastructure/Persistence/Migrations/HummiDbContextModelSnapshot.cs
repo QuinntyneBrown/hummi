@@ -410,6 +410,42 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                     b.ToTable("Tracks", (string)null);
                 });
 
+            modelBuilder.Entity("Hummi.Domain.Library.ArtistFollow", b =>
+                {
+                    b.Property<Guid>("ListenerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ArtistId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("FollowedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("ListenerId", "ArtistId");
+
+                    b.HasIndex("ArtistId");
+
+                    b.ToTable("ArtistFollows", (string)null);
+                });
+
+            modelBuilder.Entity("Hummi.Domain.Library.TrackLike", b =>
+                {
+                    b.Property<Guid>("ListenerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TrackId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("LikedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("ListenerId", "TrackId");
+
+                    b.HasIndex("TrackId");
+
+                    b.ToTable("TrackLikes", (string)null);
+                });
+
             modelBuilder.Entity("Hummi.Domain.Accounts.EmailToken", b =>
                 {
                     b.HasOne("Hummi.Domain.Accounts.Listener", null)
@@ -467,6 +503,36 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                     b.Navigation("Artist");
 
                     b.Navigation("Genre");
+                });
+
+            modelBuilder.Entity("Hummi.Domain.Library.ArtistFollow", b =>
+                {
+                    b.HasOne("Hummi.Domain.Catalogue.Artist", null)
+                        .WithMany()
+                        .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Hummi.Domain.Accounts.Listener", null)
+                        .WithMany()
+                        .HasForeignKey("ListenerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Hummi.Domain.Library.TrackLike", b =>
+                {
+                    b.HasOne("Hummi.Domain.Accounts.Listener", null)
+                        .WithMany()
+                        .HasForeignKey("ListenerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Hummi.Domain.Catalogue.Track", null)
+                        .WithMany()
+                        .HasForeignKey("TrackId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

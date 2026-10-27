@@ -116,6 +116,8 @@
       "title": "Library",
       "states": [
         "default",
+        "liked",
+        "following",
         "loading",
         "empty",
         "error",
@@ -495,12 +497,12 @@
         "play-next",
         "removed",
         "album-added",
-        "downloads"
+        "downloads",
+        "danger"
       ],
       "opens_from": "playlist",
       "not_applicable": {
-        "warning": "The design has one confirmation pill; problems are shown as banners (L2-042) or inline error blocks.",
-        "danger": "The design has one confirmation pill; failures are shown as banners (L2-042) or inline error blocks."
+        "warning": "Problems are shown as banners (L2-042), inline error blocks or the danger toast."
       }
     },
     {

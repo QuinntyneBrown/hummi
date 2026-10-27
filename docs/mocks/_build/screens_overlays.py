@@ -141,6 +141,9 @@ def toast(state, under):
         "removed": toast_pill("Removed “Road March Riddim” from your library", "road-march-riddim", undo=True),
         "album-added": toast_pill("Added Mas on the Avenue to your library", "feathers-up"),
         "downloads": toast_pill("Downloads are saved for offline listening on this device"),
+        "danger": ('<div class="toast toast--danger" role="alert">' + icon("alert") + '<div class="toast__body"><div class="toast__title">Couldn’t like the track</div>'
+                   '<div class="toast__text">Check your connection and try again.</div><button class="toast__action" type="button">Retry</button></div>'
+                   '<button class="close" type="button" aria-label="Dismiss">' + icon("close", "icon--sm") + "</button></div>"),
     }
     n = "Auto-dismisses after 4 s. Sits above the player bar; 24px from the bottom when no player is shown."
     return under + region(t[state]) + note(n, "bottom: 12rem; right: 1rem;")
@@ -162,6 +165,6 @@ def banner(state, under):
 
 
 NOTIFS = [
-    dict(id="toast", title="Toast", opens_from="playlist", states=["info", "success", "play-next", "removed", "album-added", "downloads"], na={"warning": "The design has one confirmation pill; problems are shown as banners (L2-042) or inline error blocks.", "danger": "The design has one confirmation pill; failures are shown as banners (L2-042) or inline error blocks."}, render=toast, desc="Transient pill confirming an action"),
+    dict(id="toast", title="Toast", opens_from="playlist", states=["info", "success", "play-next", "removed", "album-added", "downloads", "danger"], na={"warning": "Problems are shown as banners (L2-042), inline error blocks or the danger toast."}, render=toast, desc="Transient pill confirming an action"),
     dict(id="banner", title="Banner", opens_from="home", states=["info", "success", "warning", "danger", "persistent"], render=banner, desc="Page-wide message above the top bar"),
 ]

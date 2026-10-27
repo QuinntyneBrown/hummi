@@ -26,7 +26,7 @@ box "Backend — Hummi.Api application" #D1FADF
   participant "LibraryController" as ctl
 end box
 box "Backend — Hummi Application and Domain" #ECFDF3
-  participant "LikeTrackCommandHandler" as cmd
+  participant "SetTrackLikeCommandHandler" as cmd
 end box
 box "Backend — Hummi Infrastructure" #FFF4E5
   participant "HummiDbContext" as ctx
@@ -41,7 +41,7 @@ else signed in
   store --> btn : pressed, label "Remove like from Slow Orbit" (L2-018)
   store -> client : like(trackId)
   client -> ctl : PUT /api/me/likes/{trackId}
-  ctl -> cmd : Send LikeTrackCommand
+  ctl -> cmd : Send SetTrackLikeCommand
   cmd -> ctx : Insert Like if absent
   ctx -> db : INSERT
   alt saved

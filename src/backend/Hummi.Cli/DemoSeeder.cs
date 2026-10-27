@@ -1,6 +1,7 @@
 using Hummi.Application.Abstractions;
 using Hummi.Domain.Accounts;
 using Hummi.Domain.Catalogue;
+using Hummi.Domain.Library;
 using Hummi.Infrastructure.Accounts;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,11 +11,16 @@ namespace Hummi.Cli;
 /// Writes the demo catalogue of the mocks (docs/mocks/_build/kit.py) into a local install: artists,
 /// published albums, tracks with their licences and waveforms, plays that order the Top 10, and a
 /// generated WAV per track on the media volume. There is no upload tooling; this is how a local
-/// install gets music. It also adds the confirmed demo listener Nadia Charles.
+/// install gets music. It also adds the confirmed demo listener Nadia Charles with a few likes and follows.
 /// </summary>
 public static class DemoSeeder
 {
     private const string Cdn = "https://cdn.magicpatterns.com/patterns/generated-images/";
+
+    /// <summary>What Nadia Charles has liked and follows, so Library has something to show (L2-019).</summary>
+    public static readonly IReadOnlyList<string> DemoLikes = ["Feathers Up", "Big Truck Energy", "Panyard Nights"];
+
+    public static readonly IReadOnlyList<string> DemoFollows = ["Kaiso Collective", "Lady Tamboo"];
 
     /// <summary>A demo track; Genre is the slug of one of the fixed genres and Album the title of the artist's release.</summary>
     public sealed record DemoTrack(string Title, string Artist, int Seconds, string CoverId, string Genre, string Album, Licence Licence);
@@ -129,6 +135,15 @@ public static class DemoSeeder
         var listener = Listener.Create("Nadia Charles", DemoEmail, new IdentityPasswordHasher().Hash(DemoPassword), now);
         listener.ConfirmEmail(now);
         db.Listeners.Add(listener);
+        foreach (var title in DemoLikes)
+        {
+            db.TrackLikes.Add(TrackLike.Create(listener.Id, db.Tracks.Local.Single(t => t.Title == title).Id, now));
+        }
+
+        foreach (var name in DemoFollows)
+        {
+            db.ArtistFollows.Add(ArtistFollow.Create(listener.Id, artists[name].Id, now));
+        }
 
         await db.SaveChangesAsync(cancellationToken);
         return Tracks.Count;

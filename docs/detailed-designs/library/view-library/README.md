@@ -17,7 +17,7 @@ Library is one aggregate read for the signed-in listener; no client-side cache o
 
 **Frontend — Hummi web application (Angular)**
 
-- **`LibraryPage`** — Routed component in @hummi/library. Renders the header with New playlist, `hm-tabs`, `hm-playlist-tile` grid, liked `hm-track-list`, `hm-artist-tile` grid and the empty and signed-out states
+- **`LibraryPage`** — Routed component in @hummi/library. Renders the header with New playlist, `hm-tabs`, an `hm-media-tile` grid of playlists, liked `hm-track-list`, a round `hm-media-tile` grid of artists and the empty, error and signed-out states
 - **`SessionStore`** — Signal store in @hummi/api. Holds the signed-in listener, the access token and the signed-in/signed-out state the shell reads
 - **`LibraryApi`** — Typed HTTP service in @hummi/api. Calls the authorized `/api/me/*` library endpoints
 
@@ -27,12 +27,12 @@ Library is one aggregate read for the signed-in listener; no client-side cache o
 
 **Backend — Hummi Application and Domain**
 
-- **`GetLibraryQueryHandler`** — MediatR query handler. Returns counts, owned and saved playlists, liked tracks and followed artists
+- **`GetLibraryQueryHandler`** — MediatR query handler. Returns counts, owned and saved playlists (empty until journey 10), liked tracks and followed artists
 
 **Backend — Hummi Infrastructure**
 
 - **`HummiDbContext`** — EF Core DbContext. Implements the `IHummiDbContext` port from `Application/Abstractions` and maps entities to tables
-- **`Hummi database`** — Azure SQL. Playlists, saved playlists, likes and follows
+- **`Hummi database`** — Azure SQL. Playlists, saved playlists, `TrackLikes` and `ArtistFollows`
 
 ## Requirements
 

@@ -1,5 +1,6 @@
 using Hummi.Domain.Accounts;
 using Hummi.Domain.Catalogue;
+using Hummi.Domain.Library;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hummi.Application.Abstractions;
@@ -25,6 +26,10 @@ public interface IHummiDbContext
     DbSet<EmailToken> EmailTokens { get; }
 
     DbSet<RefreshToken> RefreshTokens { get; }
+
+    DbSet<TrackLike> TrackLikes { get; }
+
+    DbSet<ArtistFollow> ArtistFollows { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

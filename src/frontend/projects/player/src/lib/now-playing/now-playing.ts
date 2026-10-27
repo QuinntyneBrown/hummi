@@ -1,20 +1,21 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { PlayerOverlays, PlayerStore, SignInGate } from '@hummi/api';
+import { LibraryStore, PlayerOverlays, PlayerStore } from '@hummi/api';
 import { ButtonDirective, PlayerLayerComponent } from '@hummi/components';
 
 /**
  * Now playing (`/now-playing`, L2-015): hm-player-layer over the page for the current track, or
  * "Nothing is playing" with Browse genres. Close and Escape go back to the page it was opened from (Home
  * when opened directly). Queue closes the layer and opens the queue drawer; More actions opens the track
- * menu. Save asks SignInGate first (L2-032); saving itself and Share come with the library and sharing journeys.
+ * menu. Save likes the track through LibraryStore,
+ * which asks SignInGate first (L2-018, L2-032); Share comes with the sharing journey.
  */
 @Component({
   selector: 'hm-now-playing',
   imports: [RouterLink, ButtonDirective, PlayerLayerComponent],
   template: `
     <hm-player-layer
-      [track]="player.current()"
+      [track]="track()"
       [playing]="player.playing()"
       [position]="player.position()"
       [duration]="player.duration()"
@@ -30,7 +31,7 @@ import { ButtonDirective, PlayerLayerComponent } from '@hummi/components';
       (toggleRepeat)="player.toggleRepeat()"
       (queue)="openQueue()"
       (more)="openMenu()"
-      (save)="gate.allow()"
+      (save)="save()"
     >
       <a hmButton="primary" routerLink="/browse">Browse genres</a>
     </hm-player-layer>
@@ -39,7 +40,12 @@ import { ButtonDirective, PlayerLayerComponent } from '@hummi/components';
 })
 export class NowPlayingComponent {
   readonly player = inject(PlayerStore);
-  readonly gate = inject(SignInGate);
+  private readonly library = inject(LibraryStore);
+  /** The current track with the listener's like. */
+  readonly track = computed(() => {
+    const track = this.player.current();
+    return track && this.library.withLikes([track])[0];
+  });
   private readonly overlays = inject(PlayerOverlays);
   private readonly router = inject(Router);
   /** True when the app navigated here from another of its pages, so Back returns there. */
@@ -48,6 +54,11 @@ export class NowPlayingComponent {
   close(): void {
     if (this.cameFromApp) history.back();
     else void this.router.navigateByUrl('/');
+  }
+
+  save(): void {
+    const track = this.player.current();
+    if (track) void this.library.toggleLike(track);
   }
 
   openQueue(): void {

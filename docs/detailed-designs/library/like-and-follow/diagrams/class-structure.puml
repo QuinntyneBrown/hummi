@@ -12,24 +12,24 @@ skinparam class {
 hide empty members
 title Class structure — Like tracks and follow artists
 
-class Like {
+class TrackLike {
   +Guid ListenerId
   +Guid TrackId
   +DateTimeOffset CreatedAt
 }
-class Follow {
+class ArtistFollow {
   +Guid ListenerId
   +Guid ArtistId
   +DateTimeOffset CreatedAt
 }
-class LikeTrackCommand {
+class SetTrackLikeCommand {
   +Guid TrackId
 }
-class LikeTrackCommandHandler {
-  +Handle(c: LikeTrackCommand): Task<Result>
+class SetTrackLikeCommandHandler {
+  +Handle(c: SetTrackLikeCommand): Task<Result>
 }
-class FollowArtistCommandHandler {
-  +Handle(c: FollowArtistCommand): Task<Result>
+class SetArtistFollowCommandHandler {
+  +Handle(c: SetArtistFollowCommand): Task<Result>
 }
 class LibraryStore {
   +likedIds: Signal<Set<string>>
@@ -37,7 +37,7 @@ class LibraryStore {
   +toggleLike(track): Promise<void>
   +toggleFollow(artist): Promise<void>
 }
-LikeTrackCommandHandler ..> LikeTrackCommand : handles
-LikeTrackCommandHandler ..> Like : creates
-FollowArtistCommandHandler ..> Follow : creates
+SetTrackLikeCommandHandler ..> SetTrackLikeCommand : handles
+SetTrackLikeCommandHandler ..> TrackLike : creates
+SetArtistFollowCommandHandler ..> ArtistFollow : creates
 @enduml

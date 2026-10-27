@@ -30,3 +30,5 @@ export {
 } from './lib/catalogue/catalogue-api';
 export { SearchApi, type ArtistHitDto, type SearchResultsDto } from './lib/search/search-api';
 export { SearchStore } from './lib/search/search-store';
+export { LibraryApi, type ArtistTileDto, type LibraryDto, type PlaylistTileDto } from './lib/library/library-api';
+export { LibraryStore, type LibraryProblem } from './lib/library/library-store';

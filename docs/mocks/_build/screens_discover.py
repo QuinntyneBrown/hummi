@@ -141,12 +141,18 @@ def playlist(state):
 def library(state):
     default = (f'<div class="tabs" role="tablist" aria-label="Library"><button class="tab" role="tab" aria-selected="true" type="button">Playlists</button><button class="tab" role="tab" aria-selected="false" tabindex="-1" type="button">Liked</button><button class="tab" role="tab" aria-selected="false" tabindex="-1" type="button">Following</button></div>'
                '<div class="card-grid" style="margin-top:var(--space-4)">' + "".join(tile(p, "pl") for p in PLAYLISTS) + "</div>")
-    c = {"default": default, "loading": skel_tiles(6),
+    def tabs(sel):
+        return ('<div class="tabs" role="tablist" aria-label="Library">' + "".join(
+            f'<button class="tab" role="tab" aria-selected="{"true" if n == sel else "false"}"{"" if n == sel else " tabindex=\"-1\""} type="button">{n}</button>'
+            for n in ("Playlists", "Liked", "Following")) + "</div>")
+    liked = tabs("Liked") + '<div style="margin-top:var(--space-4)">' + track_list(list(T)[:4], label="Liked tracks", liked=list(T)[:4]) + "</div>"
+    following = tabs("Following") + '<div class="card-grid" style="margin-top:var(--space-4)">' + "".join(tile(a, "artist") for a in list(A)[:4]) + "</div>"
+    c = {"default": default, "liked": liked, "following": following, "loading": skel_tiles(6),
          "empty": empty("library", "Your library is empty", "Like a track or create a playlist and it will live here, on every device you sign in on.", btn("Create a playlist", "primary", "plus", href=D("create-playlist")) + btn("Browse genres", "", href=P("browse"))),
          "error": err("Your library didn’t load"),
          "signed-out": empty("lock", "Sign in to see your library", "Playlists and liked tracks are saved to your account.", btn("Sign in", "primary", href=P("sign-in")) + btn("Create account", "", href=P("sign-up")))}
-    return frame(state, "library", "Library", "3 playlists · 41 liked tracks · 6 artists" if state == "default" else "", c,
-                 btn("New playlist", "primary", "plus", href=D("create-playlist")) if state in ("default", "loading", "empty") else "", signed_in=state != "signed-out")
+    return frame(state, "library", "Library", "3 playlists · 41 liked tracks · 6 artists" if state in ("default", "liked", "following") else "", c,
+                 btn("New playlist", "primary", "plus", href=D("create-playlist")) if state in ("default", "liked", "following", "loading", "empty") else "", signed_in=state != "signed-out")
 
 
 def now_playing(state):
@@ -176,7 +182,7 @@ SCREENS = [
     dict(id="artist", kind="page", title="Artist", route="/artists/:id", states=["default", "loading", "empty", "error"], render=artist, desc="Artist profile with popular tracks and releases"),
     dict(id="album", kind="page", title="Album", route="/albums/:id", states=["default", "loading", "error"], na={"empty": "An album exists only when it has at least one track."}, render=album, desc="Album track list and licence summary"),
     dict(id="playlist", kind="page", title="Playlist", route="/playlists/:id", states=["default", "loading", "empty", "error", "selected", "read-only"], render=playlist, desc="Playlist with owner actions, multi-select and read-only view of someone else's playlist"),
-    dict(id="library", kind="page", title="Library", route="/library", states=["default", "loading", "empty", "error", "signed-out"], render=library, desc="Saved playlists, liked tracks and followed artists"),
+    dict(id="library", kind="page", title="Library", route="/library", states=["default", "liked", "following", "loading", "empty", "error", "signed-out"], render=library, desc="Saved playlists, liked tracks and followed artists"),
     dict(id="now-playing", kind="page", title="Now playing", route="/now-playing", states=["default", "paused", "loading", "empty", "error"], render=now_playing, desc="Full-screen Now playing layer with scrubber, controls and up next"),
     dict(id="queue", kind="page", title="Queue", route="/queue", states=["default", "loading", "empty", "error"], render=queue, desc="Queue drawer: now playing, up next and more from the genre"),
     dict(id="shared-track", kind="page", title="Shared track", route="/s/:code", states=["default", "loading", "error"], na={"empty": "A shared link points at exactly one track."}, render=shared_track, desc="Logged-out landing page for a shared track link"),

@@ -773,6 +773,8 @@ a.avatar { text-decoration: none; }
 .toast__dot { width: 0.5rem; height: 0.5rem; margin-left: var(--space-2); flex: none; border-radius: 50%; background: var(--color-accent); }
 .toast__msg { font: var(--text-label); font-weight: var(--font-weight-bold); white-space: nowrap; }
 .toast__undo { height: 2.25rem; padding: 0 1rem; border: 0; border-radius: var(--radius-full); background: var(--color-bg-canvas); color: var(--color-fg-default); font-size: 0.8125rem; font-weight: var(--font-weight-bold); cursor: pointer; }
+/* A danger toast keeps the card shape: icon, title, text, Retry and Dismiss; it stays until dismissed (L2-018 AC4). */
+.toast.toast--danger { align-items: flex-start; width: min(24rem, calc(100vw - 2rem)); padding: var(--space-4); border-radius: var(--radius-md); white-space: normal; }
 
 /* Card more-actions button and kids banner. */
 .card-track__more { position: absolute; z-index: 2; top: 0.5rem; right: 0.5rem; display: grid; place-items: center; width: 2rem; height: 2rem; border: 0; border-radius: 50%; background: color-mix(in srgb, var(--color-bg-canvas) 80%, transparent); backdrop-filter: blur(4px); color: var(--color-fg-default); opacity: 0; cursor: pointer; transition: opacity 150ms; }

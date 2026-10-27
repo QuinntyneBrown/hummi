@@ -43,11 +43,11 @@
                 hmButton="ghost"
                 class="btn--icon"
                 type="button"
-                [pressed]="t.liked"
-                [attr.aria-label]="'Like ' + t.title"
-                (click)="gate.allow()"
+                [pressed]="library.isLiked(t.id)"
+                [attr.aria-label]="(library.isLiked(t.id) ? 'Remove like from ' : 'Like ') + t.title"
+                (click)="library.toggleLike(t)"
               >
-                <hm-icon name="heart" [fill]="t.liked" />
+                <hm-icon name="heart" [fill]="library.isLiked(t.id)" />
               </button>
               <button hmButton type="button" (click)="gate.allow()"><hm-icon name="plus" />Add to playlist</button>
               <button hmButton type="button"><hm-icon name="share" />Share</button>
@@ -64,8 +64,8 @@
           @if (t.moreFromArtist.length) {
             <hm-shelf [heading]="'More from ' + t.artist.name">
               <hm-track-list
-                (like)="gate.allow()"
-                [tracks]="t.moreFromArtist"
+                (like)="library.toggleLike($event)"
+                [tracks]="library.withLikes(t.moreFromArtist)"
                 [label]="'More from ' + t.artist.name"
                 [currentTrackId]="player.current()?.id ?? null"
                 [playing]="player.playing()"
@@ -83,8 +83,8 @@
           </hm-alert>
           <hm-shelf heading="Similar tracks">
             <hm-track-list
-              (like)="gate.allow()"
-              [tracks]="t.similar"
+              (like)="library.toggleLike($event)"
+              [tracks]="library.withLikes(t.similar)"
               label="Similar tracks"
               [currentTrackId]="player.current()?.id ?? null"
               [playing]="player.playing()"
