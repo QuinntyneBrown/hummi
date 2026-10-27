@@ -12,9 +12,10 @@ Container_Boundary(api, "Hummi.Api") {
   Component(cmd, "RequestPasswordResetCommandHandler", "MediatR command handler", "Issues a 1-hour token and sends the email\nonly when the account exists; always returns\nsuccess unless sending fails")
   Component(redeem, "ResetPasswordCommandHandler", "MediatR command handler", "Redeems the token, sets the new hash and\nrevokes all refresh tokens")
   Component(mail, "IEmailSender", "Application port", "SendAsync(EmailMessage); implemented by an\nSMTP adapter in Infrastructure")
-  Component(clock, "IClock", "Application port", "Supplies the current UTC time so time rules\nare testable")
+  Component(clock, "TimeProvider", ".NET clock", "Supplies the current UTC time so time rules\nare testable")
   Component(ctx, "HummiDbContext", "EF Core DbContext", "Implements the IHummiDbContext port from\nApplication/Abstractions and maps entities\nto tables")
 }
+Rel(newpw, client, "Confirms the reset")
 Rel(page, client, "requestReset(email)")
 Rel(client, ctl, "POST /api/auth/password-reset")
 Rel(ctl, cmd, "Send RequestPasswordResetCommand")

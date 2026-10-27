@@ -16,7 +16,8 @@ export interface SignUpRequest {
 /**
  * The anonymous account calls (L2-027, L2-028). Sign up answers 202 or 422 with field errors; verify
  * answers the confirmed listener or 410 LINK_EXPIRED; resend sends a fresh link for the signed-in
- * listener, or for the owner of the given expired link.
+ * listener, or for the owner of the given expired link. A reset request answers 202 whether or not the
+ * account exists (L2-030); confirming it answers 204, 422 or 410 LINK_EXPIRED (L2-055).
  */
 @Injectable({ providedIn: 'root' })
 export class AuthApi {
@@ -33,5 +34,13 @@ export class AuthApi {
 
   resendConfirmation(token?: string): Promise<ApiResult<unknown>> {
     return toResult(this.http.post(`${this.baseUrl}/auth/resend-confirmation`, token ? { token } : {}));
+  }
+
+  requestPasswordReset(email: string): Promise<ApiResult<unknown>> {
+    return toResult(this.http.post(`${this.baseUrl}/auth/password-reset`, { email }));
+  }
+
+  resetPassword(token: string, password: string): Promise<ApiResult<unknown>> {
+    return toResult(this.http.post(`${this.baseUrl}/auth/password-reset/confirm`, { token, password }));
   }
 }

@@ -36,4 +36,11 @@ public sealed class Listener
     public static string NormaliseEmail(string email) => email.Trim().ToLowerInvariant();
 
     public void ConfirmEmail(DateTimeOffset at) => EmailConfirmedAt ??= at;
+
+    /// <summary>Sets a new password hash from a reset link (L2-055); the link also proves the address.</summary>
+    public void ChangePassword(string passwordHash, DateTimeOffset at)
+    {
+        PasswordHash = passwordHash;
+        ConfirmEmail(at);
+    }
 }

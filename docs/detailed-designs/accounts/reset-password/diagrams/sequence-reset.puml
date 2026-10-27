@@ -26,7 +26,7 @@ box "Backend — Hummi Application and Domain" #ECFDF3
   participant "RequestPasswordResetCommandHandler" as cmd
   participant "ResetPasswordCommandHandler" as redeem
   participant "IEmailSender" as mail
-  participant "IClock" as clock
+  participant "TimeProvider" as clock
 end box
 box "Backend — Hummi Infrastructure" #FFF4E5
   participant "HummiDbContext" as ctx

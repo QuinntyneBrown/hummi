@@ -202,6 +202,30 @@ Rendered by the shell from `@hummi/player` (`hm-track-menu-host`) for `PlayerOve
 | Error | `hm-alert` (danger, "That email and password don’t match", reset link); other failures "Sign in isn’t working right now" | None |
 | Footer | None | "New to Hummi? Create a free account" paragraph |
 
+## Reset password (`pages/reset-password`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Card | `hm-auth-card` ("Reset your password", intro) | `ResetPasswordComponent` in `@hummi/accounts` |
+| Field | `hm-text-field` Email (required) | Client check in `ResetPasswordComponent` |
+| Invalid | `hm-error-summary` ("Enter the email you signed up with") and the field's error | None |
+| Submitting | Read-only `hm-text-field`; `hmButton="primary"` `large` `block` `busy` "Send reset link…" with `.spinner` | None |
+| Error | `hm-alert` (danger, "We couldn’t send the email") | None |
+| Success | `hm-auth-card` ("Check your inbox"), `hmButton="primary"` link "Back to sign in" | None |
+| Footer | Ghost `hmButton` link "Back to sign in" | None |
+
+## New password (`pages/new-password`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Card | `hm-auth-card` ("Choose a new password", intro) | `NewPasswordComponent` in `@hummi/accounts` |
+| Field | `hm-text-field` New password (required, help "At least 10 characters") | Client check in `NewPasswordComponent` |
+| Invalid | `hm-error-summary` ("Use at least 10 characters") and the field's error | None |
+| Submitting | Read-only `hm-text-field`; `hmButton="primary"` `large` `block` `busy` "Change password…" with `.spinner` | None |
+| Error (expired) | `hm-auth-card` ("This link has expired"), `hmButton="primary"` link "Request a new link", ghost `hmButton` link "Back to sign in" | None |
+| Failed | `hm-alert` (danger, "We couldn’t change your password") above the field (ADR 0011) | None |
+| Success | `hm-auth-card` ("Password changed"), `hmButton="primary"` link "Sign in" | None |
+
 ## Verify email (`pages/verify-email`)
 
 | Part | Library components | Local UI |

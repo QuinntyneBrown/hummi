@@ -69,6 +69,19 @@ def reset_password(state):
     return auth("Reset your password", "Enter your email and we’ll send a link to choose a new one.", form)
 
 
+def new_password(state):
+    inv = state == "invalid"; busy = state == "submitting"
+    if state == "success":
+        return auth("Password changed", "Sign in with your new password.", btn("Sign in", "primary", href=P("sign-in")))
+    if state == "error":
+        return auth("This link has expired", "Reset links work for 1 hour. Request a new one to choose a password.",
+                    btn("Request a new link", "primary", href=P("reset-password")) + f'<a class="btn btn--ghost btn--block" href="{P("sign-in")}">Back to sign in</a>')
+    top = summary([("password", "Use at least 10 characters")]) if inv else ""
+    form = (f'<form class="stack" novalidate>{top}' + field("New password", "password", "password", "short" if inv else "••••••••••••", help="At least 10 characters", error="Use at least 10 characters" if inv else "", extra=' autocomplete="new-password"' + (" readonly" if busy else ""), req=True)
+            + submit("Change password", busy) + f'<a class="btn btn--ghost btn--block" href="{P("sign-in")}">Back to sign in</a></form>')
+    return auth("Choose a new password", "Pick a new password for your Hummi account.", form)
+
+
 def verify_email(state):
     if state == "success":
         return auth("Email confirmed", "You’re all set, Nadia. Your account is ready.", btn("Start listening", "primary", href=P("home")))
@@ -149,6 +162,7 @@ SCREENS = [
     dict(id="sign-in", kind="page", title="Sign in", route="/sign-in", states=["default", "invalid", "submitting", "error"], na=NA_STATIC, render=sign_in, desc="Email and password sign in"),
     dict(id="sign-up", kind="page", title="Sign up", route="/sign-up", states=["default", "invalid", "submitting", "error", "success"], na=NA_STATIC, render=sign_up, desc="Create a free account"),
     dict(id="reset-password", kind="page", title="Reset password", route="/reset-password", states=["default", "invalid", "submitting", "error", "success"], na=NA_STATIC, render=reset_password, desc="Request a password reset email"),
+    dict(id="new-password", kind="page", title="New password", route="/new-password", states=["default", "invalid", "submitting", "error", "success"], na=NA_STATIC, render=new_password, desc="Choose a new password from the emailed reset link"),
     dict(id="verify-email", kind="page", title="Verify email", route="/verify-email", states=["default", "error", "success"], na={"loading": "Its default state is the loading state: it confirms the token on arrival.", "empty": "No collection."}, render=verify_email, desc="Confirms an email address from the emailed link"),
     dict(id="settings", kind="page", title="Settings", route="/settings", states=["default", "loading", "error", "invalid", "submitting", "success"], na={"empty": "Settings always have values."}, render=settings, desc="Profile, playback, appearance and notification settings"),
     dict(id="notifications", kind="page", title="Notifications", route="/notifications", states=["default", "unread", "read", "loading", "empty", "error"], render=notifications, desc="Notification centre"),

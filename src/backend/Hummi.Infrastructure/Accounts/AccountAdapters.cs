@@ -65,4 +65,6 @@ public sealed class SmtpEmailSender(SmtpOptions options) : IEmailSender
 public sealed class AppLinks(Uri baseUrl) : IAppLinks
 {
     public Uri VerifyEmail(string token) => new(baseUrl, $"verify-email?token={Uri.EscapeDataString(token)}");
+
+    public Uri NewPassword(string token) => new(baseUrl, $"new-password?token={Uri.EscapeDataString(token)}");
 }
