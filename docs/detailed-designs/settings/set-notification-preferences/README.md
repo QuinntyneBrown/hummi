@@ -15,7 +15,7 @@ Preferences are saved with the Settings command; a worker job sends the digest a
 **Frontend — Hummi web application (Angular)**
 
 - **`SettingsPage`** — Routed component in @hummi/settings. Notifications `hm-switch` pair
-- **`SettingsApi`** — Typed HTTP service in @hummi/api. Calls `GET` and `PUT /api/me/settings`
+- **`SettingsStore`** — Signal store in @hummi/api. Calls `GET` and `PUT /api/me/settings` and applies the theme and Playback switches
 
 **Backend — Hummi.Api application**
 
@@ -23,7 +23,7 @@ Preferences are saved with the Settings command; a worker job sends the digest a
 
 **Backend — Hummi.Worker application**
 
-- **`ReleaseDigestJob`** — Hosted background job. Weekly <TO SUPPLY: day and hour>; emails each opted-in listener with releases since their last digest
+- **`ReleaseDigestJob`** — Hosted background job. Hourly; emails each opted-in listener whose last digest is at least 7 days old, with followed artists' tracks added since (ADR 0016)
 - **`ProductNewsSender`** — Hosted background job. Sends a product announcement only to listeners with `ProductNews` on
 
 **Backend — Hummi Application and Domain**
@@ -60,13 +60,13 @@ A signed-in listener chooses which emails Hummi sends through the email provider
 
 ### Components
 
-`SettingsPage` saves through `SettingsApi`; in the worker, `ReleaseDigestJob` and `ProductNewsSender` query preferences and call `IEmailSender`.
+`SettingsPage` saves through `SettingsStore`; in the worker, `ReleaseDigestJob` and `ProductNewsSender` query preferences and call `IEmailSender`.
 
 ![C4 component view for set notification preferences](diagrams/c4-component.png)
 
 ### Class structure
 
-`ReleaseDigestJob` reads `ListenerSettings.NotifyNewReleases` and records each send in `DigestLog`.
+`ReleaseDigestJob` reads `Listener settings.NotifyNewReleases` and records each send in `DigestLog`.
 
 ![Class diagram for set notification preferences](diagrams/class-structure.png)
 

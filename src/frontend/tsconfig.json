@@ -10,6 +10,7 @@
       "@hummi/accounts": ["./projects/accounts/src/public-api.ts"],
       "@hummi/library": ["./projects/library/src/public-api.ts"],
       "@hummi/sharing": ["./projects/sharing/src/public-api.ts"],
+      "@hummi/settings": ["./projects/settings/src/public-api.ts"],
       "@hummi/player": ["./projects/player/src/public-api.ts"]
     },
     "noImplicitOverride": true,

@@ -320,7 +320,7 @@ test('L2-052: the avatar opens the account menu with the name and email; Escape 
   await expect(account.avatar).toHaveAttribute('aria-expanded', 'true');
   await expect(account.menu).toContainText('Nadia Charles');
   await expect(account.menu).toContainText('nadia@hummi.fm');
-  await expect(account.menu.getByRole('menuitem', { name: 'Sign out' })).toBeFocused();
+  await expect(account.menu.getByRole('menuitem', { name: 'Your library' })).toBeFocused();
   await page.keyboard.press('Escape');
   await expect(account.menu).toHaveCount(0);
   await expect(account.avatar).toBeFocused();

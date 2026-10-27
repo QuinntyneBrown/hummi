@@ -43,7 +43,10 @@
       [email]="user.email"
       (dismiss)="closeAccountMenu()"
       (signOut)="openSignOut()"
-    />
+    >
+      <a class="mi" role="menuitem" routerLink="/library" (click)="accountMenuOpen.set(false)">Your library</a>
+      <a class="mi" role="menuitem" routerLink="/settings" (click)="accountMenuOpen.set(false)">Settings</a>
+    </hm-account-menu>
   }
 }
 @if (search.open()) {

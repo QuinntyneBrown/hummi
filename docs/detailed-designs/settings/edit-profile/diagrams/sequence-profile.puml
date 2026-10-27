@@ -17,14 +17,14 @@ skinparam package {
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
   participant "SettingsPage" as page
-  participant "SettingsApi" as client
+  participant "SettingsStore" as client
   participant "SessionStore" as session
 end box
 box "Backend — Hummi.Api application" #D1FADF
   participant "SettingsController" as ctl
 end box
 box "Backend — Hummi Application and Domain" #ECFDF3
-  participant "UpdateSettingsValidator" as val
+  participant "UpdateSettingsCommandHandler checks" as val
   participant "UpdateSettingsCommandHandler" as cmd
 end box
 box "Backend — Hummi Infrastructure" #FFF4E5
@@ -44,7 +44,7 @@ page -> client : update(dto)
 client -> ctl : PUT /api/me/settings
 ctl -> val : Validate
 ctl -> cmd : Send UpdateSettingsCommand
-cmd -> ctx : Update Listener and ListenerSettings
+cmd -> ctx : Update Listener and Listener settings
 ctx -> db : UPDATE
 ctl --> client : 200 SettingsDto
 client -> session : Update displayName

@@ -16,13 +16,13 @@ A theme service sets `data-theme` on `<html>`; tokens and `hm-logo` react to it.
 **Frontend — Hummi web application (Angular)**
 
 - **`SettingsPage`** — Routed component in @hummi/settings. Appearance `hm-radio-group` Match my device, Light, Dark
-- **`ThemeService`** — Service in @hummi/api. Resolves the preference against `matchMedia('(prefers-color-scheme: dark)')` and sets `document.documentElement.dataset.theme`
+- **`SettingsStore.applyTheme`** — Service in @hummi/api. Resolves the preference against `matchMedia('(prefers-color-scheme: dark)')` and sets `document.documentElement.dataset.theme`
 - **`LogoComponent`** — `hm-logo` in @hummi/components. Colours the wordmark from tokens
-- **`SettingsApi`** — Typed HTTP service in @hummi/api. `PUT /api/me/settings`
+- **`SettingsStore`** — Typed HTTP service in @hummi/api. `PUT /api/me/settings`
 
 **Backend — Hummi.Api application**
 
-- **`SettingsController`** — ASP.NET Core controller. Stores `Theme` in `ListenerSettings`
+- **`SettingsController`** — ASP.NET Core controller. Stores `Theme` in `Listener settings`
 
 ## Requirements
 
@@ -48,18 +48,18 @@ The Angular application reads the device colour scheme; `Hummi.Api` stores the p
 
 ### Components
 
-`SettingsPage` calls `ThemeService` and `SettingsApi`; `LogoComponent` and tokens follow `data-theme`.
+`SettingsPage` calls `SettingsStore.applyTheme` and `SettingsStore`; `LogoComponent` and tokens follow `data-theme`.
 
 ![C4 component view for switch light and dark themes](diagrams/c4-component.png)
 
 ### Class structure
 
-`ThemeService` resolves a `ThemePreference` to a concrete theme.
+`SettingsStore.applyTheme` resolves a `ThemePreference` to a concrete theme.
 
 ![Class diagram for switch light and dark themes](diagrams/class-structure.png)
 
 ### Behaviour — resolve and change the theme
 
-The preference is applied at once in the browser and saved with the Settings command so other devices pick it up. Signed-out visitors keep the preference in `localStorage` <TO SUPPLY: confirm>.
+The preference is applied at once in the browser and saved with the Settings command so other devices pick it up. Signed-out visitors keep the preference in `localStorage` (ADR 0016).
 
 ![Sequence diagram for resolve and change the theme](diagrams/sequence-theme.png)

@@ -47,7 +47,15 @@ export {
   SoundTileComponent,
   TopResultComponent,
 } from './lib/search-layer/search-results';
-export { CheckboxComponent, ErrorSummaryComponent, TextFieldComponent, type FormError } from './lib/form/form-fields';
+export {
+  CheckboxComponent,
+  ErrorSummaryComponent,
+  RadioGroupComponent,
+  SwitchComponent,
+  TextFieldComponent,
+  type FormError,
+  type RadioOption,
+} from './lib/form/form-fields';
 export { AuthCardComponent, ProgressComponent } from './lib/auth-card/auth-card';
 export { AccountMenuComponent } from './lib/account-menu/account-menu';
 export { TabsComponent } from './lib/tabs/tabs';

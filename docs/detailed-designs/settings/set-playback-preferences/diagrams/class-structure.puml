@@ -17,7 +17,7 @@ enum ThemePreference {
   Light
   Dark
 }
-class ListenerSettings {
+class Listener settings {
   +Guid ListenerId
   +bool AutoplaySimilar = true
   +bool Crossfade = false
@@ -25,7 +25,7 @@ class ListenerSettings {
   +bool ProductNews = false
   +ThemePreference Theme = Device
 }
-ListenerSettings --> ThemePreference
+Listener settings --> ThemePreference
 
 class PlayerStore {
   +autoplay: Signal<boolean>
@@ -33,5 +33,5 @@ class PlayerStore {
   -onQueueEnd(): void
   -onNearTrackEnd(remaining: number): void
 }
-PlayerStore ..> ListenerSettings : loaded from SettingsDto
+PlayerStore ..> Listener settings : loaded from SettingsDto
 @enduml

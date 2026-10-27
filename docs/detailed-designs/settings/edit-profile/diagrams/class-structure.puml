@@ -17,7 +17,7 @@ enum ThemePreference {
   Light
   Dark
 }
-class ListenerSettings {
+class Listener settings {
   +Guid ListenerId
   +bool AutoplaySimilar = true
   +bool Crossfade = false
@@ -25,7 +25,7 @@ class ListenerSettings {
   +bool ProductNews = false
   +ThemePreference Theme = Device
 }
-ListenerSettings --> ThemePreference
+Listener settings --> ThemePreference
 
 class Listener {
   +string DisplayName
@@ -46,5 +46,5 @@ class UpdateSettingsCommandHandler {
 }
 UpdateSettingsCommandHandler ..> UpdateSettingsCommand : handles
 UpdateSettingsCommandHandler --> Listener : updates
-UpdateSettingsCommandHandler --> ListenerSettings : updates
+UpdateSettingsCommandHandler --> Listener settings : updates
 @enduml

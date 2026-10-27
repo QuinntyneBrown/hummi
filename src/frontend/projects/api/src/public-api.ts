@@ -43,3 +43,5 @@ export {
 export { PlaylistDialogs, type PlaylistDialog, type PlaylistTrack } from './lib/library/playlist-dialogs';
 export { ShareDialogs, SharesApi, type SharedItemDto, type ShareSubject } from './lib/sharing/shares-api';
 export { HomeApi, type FeaturedAlbumDto, type HomeShelfDto, type HomeSummaryDto } from './lib/discovery/home-api';
+export { SettingsStore, type SettingsDto, type Theme } from './lib/settings/settings-store';
+export { AccountDialogs } from './lib/auth/account-dialogs';

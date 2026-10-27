@@ -26,6 +26,21 @@ public sealed class MonthlyListenersJobTests
         Assert.IsType<RefreshMonthlyListenersCommand>(first);
     }
 
+    [Fact]
+    public async Task L2_035_the_digest_job_sends_digests_hourly_from_the_start()
+    {
+        var sender = new RecordingSender();
+        using var services = new ServiceCollection().AddSingleton<ISender>(sender).BuildServiceProvider();
+        using var job = new ReleaseDigestJob(services.GetRequiredService<IServiceScopeFactory>());
+
+        await job.StartAsync(CancellationToken.None);
+        var first = await sender.FirstRequest.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        await job.StopAsync(CancellationToken.None);
+
+        Assert.Equal(TimeSpan.FromHours(1), ReleaseDigestJob.Interval);
+        Assert.IsType<Hummi.Application.Accounts.SendReleaseDigestsCommand>(first);
+    }
+
     /// <summary>A fake mediator that keeps the first request it is sent.</summary>
     private sealed class RecordingSender : ISender
     {

@@ -14,6 +14,7 @@ import {
 } from '@angular/core';
 import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import {
+  AccountDialogs,
   AuthApi,
   LibraryStore,
   PlayerOverlays,
@@ -21,6 +22,7 @@ import {
   PlaylistDialogs,
   SearchStore,
   SessionStore,
+  SettingsStore,
   ShareDialogs,
   SignInGate,
 } from '@hummi/api';
@@ -113,7 +115,10 @@ export class AppShellComponent {
   private readonly toasts = inject(ToastService);
   private readonly injector = inject(Injector);
   readonly accountMenuOpen = signal(false);
-  readonly signOutOpen = signal(false);
+  private readonly accountDialogs = inject(AccountDialogs);
+  readonly signOutOpen = this.accountDialogs.signOutOpen;
+  /** Applies the theme and the Playback settings from the start (L2-034, L2-049). */
+  private readonly settings = inject(SettingsStore);
   private readonly avatar = viewChild<ElementRef<HTMLElement>>('avatar');
   readonly inert = computed(() =>
     this.shortcuts.dialogOpen() ||
@@ -177,12 +182,12 @@ export class AppShellComponent {
 
   openSignOut(): void {
     this.accountMenuOpen.set(false);
-    this.signOutOpen.set(true);
+    this.accountDialogs.openSignOut();
   }
 
   /** Cancelled: focus returns to the avatar. Signed out: the header now shows Sign in and Sign up. */
   signOutClosed(reason: 'signed-out' | 'cancelled'): void {
-    this.signOutOpen.set(false);
+    this.accountDialogs.closeSignOut();
     if (reason === 'cancelled') {
       afterNextRender(() => this.avatar()?.nativeElement.focus(), { injector: this.injector });
     }

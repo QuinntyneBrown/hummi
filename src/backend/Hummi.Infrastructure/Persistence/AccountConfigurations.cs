@@ -14,6 +14,7 @@ internal sealed class ListenerConfiguration : IEntityTypeConfiguration<Listener>
         builder.Property(l => l.Email).HasMaxLength(320).IsRequired();
         builder.Property(l => l.PasswordHash).HasMaxLength(200).IsRequired();
         builder.Ignore(l => l.EmailConfirmed);
+        builder.Property(l => l.Theme).HasMaxLength(10).IsRequired();
         builder.HasIndex(l => l.Email).IsUnique();
     }
 }

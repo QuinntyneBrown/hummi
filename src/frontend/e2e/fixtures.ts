@@ -456,10 +456,10 @@ function wav(seconds: number): Buffer {
  */
 export async function fakeMedia(
   page: Page,
-  options: { dropConnection?: boolean } = {},
+  options: { dropConnection?: boolean; seconds?: Record<string, number> } = {},
 ): Promise<{ requested: string[] }> {
   const requested: string[] = [];
-  const durations = new Map(Object.values(TRACKS).map((t) => [t.id, t.durationSeconds]));
+  const durations = new Map(Object.values(TRACKS).map((t) => [t.id, options.seconds?.[t.id] ?? t.durationSeconds]));
   await page.route('**/media/tracks/*', async (route) => {
     const id = decodeURIComponent(new URL(route.request().url()).pathname.split('/').pop() ?? '');
     requested.push(id);
@@ -816,6 +816,49 @@ export async function fakeShares(
     );
   });
   return { shared };
+}
+
+export const NADIA_SETTINGS = {
+  displayName: 'Nadia Charles',
+  email: 'nadia@hummi.fm',
+  emailConfirmed: true,
+  autoplaySimilar: true,
+  crossfade: false,
+  theme: 'device',
+  notifyNewReleases: true,
+  productNews: false,
+};
+
+/**
+ * GET and PUT /api/me/settings over one stored copy; PUT answers status (200 by default) after delayMs
+ * and keeps each body it was sent.
+ */
+export async function fakeSettings(
+  page: Page,
+  options: { start?: Partial<typeof NADIA_SETTINGS>; status?: number; delayMs?: number; getStatus?: number } = {},
+): Promise<{ saved: unknown[]; current: () => typeof NADIA_SETTINGS }> {
+  let current = { ...NADIA_SETTINGS, ...options.start };
+  const saved: unknown[] = [];
+  await page.route('**/api/me/settings', async (route) => {
+    const json = (status: number, body: unknown) =>
+      route.fulfill({
+        status,
+        contentType: status < 400 ? 'application/json' : 'application/problem+json',
+        body: JSON.stringify(body),
+      });
+    if (route.request().method() === 'GET') {
+      const status = options.getStatus ?? 200;
+      return json(status, status === 200 ? current : { title: 'Server error', code: 'UNEXPECTED' });
+    }
+    const body = route.request().postDataJSON();
+    saved.push(body);
+    if (options.delayMs) await new Promise((resolve) => setTimeout(resolve, options.delayMs));
+    const status = options.status ?? 200;
+    if (status !== 200) return json(status, { title: 'Server error', code: 'UNEXPECTED' });
+    current = { ...current, ...body };
+    return json(200, current);
+  });
+  return { saved, current: () => current };
 }
 
 export const test = base.extend<{ visitor: void }>({
