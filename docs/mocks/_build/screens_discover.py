@@ -29,9 +29,10 @@ def home(state, extra="", inert=False, pkw=None, kids=False):
                    "12 tracks · 46 min · Free to stream and share", art("billboard"), "feathers-up",
                    btn("Play album", "primary", "play", href=P("now-playing"), size="lg") + btn("Add to library", "soft", "plus", size="lg"))
     recent = rail("Recently added", ["feathers-up", "big-truck-energy", "panyard-nights", "hummi-sings-hello", "red-light-riddim", "fisherman-dawn"], "Fresh this week")
-    top = shelf("Top 10 on Hummi this week", top_ten(["big-truck-energy", "red-light-riddim", "feathers-up", "fruit-salad-band", "panyard-nights",
-                                                       "road-march-riddim", "fisherman-dawn", "sound-system-sunday", "hummi-sings-hello", "wine-slow"]),
-                more=P("browse"), note="Most played across the islands", rail=True)
+    top = shelf("Top 10 on Hummi this week", track_list(["big-truck-energy", "red-light-riddim", "feathers-up", "fruit-salad-band", "panyard-nights",
+                                                          "road-march-riddim", "fisherman-dawn", "sound-system-sunday", "hummi-sings-hello", "a-very-long-title"],
+                                                         playing="feathers-up", label="Top 10 on Hummi this week"),
+                more=P("browse"), note="Most played across the islands")
     soca = rail("Soca", ["feathers-up", "road-march-riddim", "jouvert-morning", "big-truck-energy", "sunrise-on-ariapita", "wine-slow"], "Road march contenders", new=("feathers-up", "big-truck-energy"), playing="feathers-up")
     kid = rail("Kids", ["hummi-sings-hello", "panny-the-pan", "conga-in-the-jungle", "fruit-salad-band"], "Sing-alongs and bedtime songs", new=("hummi-sings-hello", "fruit-salad-band"))
     pan = rail("Steelpan & Calypso", ["chrome-copper", "mister-kaiso", "panyard-nights", "a-very-long-title"], new=("panyard-nights",))
@@ -47,7 +48,7 @@ def home(state, extra="", inert=False, pkw=None, kids=False):
                  + "".join(tile(t, new=t in ("hummi-sings-hello", "fruit-salad-band")) for t in ["hummi-sings-hello", "panny-the-pan", "conga-in-the-jungle", "fruit-salad-band"]) + "</div>")
     c = {
         "default": bb + recent + top + soca + kid + pan + dance + chill,
-        "loading": skel_bb + shelf("Recently added", skel_tiles(6)) + shelf("Soca", skel_tiles(6)),
+        "loading": skel_bb + shelf("Recently added", skel_tiles(6)) + shelf("Top 10 on Hummi this week", skel_rows(6)),
         "empty": empty("music", "Your Home fills up as you listen", "Play a few tracks and we’ll line up what to hear next. Pick a genre to begin.", btn("Browse genres", "primary", href=P("browse"))) + first,
         "error": err(),
         "offline": bb + recent + soca,

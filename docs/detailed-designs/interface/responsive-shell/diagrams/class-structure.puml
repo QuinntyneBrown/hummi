@@ -13,14 +13,14 @@ hide empty members
 title Class structure — Adapt the shell to the viewport
 
 class ShellComponent {
-  +narrow: Signal<boolean>
   +navOpen: Signal<boolean>
   +toggleNav(): void
 }
-class SidebarNavComponent <<hm-sidebar-nav>> {
-  +signedIn: input<boolean>
-  +mode: input<"docked" | "overlay">
+class TopNavComponent <<hm-top-nav>> {
+  +links: input<NavLink[]>
+  +open: input<boolean>
+  +toggle: output<void>
 }
-ShellComponent --> SidebarNavComponent
-ShellComponent ..> BreakpointObserver
+ShellComponent --> TopNavComponent
+ShellComponent ..> SessionStore
 @enduml

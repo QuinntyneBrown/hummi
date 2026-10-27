@@ -2,22 +2,21 @@
 
 ## Overview
 
-The shell is the frame around every page: sidebar navigation, top bar, content and player bar. On wide
-viewports the sidebar is always visible; on narrow viewports it hides behind an "Open navigation"
-button. Grids, track lists and the player bar reflow so the page never scrolls horizontally.
+The shell is the frame around every page: a sticky header with the primary navigation, the content and
+the player bar. On wide viewports the header shows the links Home, Soca, Kids, Steelpan and Your library
+beside the logo; on narrow viewports they hide behind an "Open navigation" button. Shelves, track lists
+and the player bar reflow so the page never scrolls horizontally (ADR 0004 replaced the sidebar with this header).
 
-- **narrow viewport** — width below the sidebar breakpoint <TO SUPPLY: value from `docs/design-system/` tokens>
+- **narrow viewport** — width below `--layout-breakpoint-lg` (64rem, 1024px) from `docs/design-system/tokens/tokens.css`
 
 ## Description
 
-Layout is CSS-driven; one signal tracks the narrow breakpoint for the navigation toggle.
+Layout is CSS-driven: the design-system stylesheet hides the links and shows the toggle below the breakpoint, so no breakpoint signal is needed. One signal holds whether the narrow menu is open.
 
 **Frontend — Hummi web application (Angular)**
 
-- **`ShellComponent`** — Shell component in the hummi application. CSS grid of sidebar, top bar, main and player bar
-- **`BreakpointObserver`** — Angular CDK layout. Emits whether the viewport is narrow
-- **`SidebarNavComponent`** — `hm-sidebar-nav` in @hummi/components. Home, Browse, Search, Library, Notifications and, signed in, Account > Settings
-- **`NavToggleButton`** — `hm-icon-button` in the top bar. "Open navigation" with `aria-expanded`
+- **`ShellComponent`** — Shell component in the hummi application. Skip link, `hm-top-nav`, main and `hm-player-bar`; holds `navOpen` and closes it on navigation
+- **`TopNavComponent`** — `hm-top-nav` in @hummi/components. Brand link, primary links (the current one marked `aria-current="page"`), the "Open navigation" toggle with `aria-expanded`, and an end slot for the search pill and account controls
 - **`SessionStore`** — Signal store in @hummi/api. Holds the signed-in listener, the access token and the signed-in/signed-out state the shell reads
 
 ## Requirements
@@ -26,7 +25,7 @@ The feature realizes the following level-2 (L2) requirements. Each L2 requiremen
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-050` | `L1-012` | **Responsive layout.** 1. Given a wide viewport, when the shell renders, then the primary navigation is a visible sidebar with Home, Browse, Search, Library, Notifications and, when signed in, Account > Settings.<br>2. Given a narrow viewport, when the shell renders, then the sidebar is hidden and an "Open navigation" button in the top bar opens it, with its expanded state reflecting whether it is open.<br>3. Given any viewport width, when a page renders, then tile grids, track lists and the player bar reflow to fit without horizontal page scrolling. |
+| `L2-050` | `L1-012` | **Responsive layout.** 1. Given a wide viewport, when the header renders, then the links Home, Soca, Kids, Steelpan and Your library are visible beside the logo.<br>2. Given a narrow viewport, when the header renders, then the links are hidden and an "Open navigation" button opens them, with its expanded state reflecting whether they are open.<br>3. Given any viewport width, when a page renders, then shelves, track lists and the player bar reflow to fit without horizontal page scrolling; shelves scroll horizontally within themselves. |
 
 ## Diagrams
 
@@ -44,18 +43,18 @@ The layout runs entirely in the Angular application.
 
 ### Components
 
-`ShellComponent` reads `BreakpointObserver` and `SessionStore`, and controls `SidebarNavComponent` through `NavToggleButton`.
+`ShellComponent` reads `SessionStore` for the header's end controls and passes `navOpen` to `TopNavComponent`, whose toggle emits `toggle`.
 
 ![C4 component view for adapt the shell to the viewport](diagrams/c4-component.png)
 
 ### Class structure
 
-`ShellComponent` holds `narrow` and `navOpen` signals and sets the `SidebarNavComponent` mode.
+`ShellComponent` holds the `navOpen` signal; `TopNavComponent` takes the links and `open` as inputs and emits `toggle`.
 
 ![Class diagram for adapt the shell to the viewport](diagrams/class-structure.png)
 
 ### Behaviour — render the shell at two widths
 
-The breakpoint signal only switches the navigation mode; grids reflow with CSS `auto-fill` columns and `min-width: 0` so content never forces horizontal scrolling.
+CSS switches the header between the visible links and the toggle at 64rem; shelves scroll inside their own track and track rows use `min-width: 0` with ellipsis, so content never forces horizontal page scrolling.
 
 ![Sequence diagram for render the shell at two widths](diagrams/sequence-shell.png)

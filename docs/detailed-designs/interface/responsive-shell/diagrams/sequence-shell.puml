@@ -17,22 +17,19 @@ skinparam package {
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
   participant "ShellComponent" as shell
-  participant "BreakpointObserver" as bp
-  participant "SidebarNavComponent" as nav
-  participant "NavToggleButton" as toggle
+  participant "TopNavComponent" as nav
   participant "SessionStore" as session
 end box
-shell -> bp : observe(narrow breakpoint)
-shell -> session : isSignedIn()
-alt wide
-  bp --> shell : false
-  shell -> nav : mode docked, Account > Settings when signed in (L2-050)
+shell -> session : signedIn()
+shell -> nav : links, open=false
+alt wide (64rem and up)
+  nav --> u : Home, Soca, Kids, Steelpan, Your library beside the logo (L2-050)
 else narrow
-  bp --> shell : true
-  shell --> u : Sidebar hidden, "Open navigation" aria-expanded=false (L2-050)
-  u -> toggle : Activate
-  toggle -> shell : toggleNav()
-  shell -> nav : mode overlay, aria-expanded=true (L2-050)
+  nav --> u : Links hidden, "Open navigation" aria-expanded=false (L2-050)
+  u -> nav : Activate "Open navigation"
+  nav -> shell : toggle
+  shell -> nav : open=true
+  nav --> u : Links shown, aria-expanded=true (L2-050)
 end
-shell --> u : Grids and lists reflow with no horizontal scroll (L2-050)
+shell --> u : Shelves, track lists and player bar reflow with no horizontal page scroll (L2-050)
 @enduml

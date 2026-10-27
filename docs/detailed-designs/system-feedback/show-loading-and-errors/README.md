@@ -18,7 +18,9 @@ A single resource helper gives every page the same loading and error behaviour.
 **Frontend — Hummi web application (Angular)**
 
 - **`Any data page`** — Routed component in a feature library. Switches on `resource.status()` to render `hm-skeleton`, content or `hm-error-block`
-- **`apiResource`** — Function in @hummi/api. Wraps an API call in a signal-based `ResourceState<T>` with `reload()`
+- **`apiResource`** — Function in @hummi/api. Wraps an API call in a signal-based `ResourceState<T>` with `reload()`; called in an injection context
+- **`SkeletonComponent`** — `hm-skeleton` in @hummi/components. One placeholder shape (`text`, `title`, `rect`, `circle`)
+- **`ErrorBlockComponent`** — `hm-error-block` in @hummi/components. `role="alert"` block with title, explanation, Try again (emits `retry`) and Go to Home
 - **`Typed API service`** — Service in @hummi/api. Returns `Observable<T>` and maps ProblemDetails to `ApiProblem`
 
 **Backend — Hummi.Api application**
@@ -63,6 +65,6 @@ A page uses `apiResource`, which calls a typed API service; controllers and `Exc
 
 ### Behaviour — load, fail and retry
 
-Every page builds its data through `apiResource`, so skeleton and error behaviour are uniform. Try again calls `reload()`, which repeats the request. Request timeout: <TO SUPPLY>.
+Every page builds its data through `apiResource`, so skeleton and error behaviour are uniform. Try again calls `reload()`, which repeats the request. Request timeout: 15 seconds; a request still open then fails with the default explanation.
 
 ![Sequence diagram for load, fail and retry](diagrams/sequence-load.png)
