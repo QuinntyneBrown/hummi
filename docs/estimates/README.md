@@ -1,7 +1,7 @@
 # Estimates
 
 - Overall effort: 132 days
-- Complete: 86%
+- Complete: 88%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
@@ -16,7 +16,7 @@
 | [search](search.md) | 4 days | 95% |
 | [settings](settings.md) | 10 days | 100% |
 | [notifications](notifications.md) | 6 days | 100% |
-| [reporting](reporting.md) | 3 days | 0% |
+| [reporting](reporting.md) | 3 days | 100% |
 
 ## Roadmap
 

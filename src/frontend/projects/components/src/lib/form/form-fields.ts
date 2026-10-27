@@ -192,10 +192,15 @@ export interface RadioOption {
             [name]="name()"
             [value]="option.value"
             [checked]="value() === option.value"
+            [attr.aria-invalid]="error() ? 'true' : null"
+            [attr.aria-describedby]="error() ? name() + '-err' : null"
             (change)="value.set(option.value)"
           />
           <span class="choice__text">{{ option.label }}</span>
         </label>
+      }
+      @if (error()) {
+        <span class="field__error" [id]="name() + '-err'">{{ error() }}</span>
       }
     </fieldset>
   `,
@@ -207,5 +212,48 @@ export class RadioGroupComponent {
   readonly name = input.required<string>();
   readonly options = input.required<readonly RadioOption[]>();
   readonly disabled = input(false);
+  /** A required choice left empty, for example "Choose a reason" (L2-038 AC2). */
+  readonly error = input('');
+  readonly value = model('');
+}
+
+/** A labelled multi-line field (`.textarea`), marked "(optional)" unless required (L2-038 AC1). */
+@Component({
+  selector: 'hm-textarea',
+  template: `
+    <div class="field">
+      <label class="field__label" [for]="fieldId()"
+        >{{ label() }}
+        @if (!required()) {
+          <span class="optional">(optional)</span>
+        }
+      </label>
+      <textarea
+        #control
+        class="textarea"
+        [id]="fieldId()"
+        [rows]="rows()"
+        [readOnly]="readonly()"
+        [required]="required()"
+        [value]="value()"
+        [attr.aria-invalid]="error() ? 'true' : null"
+        [attr.aria-describedby]="error() ? fieldId() + '-err' : null"
+        (input)="value.set(control.value)"
+      ></textarea>
+      @if (error()) {
+        <span class="field__error" [id]="fieldId() + '-err'">{{ error() }}</span>
+      }
+    </div>
+  `,
+  styles: ':host { display: contents; }',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class TextareaComponent {
+  readonly label = input.required<string>();
+  readonly fieldId = input.required<string>();
+  readonly rows = input(3);
+  readonly required = input(false);
+  readonly readonly = input(false);
+  readonly error = input('');
   readonly value = model('');
 }

@@ -237,6 +237,17 @@ Mock: the layer over Home in every state. Rendered by the shell from `@hummi/sea
 | Empty | `hm-empty-state` (bell, "You’re all caught up"), `hmButton="primary"` link "Find artists to follow" | None |
 | Error | `hm-error-block` ("Notifications didn’t load"); a visitor sees "Sign in to see your notifications" | None |
 
+## Report a track (`dialogs/report-track`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Dialog | `hm-dialog` ("Report “{title}”", "Tell us what’s wrong. The artist isn’t told who reported.") | `ReportTrackDialogComponent` in `@hummi/reporting`, rendered by the shell's `hm-report-dialog-host` |
+| Reason | `hm-radio-group` "What’s wrong?" (four reasons) with its error "Choose a reason" | None |
+| Details | `hm-textarea` "Details" (optional) | Up to 1,000 characters |
+| Footer | `hmButton` Cancel, `hmButton="primary"` "Send report"; busy "Sending…" with `.spinner` | None |
+| Failed | `hm-alert` (danger, "That didn’t work") | Answers kept |
+| Success | `hm-dialog` ("Thanks, we’ll take a look"), `hmButton="primary"` Close | None |
+
 ## Now playing (`pages/now-playing`)
 
 Mock: the layer over Home. Routed at `/now-playing` in `@hummi/player`; the player bar is hidden there (ADR 0009).

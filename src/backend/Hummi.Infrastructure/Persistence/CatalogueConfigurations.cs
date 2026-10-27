@@ -82,3 +82,17 @@ internal sealed class PlayEventConfiguration : IEntityTypeConfiguration<PlayEven
         builder.HasIndex(p => new { p.ListenerId, p.PlayedAt });
     }
 }
+
+internal sealed class TrackReportConfiguration : IEntityTypeConfiguration<TrackReport>
+{
+    public void Configure(EntityTypeBuilder<TrackReport> builder)
+    {
+        builder.ToTable("TrackReports");
+        builder.Property(r => r.Id).ValueGeneratedNever();
+        builder.Property(r => r.Details).HasMaxLength(TrackReport.MaxDetails);
+        builder.Property(r => r.Outcome).HasMaxLength(2000);
+        builder.HasIndex(r => new { r.Status, r.CreatedAt });
+        builder.HasOne<Track>().WithMany().HasForeignKey(r => r.TrackId).OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne<Hummi.Domain.Accounts.Listener>().WithMany().HasForeignKey(r => r.ReporterId).OnDelete(DeleteBehavior.NoAction);
+    }
+}

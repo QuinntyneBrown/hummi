@@ -18,9 +18,13 @@ public sealed class AuthApiFactory : WebApplicationFactory<Program>
 
     public int RequestsPerMinute { get; init; } = 100;
 
+    /// <summary>The reviewers' key for /api/reports; empty leaves those endpoints off.</summary>
+    public string ReviewerKey { get; init; } = string.Empty;
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("Auth:RequestsPerMinute", RequestsPerMinute.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        builder.UseSetting("Reports:ReviewerKey", ReviewerKey);
         builder.ConfigureServices(services =>
         {
             services.RemoveAll<DbContextOptions<HummiDbContext>>();

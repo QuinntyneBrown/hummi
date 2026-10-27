@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import {
   LibraryStore,
   PlaylistDialogs,
+  ReportDialogs,
   ShareDialogs,
   PlayerOverlays,
   PlayerStore,
@@ -63,6 +64,7 @@ export class TrackComponent {
   readonly library = inject(LibraryStore);
   readonly dialogs = inject(PlaylistDialogs);
   private readonly shares = inject(ShareDialogs);
+  readonly reports = inject(ReportDialogs);
   readonly track = slugResource(
     (slug) => this.api.get(slug),
     (track) => track.title,

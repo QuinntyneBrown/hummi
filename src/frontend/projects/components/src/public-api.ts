@@ -52,6 +52,7 @@ export {
   ErrorSummaryComponent,
   RadioGroupComponent,
   SwitchComponent,
+  TextareaComponent,
   TextFieldComponent,
   type FormError,
   type RadioOption,

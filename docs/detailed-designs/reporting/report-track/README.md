@@ -4,12 +4,12 @@
 
 Any listener may report a track for copyright, licence or safety problems. The artist is never told
 who reported. Reports are reviewed within 2 working days and the reporter is emailed the outcome.
-Hummi has no moderation tooling in the product; reviewers work outside it <TO SUPPLY: review channel>.
+Hummi has no moderation tooling in the product; reviewers work outside it with an HTTP client against a keyed API (ADR 0018).
 
 - **report** — record of a track, a reason and optional details, linked to the reporter for the outcome email only
 - **reason** — one of `CopiedWithoutPermission`, `WrongLicence`, `HarmfulContent`, `Other`
 
-Whether a signed-out listener may report, and how they then receive the outcome, is <TO SUPPLY>.
+Reporting needs an account, so the outcome can be emailed to the account address; a signed-out listener gets the sign-in prompt (ADR 0018).
 
 ## Description
 
@@ -18,17 +18,17 @@ A command stores the report; the reporter identity is excluded from every artist
 **Frontend — Hummi web application (Angular)**
 
 - **`ReportTrackDialog`** — Dialog component in @hummi/reporting. Renders `hm-radio-group` "What’s wrong?", `hm-textarea` Details, busy, success and error states
-- **`ReportsApi`** — Typed HTTP service in @hummi/api. Calls `POST /api/tracks/{id}/reports`
+- **`ReportsApi`** — Typed HTTP service in @hummi/api. Calls `POST /api/tracks/{id}/reports`; `ReportDialogs` opens the dialog after `SignInGate`
 
 **Backend — Hummi.Api application**
 
-- **`ReportsController`** — ASP.NET Core controller. `POST /api/tracks/{id}/reports`
+- **`ReportsController`** — ASP.NET Core controller. `POST /api/tracks/{id}/reports` for listeners; `GET /api/reports` and `POST /api/reports/{id}/resolve` for reviewers with the shared key
 
 **Backend — Hummi Application and Domain**
 
-- **`ReportTrackValidator`** — FluentValidation validator. Reason required; details at most <TO SUPPLY> characters
-- **`ReportTrackCommandHandler`** — MediatR command handler. Stores `TrackReport` with status `Open`
-- **`ResolveReportCommandHandler`** — MediatR command handler. Records the outcome and emails the reporter
+- **`ReportTrackCommandHandler` checks** — Reason required; details at most 1,000 characters (422)
+- **`ReportTrackCommandHandler`** — MediatR command handler. Stores `TrackReport` with status `Open`; `GetOpenReportsQuery` lists open reports without the reporter
+- **`ResolveReportCommandHandler`** — MediatR command handler. Records the outcome, withdraws the track when upheld and emails the reporter; reviewers call it with `X-Reviewer-Key`
 - **`IEmailSender`** — Application port. Sends the outcome email
 
 **Backend — Hummi Infrastructure**
