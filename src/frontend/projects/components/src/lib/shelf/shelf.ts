@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 let nextId = 0;
@@ -8,6 +9,7 @@ let nextId = 0;
  */
 @Component({
   selector: 'hm-shelf',
+  imports: [NgTemplateOutlet],
   template: `
     <section class="shelf" [attr.aria-labelledby]="headingId">
       <div class="shelf__head">
@@ -25,15 +27,16 @@ let nextId = 0;
             [attr.aria-label]="regionLabel()"
             [attr.aria-busy]="busy() || null"
           >
-            <ng-content />
+            <ng-container [ngTemplateOutlet]="content" />
           </div>
         </div>
       } @else {
         <div [attr.aria-busy]="busy() || null" [attr.aria-label]="busy() ? regionLabel() : null">
-          <ng-content />
+          <ng-container [ngTemplateOutlet]="content" />
         </div>
       }
     </section>
+    <ng-template #content><ng-content /></ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -800,3 +800,4 @@ button.pbar__title { max-width: 100%; padding: 0; border: 0; background: none; c
 .pbar__artist--error { color: var(--color-danger-fg); }
 .pbar__next .icon { rotate: 180deg; }
 @media (min-width: 64rem) { .topnav .topnav__menu { display: none; } } /* .ibtn, declared later, would otherwise show the toggle on wide viewports */
+.skeleton--card { aspect-ratio: 1; border-radius: 0.875rem; } /* the artwork of a loading shelf card */

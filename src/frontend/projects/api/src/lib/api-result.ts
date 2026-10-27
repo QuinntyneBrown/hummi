@@ -28,7 +28,8 @@ export function shortRef(correlationId: string | null): string {
   return id ? `Ref ${id.slice(0, 4)}-${id.slice(4, 8)}` : '';
 }
 
-function toProblem(error: unknown): ApiProblem {
+/** Maps a failed call (HttpErrorResponse, timeout or network) to problem details. */
+export function toProblem(error: unknown): ApiProblem {
   if (!(error instanceof HttpErrorResponse)) {
     return {
       status: 0,
