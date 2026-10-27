@@ -2,14 +2,18 @@ using Hummi.Domain.Catalogue;
 
 namespace Hummi.Application.Playback;
 
-/// <summary>One track as every track-returning endpoint lists it. Liked is false until likes exist (journey 09).</summary>
-public sealed record TrackSummaryDto(string Id, string Slug, string Title, string ArtistName, int DurationSeconds, string? CoverUrl, bool Liked);
+/// <summary>
+/// One track as every track-returning endpoint lists it. Liked is false until likes exist (journey 09).
+/// The genre names "Playing from" and "Then, more" in Now playing and the queue; null while unclassified.
+/// </summary>
+public sealed record TrackSummaryDto(string Id, string Slug, string Title, string ArtistName, int DurationSeconds, string? CoverUrl, bool Liked, string? GenreSlug = null, string? GenreName = null);
 
 public static class TrackSummaryProjection
 {
     /// <summary>Projects tracks with their artist into summaries in the database.</summary>
     public static IQueryable<TrackSummaryDto> ToSummaries(this IQueryable<Track> tracks) =>
-        tracks.Select(t => new TrackSummaryDto(t.Id.ToString(), t.Slug, t.Title, t.Artist!.Name, t.DurationSeconds, t.CoverUrl, false));
+        tracks.Select(t => new TrackSummaryDto(t.Id.ToString(), t.Slug, t.Title, t.Artist!.Name, t.DurationSeconds, t.CoverUrl, false,
+            t.Genre == null ? null : t.Genre.Slug, t.Genre == null ? null : t.Genre.Name));
 }
 
 internal static class PlaybackErrors

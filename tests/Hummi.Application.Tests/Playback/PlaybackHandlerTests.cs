@@ -31,6 +31,8 @@ public sealed class PlaybackHandlerTests
         Assert.Equal("Kaiso Collective", first.ArtistName);
         Assert.Equal(200, first.DurationSeconds);
         Assert.False(first.Liked);
+        Assert.Null(first.GenreSlug);
+        Assert.Null(first.GenreName);
     }
 
     [Fact]

@@ -49,6 +49,7 @@
           [currentTrackId]="player.current()?.id ?? null"
           [playing]="player.playing()"
           (playTrack)="player.playFrom(page.tracks, $event)"
+          (more)="overlays.openTrackMenu($event)"
         />
       }
     }

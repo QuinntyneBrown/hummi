@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, input, output } from '@an
 
 import { EqualizerComponent } from '../equalizer/equalizer';
 import { IconComponent } from '../icon/icon';
-import { TrackItem, formatDuration } from '../track/track-item';
+import { ScrubberComponent } from '../scrubber/scrubber';
+import { TrackItem } from '../track/track-item';
 
 /**
  * The persistent "Player" region at the bottom of the shell: cover, title and artist (opening Now
@@ -12,7 +13,7 @@ import { TrackItem, formatDuration } from '../track/track-item';
  */
 @Component({
   selector: 'hm-player-bar',
-  imports: [EqualizerComponent, IconComponent],
+  imports: [EqualizerComponent, IconComponent, ScrubberComponent],
   template: `
     <section class="pbar" aria-label="Player">
       <div class="pbar__now">
@@ -67,22 +68,7 @@ import { TrackItem, formatDuration } from '../track/track-item';
             <hm-icon name="skip" [fill]="true" />
           </button>
         </div>
-        <div class="scrubber">
-          <time>{{ elapsed() }}</time>
-          <div
-            class="scrubber__track"
-            role="progressbar"
-            aria-label="Track position"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            [attr.aria-valuenow]="percent()"
-            [attr.aria-valuetext]="elapsed() + ' of ' + total()"
-          >
-            <div class="scrubber__fill" [style.width.%]="percent()"></div>
-            <div class="scrubber__thumb" [style.left.%]="percent()"></div>
-          </div>
-          <time>{{ total() }}</time>
-        </div>
+        <hm-scrubber [position]="position()" [duration]="totalSeconds()" />
       </div>
       <div class="pbar__side">
         <button class="ibtn" type="button" aria-label="Share" (click)="share.emit()"><hm-icon name="share" /></button>
@@ -118,10 +104,5 @@ export class PlayerBarComponent {
   readonly volume = output<void>();
   readonly expand = output<void>();
 
-  private readonly totalSeconds = computed(() => this.duration() || this.track().durationSeconds);
-  protected readonly elapsed = computed(() => formatDuration(this.position()));
-  protected readonly total = computed(() => formatDuration(this.totalSeconds()));
-  protected readonly percent = computed(() =>
-    this.totalSeconds() ? Math.min(100, Math.round((this.position() / this.totalSeconds()) * 100)) : 0,
-  );
+  protected readonly totalSeconds = computed(() => this.duration() || this.track().durationSeconds);
 }

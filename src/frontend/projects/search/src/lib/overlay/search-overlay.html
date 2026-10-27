@@ -67,6 +67,7 @@
                   [current]="isCurrent(song.id)"
                   [playing]="player.playing()"
                   (choose)="chose()"
+                  (more)="overlays.openTrackMenu(song)"
                 />
               }
             </section>

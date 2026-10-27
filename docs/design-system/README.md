@@ -60,6 +60,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-27. Open [index.html]
 | [Skeleton](components/skeleton.html) | Feedback | Text and title, Media tile | home/loading, playlist/loading |
 | [Empty state](components/empty-state.html) | Feedback | First run, No results, Error | library/empty, search/no-results |
 | [Error page](components/error-page.html) | Feedback | 404, Offline | not-found/default, forbidden/default |
+| [Toast pill](components/toast-pill.html) | Feedback | Queue, Play next, With Undo, No cover | toast/info, toast/play-next |
 | [Cover](components/cover.html) | Media | Colourway 1, Colourway 2, Colourway 3, Colourway 4 | home/default, track/default |
 | [Track row](components/track-row.html) | Media | Default, Playing | playlist/default, queue/default |
 | [Media tile](components/media-tile.html) | Media | Track, Artist | home/default, library/default |
@@ -69,6 +70,9 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-27. Open [index.html]
 | [Hero](components/hero.html) | Media | Recommendation | home/default, track/default |
 | [Notification item](components/notification-item.html) | Media | Unread and read | notifications/default, notifications/read |
 | [Search layer](components/search-layer.html) | Media | Search pill, Bar, empty, Bar, with text, Top result | search/default, search/empty |
+| [Now playing layer](components/player-layer.html) | Media | Playing, Controls, Repeat on, Actions | now-playing/default, now-playing/paused |
+| [Queue drawer](components/queue-drawer.html) | Media | With tracks, Empty hint | queue/default, queue/empty |
+| [Track menu](components/track-menu.html) | Media | Default, Saved | track-menu/default, track-menu/saved |
 
 ## Patterns
 

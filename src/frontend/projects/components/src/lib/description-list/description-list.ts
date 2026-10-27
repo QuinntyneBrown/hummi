@@ -8,14 +8,20 @@ export interface DescriptionItem {
   link?: string;
 }
 
-/** Term and value pairs in two columns, for example a track's Details. */
+/** Term and value pairs in two columns, for example a track's Details; with keys, terms are keys to press. */
 @Component({
   selector: 'hm-description-list',
   imports: [RouterLink],
   template: `
     <dl class="dl">
       @for (item of items(); track item.term) {
-        <dt>{{ item.term }}</dt>
+        <dt>
+          @if (keys()) {
+            <kbd>{{ item.term }}</kbd>
+          } @else {
+            {{ item.term }}
+          }
+        </dt>
         <dd>
           @if (item.link; as link) {
             <a [routerLink]="link">{{ item.value }}</a>
@@ -30,4 +36,5 @@ export interface DescriptionItem {
 })
 export class DescriptionListComponent {
   readonly items = input.required<readonly DescriptionItem[]>();
+  readonly keys = input(false);
 }

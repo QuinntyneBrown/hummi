@@ -8,4 +8,10 @@ export const routes: Routes = [
     title: 'Hummi',
     loadComponent: () => import('./home/home').then((m) => m.HomeComponent),
   },
+  {
+    path: 'now-playing',
+    title: 'Now playing',
+    data: { hidePlayer: true },
+    loadComponent: () => import('./now-playing/now-playing').then((m) => m.NowPlayingComponent),
+  },
 ];

@@ -16,7 +16,7 @@ skinparam package {
 }
 actor "Listener" as u
 box "Frontend — Hummi web application (Angular)" #E0F2FE
-  participant "NowPlayingPage" as page
+  participant "NowPlayingComponent" as page
   participant "PlayerStore" as player
   participant "HTMLAudioElement" as audio
   participant "ConnectivityService" as net
@@ -24,28 +24,23 @@ end box
 box "Backend — Hummi.Api application" #D1FADF
   participant "MediaController" as mctl
 end box
-box "Backend — Hummi Infrastructure" #FFF4E5
-  database "media volume" as media
-end box
-u -> page : Open /now-playing
-page -> player : currentTrack()
+u -> page : Expand, cover or title in the player bar (/now-playing)
+page -> player : current(), upNext()
 alt nothing playing
   player --> page : null
   page --> u : "Nothing is playing" with Browse genres (L2-015)
 else track loaded
-  player --> page : Track, position, state
-  page -> mctl : GET /media/tracks/{id}/peaks.json
-  mctl -> media : Read peaks
-  mctl --> page : Peaks
-  page --> u : Cover, title, waveform, controls; main control "Pause" or "Play" (L2-015)
+  player --> page : Track, position, Shuffle, Repeat
+  page --> u : Playing from {genre}, cover, scrubber, controls, Up next (L2-015)
 end
 u -> page : Activate Shuffle
-page -> player : toggleShuffle() (L2-015)
-audio --> player : error while streaming
-player -> net : online()
-net --> player : false
-player -> player : resumeAtSeconds = position
+page -> player : toggleShuffle(): shuffle the tracks after the current one (L2-015)
+net --> player : offline event
+player -> audio : pause(); resumeFrom = position
 player --> page : Danger alert "Playback stopped" (L2-015)
 net --> player : online event
-player -> audio : currentTime = resumeAtSeconds; play() (L2-015)
+player -> audio : src = /media/tracks/{id}; currentTime = resumeFrom; play()
+audio -> mctl : GET /media/tracks/{id} Range
+u -> page : Close or Escape
+page -> page : history.back() (Home when opened directly) (L2-015)
 @enduml

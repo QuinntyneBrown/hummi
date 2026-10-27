@@ -36,6 +36,7 @@
             [current]="track.id === player.current()?.id"
             [playing]="player.playing()"
             (playTrack)="player.playFrom(state.value.recentlyAdded, i)"
+            (more)="overlays.openTrackMenu(track)"
           />
         }
       </hm-shelf>
@@ -46,6 +47,7 @@
           [currentTrackId]="player.current()?.id ?? null"
           [playing]="player.playing()"
           (playTrack)="player.playFrom(state.value.topTen, $event)"
+          (more)="overlays.openTrackMenu($event)"
         />
       </hm-shelf>
     }

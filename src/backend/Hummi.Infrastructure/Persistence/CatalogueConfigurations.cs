@@ -35,7 +35,7 @@ internal sealed class TrackConfiguration : IEntityTypeConfiguration<Track>
         builder.HasOne(t => t.Artist).WithMany().HasForeignKey(t => t.ArtistId).OnDelete(DeleteBehavior.Restrict);
         builder.Ignore(t => t.IsPlayable);
         builder.Ignore(t => t.AudioPath);
-        builder.HasOne<Genre>().WithMany().HasForeignKey(t => t.GenreId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(t => t.Genre).WithMany().HasForeignKey(t => t.GenreId).OnDelete(DeleteBehavior.Restrict);
         builder.HasIndex(t => t.AddedAt);
         builder.HasIndex(t => t.PlayCount);
         builder.HasIndex(t => new { t.GenreId, t.AddedAt });

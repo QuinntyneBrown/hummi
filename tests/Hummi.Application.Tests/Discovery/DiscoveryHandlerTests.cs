@@ -75,6 +75,18 @@ public sealed class DiscoveryHandlerTests
     }
 
     [Fact]
+    public async Task L2_015_track_summaries_name_their_genre_for_playing_from_and_then_more()
+    {
+        using var db = WithGenres();
+        AddSoca(db, ("Feathers Up", 0));
+
+        var page = (await new GetGenreTracksQueryHandler(db).Handle(new GetGenreTracksQuery("soca"), default)).Value!;
+
+        Assert.Equal("soca", page.Tracks[0].GenreSlug);
+        Assert.Equal("Soca", page.Tracks[0].GenreName);
+    }
+
+    [Fact]
     public async Task L2_004_most_played_orders_by_play_count()
     {
         using var db = WithGenres();

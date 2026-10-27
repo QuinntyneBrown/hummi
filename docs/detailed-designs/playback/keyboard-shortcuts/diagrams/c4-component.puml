@@ -4,16 +4,16 @@ LAYOUT_WITH_LEGEND()
 title Components — Use keyboard shortcuts
 
 Container_Boundary(spa, "Hummi web application") {
-  Component(keys, "ShortcutService", "Service in the hummi application", "Listens to keydown on document, ignores\nevents whose target is a text field or that\ncarry Ctrl, Alt or Meta, and dispatches the\nmapped action")
-  Component(player, "PlayerStore", "Signal store in @hummi/api", "Owns the queue, the current track, position\nand play state, and drives the\nHTMLAudioElement")
-  Component(dialogs, "DialogService", "Service in @hummi/components", "Opens hm-dialog components as modal overlays\nand returns a typed close result (L2-047)")
-  Component(like, "LibraryApi", "Typed HTTP service in @hummi/api", "PUT /api/me/likes/{trackId} (L2-018)")
-  Component(router, "Router", "Angular router", "Navigates to /queue")
-  Component(dlg, "ShortcutsDialogComponent", "Dialog content in the hummi application", "Renders hm-dialog with hm-kbd rows and Close")
+  Component(shell, "AppShellComponent", "Shell in the hummi application", "Passes document keydown to ShortcutService;\nmakes the page inert under the dialog")
+  Component(keys, "ShortcutService", "Service in the hummi application", "Ignores text fields, Ctrl, Alt and Meta,\nand Space on a focused control; dispatches\nthe mapped action")
+  Component(player, "PlayerStore", "Signal store in @hummi/api", "toggle(), next(), previous()")
+  Component(overlays, "PlayerOverlays", "Signal store in @hummi/api", "openQueue()")
+  Component(search, "SearchStore", "Signal store in @hummi/api", "openWith()")
+  Component(dlg, "ShortcutsDialogComponent", "Dialog content in the hummi application", "Renders hm-dialog with hm-description-list\nof SHORTCUTS and Close")
 }
-Rel(keys, player, "toggle() (L2-017)")
-Rel(keys, like, "like(currentTrack) (L2-017)")
-Rel(keys, router, "navigate /queue (L2-017)")
-Rel(keys, dialogs, "open(ShortcutsDialogComponent)")
-Rel(dialogs, dlg, "Render 'Work while the page is\nfocused and no text field is.' and\nsix rows (L2-017)")
+Rel(shell, keys, "handle(event)")
+Rel(keys, player, "Space, → / ← (L2-017)")
+Rel(keys, overlays, "Q (L2-017)")
+Rel(keys, search, "/ (L2-017)")
+Rel(shell, dlg, "Render while dialogOpen() (L2-017)")
 @enduml

@@ -6,13 +6,13 @@ title Containers — Show Now playing
 Person(listener, "Listener", "Uses Hummi in a browser")
 System_Boundary(hummi, "Hummi") {
   Container(web, "web", "Caddy", "Serves the Angular build, terminates TLS, proxies /api and /media")
-  Container(spa, "Hummi web application", "Angular", "Renders the full-screen player")
-  Container(api, "Hummi.Api", "ASP.NET Core", "Serves waveform peaks")
-  ContainerDb(media, "media volume", "Docker volume /data/media", "Audio files and artwork")
+  Container(spa, "Hummi web application", "Angular", "Renders the full-screen Now playing layer")
+  Container(api, "Hummi.Api", "ASP.NET Core", "Streams the current track")
+  ContainerDb(media, "media volume", "Docker volume /data/media", "Audio files")
 }
 Rel(listener, web, "Opens", "HTTPS")
 Rel(web, spa, "Delivers")
-Rel(spa, web, "Calls /api", "JSON/HTTPS")
+Rel(spa, web, "Calls /api and /media", "JSON/HTTPS")
 Rel(web, api, "Proxies", "HTTP")
 Rel(api, media, "Streams files from", "byte ranges")
 @enduml

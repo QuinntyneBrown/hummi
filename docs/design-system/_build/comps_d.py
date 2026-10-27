@@ -139,3 +139,87 @@ SPECS.append(dict(
     content="<p>No results: “Nothing matches “{query}”” with “Try an artist name, or a sound like soca, pan or lullaby.” Errors keep the query in the bar.</p>",
     dodont=[(SROW, "Name the track in the More label.", SROW.replace("More actions for Panyard Nights", "More"), "Identical labels in a list."), (BAR("pan"), "Clear appears once text is typed.", BAR("").replace("</div>", '<button class="layer-search__clear" type="button">Clear</button></div>', 1), "Clear with nothing to clear.")],
     tokens=[("Layer background", "--color-bg-canvas"), ("Scrim", "--color-bg-surface-sunken"), ("Accent icon", "--color-accent"), ("Playing title", "--color-fg-accent"), ("Layer", "--z-layer")], classes=[("search-pill", "Header pill"), ("scrim / layer-search", "Backdrop and layer"), ("layer-search__bar / __input / __clear / __close / __body", "Parts"), ("top-result", "Top result card"), ("srow / srow--artist", "Result rows"), ("recent", "Recent searches"), ("sound-grid / sound", "Browse by sound"), ("layer-empty", "No results")], sources=["pages/search/default", "pages/search/empty", "pages/search/loading", "pages/search/no-results", "pages/search/error"]))
+
+CHEV = IC('<path d="m9 5 7 7-7 7"/>')
+SHUF = IC('<path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M19 4l2 3-2 3M19 14l2 3-2 3"/>')
+REP = IC('<path d="M4 11V9a3 3 0 0 1 3-3h13M17 3l3 3-3 3M20 13v2a3 3 0 0 1-3 3H4M7 21l-3-3 3-3"/>')
+SKIP = '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5v14M18 5 9 12l9 7z"/></svg>'
+PAUSE = '<svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14M16 5v14"/></svg>'
+SHARE_I = IC('<path d="M12 15V3m0 0L8 7m4-4 4 4M5 12v8h14v-8"/>')
+QUEUE_I = IC('<path d="M4 6h12M4 11h12M4 16h7M17 14v6l5-3z"/>')
+SCRUB = ('<div class="scrubber scrubber--full"><time>1:14</time><div class="scrubber__track" role="progressbar" aria-label="Track position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="33">'
+         '<div class="scrubber__fill" style="width:33%"></div><div class="scrubber__thumb" style="left:33%"></div></div><time>3:42</time></div>')
+LP_CTRL = (f'<div class="layer-player__ctrl"><button class="ibtn ibtn--lg" type="button" aria-label="Shuffle" aria-pressed="false">{SHUF}</button><div class="mid">'
+           f'<button class="ibtn ibtn--lg" type="button" aria-label="Previous track">{SKIP}</button><button class="ibtn ibtn--hero" type="button" aria-label="Pause">{PAUSE}</button>'
+           f'<button class="ibtn ibtn--lg" style="rotate:180deg" type="button" aria-label="Next track">{SKIP}</button></div><button class="ibtn ibtn--lg" type="button" aria-label="Repeat" aria-pressed="true">{REP}</button></div>')
+LP_ACTS = (f'<div class="layer-player__acts"><button class="pill-btn pill-btn--lg" type="button" aria-pressed="false">{HEART}Save</button><button class="pill-btn pill-btn--lg" type="button">{SHARE_I}Share</button>'
+           f'<button class="pill-btn pill-btn--lg" type="button">{QUEUE_I}Queue</button><button class="ibtn ibtn--lg" type="button" aria-haspopup="menu" aria-label="More actions for Feathers Up">{MORE}</button></div>')
+LP_ROW = f'<div class="srow">{COV("c2", " cover--sm")}<div class="srow__text"><div class="srow__title"><span>Road March Riddim</span></div><div class="srow__sub">Lady Tamboo</div></div><span class="srow__dur">4:05</span></div>'
+LP = (f'<div class="layer-player" style="position:static;animation:none" role="dialog" aria-label="Now playing"><div class="layer-player__top"><button class="pill-btn" type="button"><span style="display:inline-flex;rotate:90deg">{CHEV}</span>Close</button>'
+      f'<span class="layer-player__from">Playing from <b>Soca</b></span><span style="width:5.75rem"></span></div><div class="layer-player__body"><div class="layer-player__art">{COV("c1")}</div><div>'
+      f'<h2 class="layer-player__title">Feathers Up</h2><p class="layer-player__artist">Kaiso Collective</p><div class="layer-player__scrub">{SCRUB}</div>{LP_CTRL}{LP_ACTS}'
+      f'<section class="upnext" aria-label="Up next"><h3 class="layer-h">Up next</h3>{LP_ROW}</section></div></div></div>')
+SPECS.append(dict(
+    slug="player-layer", name="Now playing layer", group="Media", lead="The full-screen layer for the current track: cover, scrubber, transport with Shuffle and Repeat, actions and Up next.",
+    overview="Opens from the player bar (cover, title or Expand) at <code>/now-playing</code>; the player bar hides while it is open. It renders the player state and emits every action; the host wires them (ADR 0009).",
+    parts=[("Top", "Close pill and “Playing from {genre}”"), ("Art", "Large cover"), ("Title and artist", "Display title, muted artist"), ("Scrubber", "<code>scrubber--full</code> with elapsed and total"), ("Controls", "Shuffle, Previous, Play/Pause (hero), Next, Repeat"), ("Actions", "Save, Share, Queue, More actions"), ("Up next", "The next two tracks")],
+    figure=LP, variants=[("Playing", LP), ("Controls, Repeat on", LP_CTRL), ("Actions", LP_ACTS)],
+    sizes=None, sizes_na="The layer fills the viewport.",
+    states=dict(rows=[("Mode toggle", f'<button class="ibtn ibtn--lg" type="button" aria-label="Shuffle"{{a}}>{SHUF}</button>')], cols=[("Off", ' aria-pressed="false"'), ("On", ' aria-pressed="true"'), ("Hover", ' data-state="hover"'), ("Focus", ' data-state="focus"')]),
+    responsive="Under 64rem the cover sits above the details in one column; from 64rem the cover (up to 32.5rem) and the details sit side by side.",
+    a11y=dict(role="<code>role=\"dialog\"</code> with <code>aria-modal</code> and the label “Now playing”; Shuffle and Repeat use <code>aria-pressed</code>; Up next is a labelled region.", keys=[("Escape", "Closes the layer"), ("Tab", "Close, controls, actions"), ("Space / → / ←", "Shortcuts (L2-017)")], focus="Close takes focus on open; focus returns to the page on close.", label="The play button is named Pause or Play; More actions names the track.", pairs=[("Title", "--color-fg-default", "--color-bg-surface-sunken", 4.5), ("Playing from", "--color-fg-muted", "--color-bg-surface-sunken", 4.5), ("Hero icon", "--color-fg-on-accent", "--color-accent", 3)],
+              motion="The layer rises in over 260 ms; reduced motion removes it."),
+    content="<p>Lost connection: “Playback stopped” with “We lost the connection while streaming {title}. We’ll resume from {position} once you’re back online.” Nothing loaded: “Nothing is playing” with Browse genres.</p>",
+    dodont=[(LP_CTRL, "Modes are pressed toggles.", LP_CTRL.replace(' aria-pressed="true"', "").replace(' aria-pressed="false"', ""), "A toggle without a pressed state hides the mode."), (LP_ACTS, "Name the track in More actions.", LP_ACTS.replace("More actions for Feathers Up", "More"), "Ambiguous label.")],
+    tokens=[("Background", "--color-bg-surface-sunken"), ("Hero button", "--color-accent"), ("Hero icon", "--color-fg-on-accent"), ("Layer", "--z-layer")], classes=[("layer-player", "Full-screen layer"), ("layer-player__top / __from / __body / __art / __title / __artist / __scrub / __ctrl / __acts", "Parts"), ("ibtn--lg / ibtn--hero", "Large and hero controls"), ("pill-btn / pill-btn--lg", "Action pills"), ("upnext", "Up next list"), ("scrubber--full", "Large scrubber")], sources=["pages/now-playing/default", "pages/now-playing/paused", "pages/now-playing/empty", "pages/now-playing/error"]))
+
+CLOSE_I = IC('<path d="M6 6l12 12M18 6 6 18"/>')
+QROW = lambda t, a, end: f'<div class="q-row">{COV("c3", " cover--sm")}<div class="srow__text"><div class="srow__title"><span>{t}</span></div><div class="srow__sub">{a}</div></div>{end}</div>'
+QD = (f'<aside class="drawer-queue" style="position:static;animation:none" aria-label="Queue"><div class="drawer-queue__head"><h2>Queue</h2><button class="ibtn" type="button" aria-label="Close queue">{CLOSE_I}</button></div>'
+      f'<div class="drawer-queue__body"><div class="q-label"><span>Now playing</span></div><div class="q-row q-row--now">{COV("c1", " cover--sm")}<div class="srow__text"><div class="srow__title"><span class="eq eq--live" role="img" aria-label="Playing"><span></span><span></span><span></span></span><span>Feathers Up</span></div><div class="srow__sub">Kaiso Collective</div></div></div>'
+      f'<div class="q-label"><span>Up next · 1</span><button type="button">Clear</button></div>{QROW("Road March Riddim", "Lady Tamboo", f"<button class=ibtn type=button aria-label=\"Remove Road March Riddim from the queue\">{CLOSE_I}</button>")}'
+      f'<div class="q-label"><span>Then, more Soca</span></div>{QROW("Wine Slow", "Marisol Vega", "<span class=srow__dur>3:30</span>").replace("q-row", "q-row q-row--more", 1)}</div></aside>')
+QE = '<p class="q-empty">Use Play next or Add to queue on any track to line it up here.</p>'
+SPECS.append(dict(
+    slug="queue-drawer", name="Queue drawer", group="Media", lead="A non-modal panel at the top right listing Now playing, Up next and more from the genre.",
+    overview="Opens from the player bar, Now playing or Q, without a backdrop, so the page stays usable. Edits apply at once; Play next and Add to queue on a track menu fill it.",
+    parts=[("Head", "“Queue” and Close"), ("Now playing", "<code>q-row--now</code> with the live equaliser"), ("Up next", "Count, Clear and a remove button per row"), ("Then, more", "Up to four dimmed genre tracks with durations")],
+    figure=QD, variants=[("With tracks", QD), ("Empty hint", QE)],
+    sizes=None, sizes_na="23.75rem wide, never wider than the viewport less 1.5rem.", states=None,
+    responsive="The drawer keeps its width down to phones, where it spans the viewport less a 0.75rem margin; it stops above the player bar.",
+    a11y=dict(role="<code>&lt;aside aria-label=\"Queue\"&gt;</code>, not modal; the playing marker is <code>role=\"img\"</code> “Playing”.", keys=[("Escape", "Closes the drawer"), ("Tab", "Close, Clear, remove buttons")], focus="Close queue takes focus on open.", label="Remove buttons name the track: “Remove {title} from the queue”.", pairs=[("Row title", "--color-fg-default", "--color-bg-surface-raised", 4.5), ("Label", "--color-fg-muted", "--color-bg-surface-raised", 4.5)]),
+    content="<p>Empty: “Use Play next or Add to queue on any track to line it up here.” The count follows “Up next · ” only when tracks are queued.</p>",
+    dodont=[(QD, "Name the track in each remove button.", QD.replace("Remove Road March Riddim from the queue", "Remove"), "Identical labels."), (QE, "Say how to fill an empty queue.", '<p class="q-empty">Empty</p>', "A dead end.")],
+    tokens=[("Background", "--color-bg-surface-raised"), ("Muted text", "--color-fg-muted"), ("Layer", "--z-player")], classes=[("drawer-queue / __head / __body", "Drawer"), ("q-label", "Section label with optional button"), ("q-row / q-row--now / q-row--more", "Rows"), ("q-empty", "Empty hint")], sources=["pages/queue/default", "pages/queue/empty"]))
+
+MI = lambda ic, t, extra="": f'<button class="mi" role="menuitem" type="button"{extra}>{IC(ic)}{t}</button>'
+TM = (f'<div class="menu-panel menu-panel--track" style="position:static;animation:none" role="menu" aria-label="Track actions"><div class="menu-head">{COV("c1", " cover--sm")}<div style="min-width:0"><strong>Feathers Up</strong><small>Kaiso Collective · 3:42</small></div></div>'
+      + MI('<path d="M4 6h12M4 12h8M4 18h8M17 14v6M14 17h6"/>', "Play next") + MI('<path d="M4 6h16M4 12h16M4 18h8M16 16l3 2-3 2"/>', "Add to queue")
+      + MI('<path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/>', "Save to library") + MI('<path d="M12 15V3m0 0L8 7m4-4 4 4M5 12v8h14v-8"/>', "Share")
+      + '<hr class="menu-divider">' + MI('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>', "More from Kaiso Collective")
+      + MI('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/>', "Go to Soca") + '</div>')
+SPECS.append(dict(
+    slug="track-menu", name="Track menu", group="Media", lead="The More actions menu of one track: queue it, save it, share it, or go to its artist or genre.",
+    overview="Opens from a card, a track row, a search song, the player bar or Now playing, anchored to the button that opened it and kept inside the viewport. A transparent scrim closes it on outside clicks.",
+    parts=[("Head", "Cover, title and “{artist} · {duration}”"), ("Queue items", "Play next, Add to queue"), ("Library and sharing", "Save to library (Remove from library when saved), Share"), ("Go to", "More from {artist}, Go to {genre}")],
+    figure=TM, variants=[("Default", TM), ("Saved", TM.replace('type="button">' + IC('<path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/>') + "Save to library", 'type="button" aria-pressed="true">' + IC('<path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/>') + "Remove from library"))],
+    sizes=None, sizes_na="16rem wide.", states=dict(rows=[("Item", '<button class="mi" role="menuitem" type="button"{a}>Play next</button>')], cols=[("Default", ""), ("Hover", ' data-state="hover"'), ("Focus", ' data-state="focus"'), ("Pressed", ' aria-pressed="true"')]),
+    responsive="Opens below its anchor, right-aligned; flips above when there is no room; stays 8px inside every viewport edge.",
+    a11y=dict(role="<code>role=\"menu\"</code> “Track actions” with <code>menuitem</code> buttons.", keys=[("↑ / ↓", "Move between items"), ("Enter / Space", "Choose"), ("Escape / Tab", "Close; focus returns to the opener")], focus="The first item takes focus on open.", label="Items are named by their text.", pairs=[("Item", "--color-fg-default", "--color-bg-surface-raised", 4.5), ("Meta", "--color-fg-muted", "--color-bg-surface-raised", 4.5)]),
+    content="<p>Choosing Play next or Add to queue confirms with a toast pill (L2-041).</p>",
+    dodont=[(TM, "Show which track the menu acts on.", TM.split('<div class="menu-head">')[0] + TM.split("</small></div></div>")[1], "Without the head the target is unclear."), (TM, "Keep it inside the viewport.", "<p>(A menu cut off by the window edge.)</p>", "Unreachable items.")],
+    tokens=[("Background", "--color-bg-surface-raised"), ("Pressed", "--color-fg-accent"), ("Layer", "--z-menu")], classes=[("menu-scrim", "Outside-click catcher"), ("menu-panel / menu-panel--track", "Panel"), ("menu-head", "Track head"), ("mi", "Item"), ("menu-divider", "Separator")], sources=["dialogs/track-menu/default", "dialogs/track-menu/saved", "dialogs/track-menu/from-player"]))
+
+TP = lambda msg, undo=False, dot=False: (f'<div class="toast{" toast--undo" if undo else ""}" style="position:static">' + ('<span class="toast__dot" aria-hidden="true"></span>' if dot else COV("c1", " cover--sm"))
+                                         + f'<span class="toast__msg">{msg}</span>' + ('<button class="toast__undo" type="button">Undo</button>' if undo else "") + "</div>")
+SPECS.append(dict(
+    slug="toast-pill", name="Toast pill", group="Feedback", lead="A short confirmation pill centred above the player bar, with the track cover and an optional Undo.",
+    overview="<code>ToastService.show()</code> queues pills in <code>hm-toast-region</code>; each dismisses itself after 4 seconds. Problems are banners or inline errors, never toasts.",
+    parts=[("Lead", "Track cover, or the coral dot"), ("Message", "One bold line"), ("Undo", "Optional action that reverts")],
+    figure=TP("Added “Feathers Up” to your queue"), variants=[("Queue", TP("Added “Feathers Up” to your queue")), ("Play next", TP("“Feathers Up” will play next")), ("With Undo", TP("Saved “Feathers Up” to your library", undo=True)), ("No cover", TP("Downloads are saved for offline listening on this device", dot=True))],
+    sizes=None, sizes_na="Width follows the message, up to the viewport less 2rem.", states=None,
+    responsive="Centred horizontally; sits above the player bar, or 1.5rem from the bottom (<code>toast-region--noplayer</code>) when no player is shown.",
+    a11y=dict(role="The region is <code>role=\"status\"</code> with <code>aria-live=\"polite\"</code>.", keys=[("Tab", "Reaches Undo")], focus="Toasts never take focus.", label="The message is the content.", pairs=[("Message", "--color-bg-canvas", "--color-fg-default", 4.5)]),
+    content="<p>Messages: “Added “{title}” to your queue”, ““{title}” will play next”, “Saved “{title}” to your library”, “Removed “{title}” from your library”.</p>",
+    dodont=[(TP("Added “Feathers Up” to your queue"), "Name the track.", TP("Added to queue"), "Which track?"), (TP("“Feathers Up” will play next"), "One line.", TP("“Feathers Up” will play next. It plays after the current track and before the rest of your queue."), "Pills are not paragraphs.")],
+    tokens=[("Background", "--color-fg-default"), ("Text", "--color-bg-canvas"), ("Dot", "--color-accent"), ("Layer", "--z-toast-pill")], classes=[("toast-region / toast-region--noplayer", "Live region"), ("toast / toast--undo", "Pill"), ("toast__dot / toast__msg / toast__undo", "Parts")], sources=["notifications/toast/info", "notifications/toast/play-next", "notifications/toast/success"]))

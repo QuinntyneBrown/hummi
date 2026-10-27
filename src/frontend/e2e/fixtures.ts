@@ -46,9 +46,24 @@ export interface FakeTrack {
   durationSeconds: number;
   coverUrl: string | null;
   liked: boolean;
+  genreSlug: string | null;
+  genreName: string | null;
 }
 
-const track = (id: string, title: string, artistName: string, durationSeconds: number, liked = false): FakeTrack => ({
+const GENRE_NAMES: Record<string, string> = {
+  soca: 'Soca',
+  steelpan: 'Steelpan & Calypso',
+  'island-chill': 'Island chill',
+};
+
+const track = (
+  id: string,
+  title: string,
+  artistName: string,
+  durationSeconds: number,
+  liked = false,
+  genreSlug: string | null = 'soca',
+): FakeTrack => ({
   id,
   slug: id,
   title,
@@ -56,6 +71,8 @@ const track = (id: string, title: string, artistName: string, durationSeconds: n
   durationSeconds,
   coverUrl: null,
   liked,
+  genreSlug,
+  genreName: genreSlug ? GENRE_NAMES[genreSlug] : null,
 });
 
 /** The demo catalogue, as Hummi.Cli seed writes it. */
@@ -64,14 +81,18 @@ export const TRACKS = {
   jouvert: track('jouvert-morning', 'J’ouvert Morning', 'Kaiso Collective', 238),
   roadMarch: track('road-march-riddim', 'Road March Riddim', 'Lady Tamboo', 245),
   bigTruck: track('big-truck-energy', 'Big Truck Energy', 'Lady Tamboo', 201),
-  panyard: track('panyard-nights', 'Panyard Nights', 'Laventille Steel Orchestra', 400),
+  panyard: track('panyard-nights', 'Panyard Nights', 'Laventille Steel Orchestra', 400, false, 'steelpan'),
   redLight: track('red-light-riddim', 'Red Light Riddim', 'Shanique', 182, true),
   longTitle: track(
     'a-very-long-title',
     'The Quiet Between Two Lighthouses, Revisited (Extended Dream Mix)',
     'Panorama Players',
     439,
+    false,
+    'island-chill',
   ),
+  wineSlow: track('wine-slow', 'Wine Slow', 'Marisol Vega', 210),
+  chrome: track('chrome-and-copper', 'Chrome and Copper', 'Lady Tamboo', 190),
 };
 
 export const HOME = {
@@ -145,14 +166,15 @@ export const SOCA_NEWEST = [TRACKS.feathersUp, TRACKS.bigTruck, TRACKS.panyard, 
  */
 export async function fakeGenreTracks(
   page: Page,
-  options: { empty?: boolean; trackCount?: number } = {},
+  options: { empty?: boolean; trackCount?: number; tracks?: FakeTrack[] } = {},
 ): Promise<{ sorts: string[] }> {
   const sorts: string[] = [];
   await page.route(/\/api\/genres\/[^/]+\/tracks/, (route) => {
     const url = new URL(route.request().url());
     const sort = url.searchParams.get('sort') ?? 'newest';
     sorts.push(sort);
-    const tracks = options.empty ? [] : sort === 'most-played' ? [...SOCA_NEWEST].reverse() : SOCA_NEWEST;
+    const newest = options.tracks ?? SOCA_NEWEST;
+    const tracks = options.empty ? [] : sort === 'most-played' ? [...newest].reverse() : newest;
     return route.fulfill({
       status: 200,
       contentType: 'application/json',

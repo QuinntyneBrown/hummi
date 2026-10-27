@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { PlayerStore, TrackDetailDto, TracksApi } from '@hummi/api';
+import { PlayerOverlays, PlayerStore, TrackDetailDto, TracksApi } from '@hummi/api';
 import {
   AlertComponent,
   ButtonDirective,
@@ -49,6 +49,7 @@ import { CatalogueNotFoundComponent, isNotFound, slugResource } from '../shared/
 export class TrackComponent {
   private readonly api = inject(TracksApi);
   readonly player = inject(PlayerStore);
+  readonly overlays = inject(PlayerOverlays);
   readonly track = slugResource(
     (slug) => this.api.get(slug),
     (track) => track.title,

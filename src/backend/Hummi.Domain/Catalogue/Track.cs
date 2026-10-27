@@ -33,6 +33,8 @@ public sealed class Track
     /// <summary>The genre the track is listed under; null until it is classified.</summary>
     public Guid? GenreId { get; private set; }
 
+    public Genre? Genre { get; private set; }
+
     /// <summary>The album the track was released on, if any, and its position there from 1.</summary>
     public Guid? AlbumId { get; private set; }
 

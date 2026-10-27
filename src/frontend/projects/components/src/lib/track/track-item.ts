@@ -9,6 +9,9 @@ export interface TrackItem {
   durationSeconds: number;
   coverUrl: string | null;
   liked: boolean;
+  /** The genre it is listed under; null while unclassified, absent where a screen does not need it. */
+  genreSlug?: string | null;
+  genreName?: string | null;
 }
 
 /** Formats seconds as "m:ss", for example 222 as "3:42". */

@@ -13,7 +13,11 @@ Mock: every page under `docs/mocks/pages/` (header, main, player bar).
 | Main | None | `main#main.container.app-main` wrapping the router outlet |
 | Footer | None | `footer.site-footer` with the two taglines |
 | Search layer | `hm-search-overlay` from `@hummi/search`, rendered while `SearchStore.open()` | None |
-| Player bar | `hm-player-bar` (uses `hm-icon`, `hm-equalizer`) | Shown only when a track is loaded and the route has no `data.hidePlayer` |
+| Player bar | `hm-player-bar` (uses `hm-icon`, `hm-equalizer`, `hm-scrubber`) | Shown only when a track is loaded and the route has no `data.hidePlayer`; More actions, Queue and Expand open the track menu, the queue drawer and Now playing |
+| Queue drawer | `hm-queue-panel` from `@hummi/player`, rendered while `PlayerOverlays.queueOpen()` | None |
+| Track menu | `hm-track-menu-host` from `@hummi/player` | None |
+| Toasts | `hm-toast-region` | None |
+| Keyboard shortcuts | `hm-dialog` through `ShortcutsDialogComponent`; header, main and player bar `inert` behind it | `ShortcutService` keydown handling |
 
 ## Home (`pages/home`)
 
@@ -117,3 +121,56 @@ Mock: the layer over Home in every state. Rendered by the shell from `@hummi/sea
 | Empty | `hm-recent-searches` ("Recent", clock icons) and `hm-sound-tile` per genre in a `.sound-grid` ("Browse by sound") | Empty grid layout (`layer-search__body--empty`) |
 | No results | `layer-empty` text block ("Nothing matches “{query}”") | The `layer-empty` block |
 | Error | `hm-error-block` ("Search isn’t working right now") with Try again | None |
+
+## Now playing (`pages/now-playing`)
+
+Mock: the layer over Home. Routed at `/now-playing` in `@hummi/player`; the player bar is hidden there (ADR 0009).
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Layer | `hm-player-layer` (`role="dialog"` "Now playing", "Close", "Playing from {genre}", cover, title, artist) | None |
+| Scrubber | `hm-scrubber` (full) inside `hm-player-layer` | None |
+| Controls | `hm-player-layer` (Shuffle and Repeat as `aria-pressed` toggles, Previous track, Play or Pause, Next track) | None |
+| Actions | `hm-player-layer` (Save or Saved, Share, Queue, "More actions for {title}") | None |
+| Up next | `hm-player-layer` (two `srow` rows with cover, title, artist, duration) | None |
+| Error | `hm-alert` (danger, "Playback stopped") inside `hm-player-layer` | None |
+| Empty | `hm-empty-state` ("Nothing is playing") inside `hm-player-layer` | "Browse genres" router link styled with `hmButton` |
+| Loading | Not reachable: the layer renders `PlayerStore`, which never waits | None |
+
+## Queue (`pages/queue`)
+
+Mock: the drawer over Home. Rendered by the shell from `@hummi/player` (`hm-queue-panel`) while `PlayerOverlays.queueOpen()`.
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Drawer | `hm-queue-drawer` (aside "Queue", "Close queue") | None |
+| Now playing | `hm-queue-drawer` `q-row--now` with `eq--live` while playing | None |
+| Up next | `hm-queue-drawer` ("Up next · {n}", Clear, "Remove {title} from the queue") | None |
+| Then, more {genre} | `hm-queue-drawer` dimmed `q-row--more` rows, up to four | Loading the genre's tracks |
+| Empty | `hm-queue-drawer` `q-empty` hint | None |
+| Loading, error | Not reachable: the queue is browser state; a failed "Then, more" load leaves the list out | None |
+
+## Track menu (`dialogs/track-menu`)
+
+Rendered by the shell from `@hummi/player` (`hm-track-menu-host`) for `PlayerOverlays.trackMenu()`.
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Menu | `hm-track-menu` (scrim, "Track actions", head with cover and "{artist} · {duration}") | None |
+| Items | `hm-track-menu` (Play next, Add to queue, Save to library or Remove from library, Share, More from {artist}, Go to {genre}) | Actions: queue edits, search, genre route |
+| Confirmation | `hm-toast-region` through `ToastService` | Toast messages |
+
+## Keyboard shortcuts (`dialogs/shortcuts`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Dialog | `hm-dialog` ("Keyboard shortcuts", keyboard icon, description, Close) | `ShortcutsDialogComponent` in the shell |
+| Shortcuts | `hm-description-list` with `keys` | Rows from `SHORTCUTS` |
+| Close | Button styled with `hmButton="primary"` in the dialog footer | None |
+
+## Toast (`notifications/toast`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Region | `hm-toast-region` (polite live region, `toast-region--noplayer` without the player bar) | Rendered once by the shell |
+| Pill | `hm-toast-region` pill: track cover or coral dot, message, optional Undo; dismissed after 4 seconds | None |
