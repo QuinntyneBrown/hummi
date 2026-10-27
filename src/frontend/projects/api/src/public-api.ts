@@ -53,3 +53,4 @@ export {
   type NotificationsDto,
 } from './lib/notifications/notifications';
 export { ReportDialogs, ReportsApi, type ReportReason, type ReportSubject } from './lib/reporting/reports';
+export { BannerService, ServerErrorHandler, type Banner } from './lib/feedback/banners';

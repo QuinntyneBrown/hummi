@@ -12,10 +12,10 @@ skinparam class {
 hide empty members
 title Class structure — Behave as accessible dialogs
 
-class DialogService {
-  +open<T, R>(component: Type<T>, data?): DialogRef<R>
+class Dialog hosts {
+  +open<T, R>(component: Type<T>, data?): dismiss output<R>
 }
-class DialogRef<R> {
+class dismiss output<R> {
   +closed: Observable<R | undefined>
   +close(result?: R): void
 }
@@ -25,6 +25,6 @@ class DialogComponent <<hm-dialog>> {
   +busy: input<boolean>
   -onCancel(e: Event): void
 }
-DialogService ..> DialogRef : returns
-DialogService ..> DialogComponent : hosts
+Dialog hosts ..> dismiss output : returns
+Dialog hosts ..> DialogComponent : hosts
 @enduml

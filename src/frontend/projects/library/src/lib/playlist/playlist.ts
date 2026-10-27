@@ -19,6 +19,7 @@ import {
   ErrorBlockComponent,
   ErrorPageComponent,
   IconComponent,
+  NOT_FOUND,
   PageHeaderComponent,
   SkeletonComponent,
   ToastService,
@@ -81,6 +82,8 @@ export class PlaylistComponent {
   readonly deleting = signal(false);
   readonly removing = signal(false);
   readonly rows = [1, 2, 3, 4, 5, 6];
+  /** A deleted or unknown playlist shows Not found (L2-044). */
+  readonly notFound = NOT_FOUND;
 
   readonly returnUrl = computed(() => `/playlists/${this.id()}`);
 

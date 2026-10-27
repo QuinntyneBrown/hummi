@@ -1,8 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   afterNextRender,
+  inject,
   input,
   model,
   output,
@@ -10,6 +12,7 @@ import {
   viewChild,
 } from '@angular/core';
 
+import { inertBackground } from '../dialog/inert-background';
 import { IconComponent } from '../icon/icon';
 
 /** How long Copy reads "Copied" (L2-025 AC2). */
@@ -161,7 +164,13 @@ export class ShareSheetComponent {
   private timer: ReturnType<typeof setTimeout> | undefined;
 
   constructor() {
-    afterNextRender(() => this.panel().nativeElement.focus());
+    const host = inject(ElementRef<HTMLElement>).nativeElement;
+    let restore = (): void => undefined;
+    afterNextRender(() => {
+      restore = inertBackground(host);
+      this.panel().nativeElement.focus();
+    });
+    inject(DestroyRef).onDestroy(() => restore());
   }
 
   protected async copy(what: 'link' | 'embed', text: string): Promise<void> {

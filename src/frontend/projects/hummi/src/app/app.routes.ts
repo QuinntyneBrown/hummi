@@ -39,6 +39,12 @@ export const routes: Routes = [
     loadChildren: () => import('@hummi/notifications').then((m) => m.routes),
   },
   {
+    path: 'server-error',
+    title: 'Something broke · Hummi',
+    data: { hidePlayer: true },
+    loadComponent: () => import('./server-error/server-error').then((m) => m.ServerErrorComponent),
+  },
+  {
     path: '**',
     title: 'Page not found',
     data: { hidePlayer: true },

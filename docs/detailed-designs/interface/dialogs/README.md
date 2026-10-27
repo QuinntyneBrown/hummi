@@ -15,7 +15,7 @@ One component and one service implement the contract; feature dialogs only suppl
 
 **Frontend — Hummi web application (Angular)**
 
-- **`DialogService`** — Service in @hummi/components. Opens `hm-dialog` components as modal overlays and returns a typed close result (`L2-047`)
+- **`Dialog hosts`** — App-wide dialogs open through services in @hummi/api (`PlaylistDialogs`, `ShareDialogs`, `ReportDialogs`, `AccountDialogs`, `SignInGate`) and render in the shell; page dialogs render in their page. `hm-dialog` makes everything else inert (`L2-047`, ADR 0019)
 - **`DialogComponent`** — `hm-dialog` in @hummi/components. Wraps native `<dialog>` opened with `showModal()`, sets `aria-labelledby` and `aria-describedby`, input `busy`
 - **`Feature dialog`** — Any dialog content component. Sets `busy` while saving
 
@@ -43,13 +43,13 @@ Dialogs run entirely in the Angular application.
 
 ### Components
 
-Feature content calls `DialogService`, which hosts `DialogComponent`.
+Feature content opens a dialog through its service or its own state; either way `DialogComponent` renders it.
 
 ![C4 component view for behave as accessible dialogs](diagrams/c4-component.png)
 
 ### Class structure
 
-`DialogService` returns a `DialogRef` and hosts `DialogComponent`, which owns the busy and cancel rules.
+`DialogComponent` makes the background inert, traps Tab and emits dismiss; each dialog ignores dismiss while busy and disables Cancel.
 
 ![Class diagram for behave as accessible dialogs](diagrams/class-structure.png)
 

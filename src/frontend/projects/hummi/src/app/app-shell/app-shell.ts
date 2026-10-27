@@ -16,6 +16,7 @@ import { ActivatedRouteSnapshot, NavigationEnd, Router, RouterLink, RouterOutlet
 import {
   AccountDialogs,
   AuthApi,
+  BannerService,
   LibraryStore,
   PlayerOverlays,
   PlayerStore,
@@ -128,6 +129,8 @@ export class AppShellComponent {
   private readonly settings = inject(SettingsStore);
   /** The header bell's unread count (L2-037 AC1). */
   readonly unread = inject(UnreadStore);
+  /** Maintenance, connectivity and streaming banners above the header (L2-042). */
+  readonly banners = inject(BannerService);
   private readonly avatar = viewChild<ElementRef<HTMLElement>>('avatar');
   readonly inert = computed(() =>
     this.shortcuts.dialogOpen() ||
@@ -147,11 +150,13 @@ export class AppShellComponent {
 
   constructor() {
     void this.session.load();
+    void this.banners.load();
     const router = this.router;
     const subscription = router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
       this.navOpen.set(false);
       this.hidePlayer.set(hidesPlayer(router.routerState.snapshot.root));
       this.bare.set(routeData(router.routerState.snapshot.root, 'bare'));
+      this.banners.ownOfflineMessage.set(routeData(router.routerState.snapshot.root, 'ownOfflineMessage'));
       this.accountMenuOpen.set(false);
     });
     inject(DestroyRef).onDestroy(() => subscription.unsubscribe());

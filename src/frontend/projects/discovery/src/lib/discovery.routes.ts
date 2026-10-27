@@ -6,6 +6,8 @@ export const routes: Routes = [
     path: '',
     pathMatch: 'full',
     title: 'Hummi',
+    // Home words its own offline banner (L2-002 AC3), so the shell's is hidden here (ADR 0019).
+    data: { ownOfflineMessage: true },
     loadComponent: () => import('./home/home').then((m) => m.HomeComponent),
   },
   {

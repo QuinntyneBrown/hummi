@@ -14,7 +14,12 @@
     </ol>
   }
   @case ('error') {
-    @if (state.problem.status === 403) {
+    @if (state.problem.status === 404) {
+      <hm-error-page [code]="notFound.code" [heading]="notFound.heading" [text]="notFound.text">
+        <a hmButton="primary" routerLink="/">Go to Home</a>
+        <a hmButton routerLink="/search">Search Hummi</a>
+      </hm-error-page>
+    } @else if (state.problem.status === 403) {
       <hm-error-page
         code="403"
         icon="lock"

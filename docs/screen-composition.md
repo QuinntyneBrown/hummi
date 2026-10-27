@@ -248,6 +248,12 @@ Mock: the layer over Home in every state. Rendered by the shell from `@hummi/sea
 | Failed | `hm-alert` (danger, "That didn’t work") | Answers kept |
 | Success | `hm-dialog` ("Thanks, we’ll take a look"), `hmButton="primary"` Close | None |
 
+## Server error (`pages/server-error`)
+
+| Part | Library components | Local UI |
+|---|---|---|
+| Page | `hm-error-page` (alert, "500", "Something broke on our side", the fixing text), `hmButton="primary"` "Try again" (reloads), `hmButton` link "Go to Home" | `ServerErrorComponent` in the hummi application, shown by `ServerErrorHandler` |
+
 ## Now playing (`pages/now-playing`)
 
 Mock: the layer over Home. Routed at `/now-playing` in `@hummi/player`; the player bar is hidden there (ADR 0009).
@@ -386,4 +392,4 @@ Rendered by the shell from `@hummi/player` (`hm-track-menu-host`) for `PlayerOve
 | Part | Library components | Local UI |
 |---|---|---|
 | Persistent | `hm-alert` (warning, `banner`) "Confirm your email. Check your inbox to keep saving playlists. Resend the email." | Rendered by the shell |
-| Info, success, warning, danger | `hm-alert` with `banner` | Built with journey 16 |
+| Info, success, warning, danger | `hm-alert` with `banner` and `dismissible` (Dismiss): maintenance (info), back online (success), offline (warning), playback can’t start (danger, announced as alert) | `BannerService` in `@hummi/api`; the shell renders them above the header (ADR 0019) |

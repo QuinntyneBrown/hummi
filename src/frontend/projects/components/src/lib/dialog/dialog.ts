@@ -1,12 +1,16 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   afterNextRender,
+  inject,
   input,
   output,
   viewChild,
 } from '@angular/core';
+
+import { inertBackground } from './inert-background';
 
 import { IconComponent, IconName } from '../icon/icon';
 
@@ -15,7 +19,8 @@ let nextId = 0;
 /**
  * A modal dialog (L2-047): backdrop, a panel labelled by its title and described by its description, a
  * Close icon button, the projected body and the projected [footer]. The panel takes focus on open and
- * Tab stays inside it; Close and Escape emit dismiss. The host makes the page behind it inert.
+ * Tab stays inside it; Close and Escape emit dismiss, which a busy dialog ignores. Everything outside the
+ * dialog is inert while it is open (L2-047).
  */
 @Component({
   selector: 'hm-dialog',
@@ -62,7 +67,13 @@ export class DialogComponent {
   private readonly panel = viewChild.required<ElementRef<HTMLElement>>('panel');
 
   constructor() {
-    afterNextRender(() => this.panel().nativeElement.focus());
+    const host = inject(ElementRef<HTMLElement>).nativeElement;
+    let restore = (): void => undefined;
+    afterNextRender(() => {
+      restore = inertBackground(host);
+      this.panel().nativeElement.focus();
+    });
+    inject(DestroyRef).onDestroy(() => restore());
   }
 
   protected keydown(event: KeyboardEvent): void {

@@ -1,4 +1,15 @@
 @if (!bare()) {
+  @for (b of banners.banners(); track b.id) {
+    <hm-alert
+      [attr.inert]="inert()"
+      [tone]="b.tone"
+      [heading]="b.title"
+      [banner]="true"
+      [dismissible]="true"
+      (dismiss)="banners.dismiss(b.id)"
+      >{{ b.text }}</hm-alert
+    >
+  }
   @if (session.user(); as user) {
     @if (!user.emailConfirmed) {
       <hm-alert [attr.inert]="inert()" tone="warning" heading="Confirm your email" [banner]="true">
