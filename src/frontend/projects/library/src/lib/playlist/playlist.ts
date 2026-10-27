@@ -8,6 +8,8 @@ import {
   PlaylistDetailDto,
   PlaylistDialogs,
   PlaylistsApi,
+  ShareDialogs,
+  SignInGate,
   apiResource,
 } from '@hummi/api';
 import {
@@ -15,6 +17,7 @@ import {
   ButtonDirective,
   EmptyStateComponent,
   ErrorBlockComponent,
+  ErrorPageComponent,
   IconComponent,
   PageHeaderComponent,
   SkeletonComponent,
@@ -30,7 +33,9 @@ import { PlaylistFormDialogComponent } from '../dialogs/playlist-form-dialog';
 /**
  * A playlist page (`/playlists/{id}`, L2-023). The owner sees "{n} tracks · {length} · {private|public}",
  * Play, Share, Rename and Delete, and can select rows: the info bar offers Remove from playlist and Add to
- * another playlist. An empty playlist shows Nothing here yet with only Share. Share comes with journey 11.
+ * another playlist. An empty playlist shows Nothing here yet with only Share. Someone else's playlist is
+ * read-only: Play, Save to my library, Share and "This playlist belongs to {owner}" (L2-024). A private
+ * playlist without its share link shows the Forbidden page (L2-045).
  */
 @Component({
   selector: 'hm-playlist',
@@ -41,6 +46,7 @@ import { PlaylistFormDialogComponent } from '../dialogs/playlist-form-dialog';
     DeletePlaylistDialogComponent,
     EmptyStateComponent,
     ErrorBlockComponent,
+    ErrorPageComponent,
     IconComponent,
     PageHeaderComponent,
     PlaylistFormDialogComponent,
@@ -58,16 +64,25 @@ export class PlaylistComponent {
   readonly library = inject(LibraryStore);
   readonly player = inject(PlayerStore);
   readonly overlays = inject(PlayerOverlays);
-  private readonly id = toSignal(inject(ActivatedRoute).paramMap.pipe(map((p) => p.get('id') ?? '')), {
-    initialValue: '',
+  private readonly shares = inject(ShareDialogs);
+  private readonly gate = inject(SignInGate);
+  private readonly route = inject(ActivatedRoute);
+  private readonly id = toSignal(this.route.paramMap.pipe(map((p) => p.get('id') ?? '')), { initialValue: '' });
+  /** The share link's code, which opens a private playlist (L2-024 AC4). */
+  private readonly shareCode = toSignal(this.route.queryParamMap.pipe(map((p) => p.get('share'))), {
+    initialValue: null,
   });
 
-  readonly playlist = apiResource(() => this.api.get(untracked(this.id)));
+  readonly playlist = apiResource(() => this.api.get(untracked(this.id), untracked(this.shareCode)));
+  /** Someone else's playlist is in the viewer's Library (L2-024 AC3); flipped at once on Save. */
+  readonly saved = signal(false);
   readonly selected = signal<readonly number[]>([]);
   readonly renaming = signal(false);
   readonly deleting = signal(false);
   readonly removing = signal(false);
   readonly rows = [1, 2, 3, 4, 5, 6];
+
+  readonly returnUrl = computed(() => `/playlists/${this.id()}`);
 
   readonly tracks = computed(() => {
     const state = this.playlist.state();
@@ -76,6 +91,10 @@ export class PlaylistComponent {
 
   constructor() {
     // Read again when the id changes or a dialog saved a playlist change.
+    effect(() => {
+      const state = this.playlist.state();
+      if (state.status === 'ready') untracked(() => this.saved.set(state.value.saved));
+    });
     let seen = `${this.id()}|${this.dialogs.changes()}`;
     effect(() => {
       const now = `${this.id()}|${this.dialogs.changes()}`;
@@ -87,6 +106,35 @@ export class PlaylistComponent {
         });
       }
     });
+  }
+
+  firstName(name: string): string {
+    return name.split(' ')[0];
+  }
+
+  share(p: PlaylistDetailDto): void {
+    this.shares.share({
+      type: 'playlist',
+      id: p.id,
+      name: p.name,
+      byline: `by ${p.ownerName}`,
+      coverUrl: p.entries[0]?.track.coverUrl ?? null,
+    });
+  }
+
+  /** Save to my library (L2-024 AC3); signed out, the sign-in prompt instead. */
+  async toggleSaved(p: PlaylistDetailDto): Promise<void> {
+    if (!this.gate.allow()) return;
+    const saved = !this.saved();
+    this.saved.set(saved);
+    const result = await this.api.setSaved(p.id, saved, this.shareCode());
+    if (!result.ok) {
+      this.saved.set(!saved);
+      this.toasts.showDanger('Couldn’t save the playlist', 'Check your connection and try again.');
+      return;
+    }
+    this.dialogs.changed();
+    this.toasts.show(saved ? `Saved “${p.name}” to your library` : `Removed “${p.name}” from your library`);
   }
 
   subtitle(p: PlaylistDetailDto): string {

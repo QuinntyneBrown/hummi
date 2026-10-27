@@ -55,6 +55,15 @@ public sealed class LibraryController(ISender sender) : ControllerBase
         return result.IsSuccess ? Ok(result.Value) : this.ToProblem(result.Error!);
     }
 
+    /// <summary>Save to my library for someone else's playlist (L2-024 AC3); share is its link code when private.</summary>
+    [HttpPut("saved-playlists/{playlistId}")]
+    public Task<IActionResult> SavePlaylist(string playlistId, [FromQuery] string? share, CancellationToken cancellationToken) =>
+        Send(new SavePlaylistCommand(User.UserId(), playlistId, share, true), cancellationToken);
+
+    [HttpDelete("saved-playlists/{playlistId}")]
+    public Task<IActionResult> UnsavePlaylist(string playlistId, CancellationToken cancellationToken) =>
+        Send(new SavePlaylistCommand(User.UserId(), playlistId, null, false), cancellationToken);
+
     private async Task<IActionResult> Send(IRequest<Application.Common.Result<Unit>> command, CancellationToken cancellationToken)
     {
         var result = await sender.Send(command, cancellationToken);

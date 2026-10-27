@@ -41,3 +41,4 @@ export {
   type PlaylistPositionDto,
 } from './lib/library/playlists-api';
 export { PlaylistDialogs, type PlaylistDialog, type PlaylistTrack } from './lib/library/playlist-dialogs';
+export { ShareDialogs, SharesApi, type SharedItemDto, type ShareSubject } from './lib/sharing/shares-api';

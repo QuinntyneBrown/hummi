@@ -21,28 +21,29 @@ public sealed record PlaylistDetailDto(
     string OwnerName,
     int TrackCount,
     int DurationSeconds,
+    bool Saved,
     IReadOnlyList<PlaylistEntryDto> Entries);
 
-/// <summary>A playlist for its owner, or a public one for anyone; a private one of someone else is 403.</summary>
-public sealed record GetPlaylistQuery(Guid? ListenerId, string PlaylistId) : IRequest<Result<PlaylistDetailDto>>;
+/// <summary>
+/// A playlist for its owner, a public one for anyone, or a private one opened through its share link
+/// (ShareCode); otherwise 403 (L2-024 AC4). Saved says whether the viewer keeps it in Library.
+/// </summary>
+public sealed record GetPlaylistQuery(Guid? ListenerId, string PlaylistId, string? ShareCode = null) : IRequest<Result<PlaylistDetailDto>>;
 
 public sealed class GetPlaylistQueryHandler(IHummiDbContext db) : IRequestHandler<GetPlaylistQuery, Result<PlaylistDetailDto>>
 {
     public async Task<Result<PlaylistDetailDto>> Handle(GetPlaylistQuery request, CancellationToken cancellationToken)
     {
-        var playlist = Guid.TryParse(request.PlaylistId, out var id)
-            ? await db.Playlists.AsNoTracking().Include(p => p.Entries).SingleOrDefaultAsync(p => p.Id == id, cancellationToken)
-            : null;
-        if (playlist is null)
+        var access = await PlaylistAccess.ViewableAsync(db, request.ListenerId, request.PlaylistId, request.ShareCode, cancellationToken);
+        if (!access.IsSuccess)
         {
-            return PlaylistErrors.NotFound;
+            return access.Error!;
         }
 
+        var playlist = access.Value!;
         var isOwner = playlist.OwnerId == request.ListenerId;
-        if (!isOwner && !playlist.IsPublic)
-        {
-            return PlaylistErrors.Private;
-        }
+        var saved = !isOwner && request.ListenerId is not null
+            && await db.SavedPlaylists.AnyAsync(s => s.ListenerId == request.ListenerId && s.PlaylistId == playlist.Id, cancellationToken);
 
         var owner = await db.Listeners.Where(l => l.Id == playlist.OwnerId).Select(l => l.DisplayName).SingleAsync(cancellationToken);
         var ordered = playlist.Entries.OrderBy(e => e.Position).ToList();
@@ -62,6 +63,7 @@ public sealed class GetPlaylistQueryHandler(IHummiDbContext db) : IRequestHandle
             owner,
             entries.Count,
             entries.Sum(e => e.Track.DurationSeconds),
+            saved,
             entries);
     }
 }

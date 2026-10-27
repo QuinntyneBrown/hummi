@@ -262,6 +262,26 @@
           "defaultConfiguration": "production"
         }
       }
+    },
+    "sharing": {
+      "projectType": "sharing",
+      "root": "projects/sharing",
+      "sourceRoot": "projects/sharing/src",
+      "prefix": "hm",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/sharing/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/sharing/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
     }
   }
 }

@@ -7,7 +7,7 @@ link of the form `https://hummi.example/s/{code}` that opens without an account.
 listening only; nobody who opens it can change the shared item.
 
 - **share link** — stable URL that identifies one track or playlist by a short random code
-- **share code** — 8-character URL-safe random string <TO SUPPLY: length and alphabet>
+- **share code** — 8 characters from `23456789abcdefghjkmnpqrstuvwxyz` (no look-alikes), drawn with `RandomNumberGenerator` (ADR 0014)
 
 One code exists per item and is reused on every share, so repeated sharing does not mint new links.
 Sharing a private playlist grants read access through the link.
@@ -18,10 +18,10 @@ The dialog asks the API for the item's link, creating it on first use, and copie
 
 **Frontend — Hummi web application (Angular)**
 
-- **`ShareDialog`** — Dialog component in @hummi/sharing. Renders `hm-dialog` with a read-only `hm-text-field`, Copy link, caption and Done; announces copy status in a live region
-- **`Clipboard`** — Angular CDK `Clipboard`. Writes text to the system clipboard
-- **`SharesApi`** — Typed HTTP service in @hummi/api. Calls `POST /api/shares`
-- **`ToastService`** — Service in @hummi/components. Queues `hm-toast` notifications in the toast region (`L2-041`)
+- **`ShareDialog`** — Dialog component in @hummi/sharing, opened through `ShareDialogs` and rendered by the shell. Renders `hm-share-sheet`: Link and Embed tabs, Copy, Start at and the send targets; announces copy status in a live region
+- **`Clipboard`** — `navigator.clipboard` in `hm-share-sheet`. Writes text to the system clipboard
+- **`SharesApi`** — Typed HTTP service in @hummi/api. Calls `POST /api/shares`; `ShareDialogs` holds the open dialog
+- **`ToastService`** — Service in @hummi/components. Shows the danger toast when no link could be made
 
 **Backend — Hummi.Api application**
 
@@ -30,7 +30,7 @@ The dialog asks the API for the item's link, creating it on first use, and copie
 **Backend — Hummi Application and Domain**
 
 - **`GetOrCreateShareLinkCommandHandler`** — MediatR command handler. Returns the existing `ShareLink` or creates one with a fresh code; refuses private playlists of other owners
-- **`IShareCodeGenerator`** — Application port. Generates cryptographically random codes
+- **`ShareLink.NewCode`** — Domain. Generates cryptographically random codes; a clash draws again
 
 **Backend — Hummi Infrastructure**
 
@@ -43,7 +43,7 @@ The feature realizes the following level-2 (L2) requirements. Each L2 requiremen
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-025` | `L1-006` | **Share dialog.** 1. Given a track or playlist, when the listener activates "Share", then the dialog "Share “{name}”" reads "Send this link by message or email." and shows a read-only link field (format `https://hummi.example/s/{code}`), a "Copy link" button, the caption "Anyone with the link can listen. They can’t change anything." and "Done".<br>2. Given "Copy link", when activated, then the link is copied to the clipboard, the button reads "Copied", and the status "Link copied. Anyone with it can listen without an account." is announced.<br>3. Given a link copied outside the dialog, when the copy succeeds, then the success toast "Link copied" with "Anyone with it can listen." and an "Undo" action is shown.<br>4. Given anyone opens a shared link, when they are not the owner, then they can listen but cannot change the shared item. |
+| `L2-025` | `L1-006` | **Share dialog.** 1. Given a track or playlist, when the listener activates "Share", then the dialog "Share {name}" shows the cover, "Free for anyone to play — no account needed.", the tabs "Link" (selected) and "Embed" (tracks only), a link field in the format `hummi.fm/s/{code}` with a "Copy" button, and a "Send it straight to" row with "WhatsApp", "Email" and "Messages".<br>2. Given "Copy", when activated, then the link is copied to the clipboard and the button reads "Copied" for a short moment before reading "Copy" again.<br>3. Given the "Embed" tab, when selected, then it shows a preview card of the track and the embed code `<iframe src="https://hummi.fm/embed/{slug}" width="100%" height="96" frameborder="0"></iframe>` with its own "Copy" button.<br>4. Given the shared track is the current track and has played for more than zero seconds, when the dialog renders, then a "Start at {m:ss}" checkbox is offered, and when checked the link carries the start time.<br>5. Given anyone opens a shared link, when they are not the owner, then they can listen but cannot change the shared item. |
 
 ## Diagrams
 

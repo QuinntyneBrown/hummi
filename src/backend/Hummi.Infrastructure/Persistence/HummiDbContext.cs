@@ -33,6 +33,10 @@ public sealed class HummiDbContext(DbContextOptions<HummiDbContext> options) : D
 
     public DbSet<PlaylistEntry> PlaylistEntries => Set<PlaylistEntry>();
 
+    public DbSet<ShareLink> ShareLinks => Set<ShareLink>();
+
+    public DbSet<SavedPlaylist> SavedPlaylists => Set<SavedPlaylist>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(HummiDbContext).Assembly);
 }

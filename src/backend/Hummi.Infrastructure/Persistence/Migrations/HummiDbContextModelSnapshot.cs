@@ -480,6 +480,54 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                     b.ToTable("PlaylistEntries", (string)null);
                 });
 
+            modelBuilder.Entity("Hummi.Domain.Library.SavedPlaylist", b =>
+                {
+                    b.Property<Guid>("ListenerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PlaylistId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("SavedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("ListenerId", "PlaylistId");
+
+                    b.HasIndex("PlaylistId");
+
+                    b.ToTable("SavedPlaylists", (string)null);
+                });
+
+            modelBuilder.Entity("Hummi.Domain.Library.ShareLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("TargetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TargetType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("TargetType", "TargetId")
+                        .IsUnique();
+
+                    b.ToTable("ShareLinks", (string)null);
+                });
+
             modelBuilder.Entity("Hummi.Domain.Library.TrackLike", b =>
                 {
                     b.Property<Guid>("ListenerId")
@@ -593,6 +641,21 @@ namespace Hummi.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("TrackId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Hummi.Domain.Library.SavedPlaylist", b =>
+                {
+                    b.HasOne("Hummi.Domain.Accounts.Listener", null)
+                        .WithMany()
+                        .HasForeignKey("ListenerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Hummi.Domain.Library.Playlist", null)
+                        .WithMany()
+                        .HasForeignKey("PlaylistId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 

@@ -21,18 +21,18 @@ The page is the same `PlaylistPage` in read-only mode; saving creates a `SavedPl
 
 **Backend — Hummi.Api application**
 
-- **`PlaylistsController`** — ASP.NET Core controller. Authorized `/api/playlists` endpoints; maps results through `ProblemDetailsMapper`
+- **`PlaylistsController`** — ASP.NET Core controller. `/api/playlists` endpoints; reads take `?share={code}`; maps results to ProblemDetails with `ToProblem`
 
 **Backend — Hummi Application and Domain**
 
-- **`GetPlaylistQueryHandler`** — MediatR query handler. Calls `Playlist.CanView(listener)`; Forbidden when false
-- **`SavePlaylistCommandHandler`** — MediatR command handler. Adds a `SavedPlaylist` row for the listener
-- **`Playlist`** — Domain aggregate. `CanView` allows the owner, any listener when public, and grantees of a share
+- **`GetPlaylistQueryHandler`** — MediatR query handler. Uses `PlaylistAccess.ViewableAsync` (owner, public, or holding its share code); Forbidden otherwise
+- **`SavePlaylistCommandHandler`** — MediatR command handler. Adds or removes a `SavedPlaylist` row for the listener (`PUT`/`DELETE /api/me/saved-playlists/{id}`)
+- **`Playlist`** — Domain aggregate. Viewable by the owner, by anyone when public, and by anyone holding its share link (ADR 0014)
 
 **Backend — Hummi Infrastructure**
 
 - **`HummiDbContext`** — EF Core DbContext. Implements the `IHummiDbContext` port from `Application/Abstractions` and maps entities to tables
-- **`Hummi database`** — Azure SQL. Playlists, grants and saved playlists
+- **`Hummi database`** — Azure SQL. Playlists, share links and saved playlists
 
 ## Requirements
 
@@ -40,7 +40,7 @@ The feature realizes the following level-2 (L2) requirements. Each L2 requiremen
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-024` | `L1-005` | **Someone else's playlist.** 1. Given Priya opens Mei's public playlist "Sunday kitchen", when it loads, then the subtitle reads "31 tracks · by Mei Rodríguez · public", the actions are "Play", "Save to my library" and "Share", and an info alert reads "This playlist belongs to Mei Rodríguez" with "You can listen and save a copy to your library. Only Mei can change the tracks."<br>2. Given a playlist the listener does not own, when it renders, then no rename, delete or remove controls are shown, and the server rejects such changes from that listener.<br>3. Given "Save to my library", when activated, then the playlist appears in the listener's Library.<br>4. Given a private playlist that was not shared with the listener, when they open it, then the Forbidden page (L2-045) is shown. |
+| `L2-024` | `L1-005` | **Someone else's playlist.** 1. Given Nadia opens Mei's public playlist "Sunday kitchen", when it loads, then the subtitle reads "31 tracks · by Mei Rodríguez · public", the actions are "Play", "Save to my library" and "Share", and an info alert reads "This playlist belongs to Mei Rodríguez" with "You can listen and save a copy to your library. Only Mei can change the tracks."<br>2. Given a playlist the listener does not own, when it renders, then no rename, delete or remove controls are shown, and the server rejects such changes from that listener.<br>3. Given "Save to my library", when activated, then the playlist appears in the listener's Library.<br>4. Given a private playlist that was not shared with the listener, when they open it, then the Forbidden page (L2-045) is shown. |
 
 ## Diagrams
 

@@ -126,7 +126,7 @@ public sealed class UpdatePlaylistCommandHandler(IHummiDbContext db) : IRequestH
     }
 }
 
-/// <summary>Deletes a playlist and its entries; the tracks stay on Hummi (L2-022 AC3).</summary>
+/// <summary>Deletes a playlist, its entries, its share link and every saved copy; the tracks stay (L2-022 AC3).</summary>
 public sealed record DeletePlaylistCommand(Guid ListenerId, string PlaylistId) : IRequest<Result<Unit>>;
 
 public sealed class DeletePlaylistCommandHandler(IHummiDbContext db) : IRequestHandler<DeletePlaylistCommand, Result<Unit>>
@@ -139,7 +139,10 @@ public sealed class DeletePlaylistCommandHandler(IHummiDbContext db) : IRequestH
             return playlist.Error!;
         }
 
-        db.Playlists.Remove(playlist.Value!);
+        var id = playlist.Value!.Id;
+        db.ShareLinks.RemoveRange(await db.ShareLinks.Where(l => l.TargetType == ShareTarget.Playlist && l.TargetId == id).ToListAsync(cancellationToken));
+        db.SavedPlaylists.RemoveRange(await db.SavedPlaylists.Where(s => s.PlaylistId == id).ToListAsync(cancellationToken));
+        db.Playlists.Remove(playlist.Value);
         await db.SaveChangesAsync(cancellationToken);
         return Unit.Value;
     }

@@ -8,7 +8,7 @@ Sign up to save it. The visitor can listen without an account. A playlist code r
 playlist page with read access granted by the link.
 
 - **landing page** — standalone page without the player bar that introduces Hummi to a visitor
-- **play preview** — playback of the full track through the shared player without an account <TO SUPPLY: preview length if not full track>
+- **play preview** — playback of the full track through the shared player without an account, from `?t=` when the link carries a start (ADR 0014)
 
 An unknown code or a removed track shows "This link didn’t work".
 
@@ -18,8 +18,8 @@ The page resolves the code with one anonymous query.
 
 **Frontend — Hummi web application (Angular)**
 
-- **`SharedTrackPage`** — Routed component in @hummi/sharing. Renders the overline "Shared with you", meta line, Play preview, Sign up to save it, `hm-waveform`, the info `hm-alert` and the failure state; route data hides the player bar
-- **`SharesApi`** — Typed HTTP service in @hummi/api. Calls `GET /api/shares/{code}`
+- **`SharedTrackPage`** — Routed component in @hummi/sharing at `/s/{code}`. Renders the overline "Shared with you", meta line, Play preview, Sign up to save it, `hm-waveform`, the info `hm-alert` and the failure state; a playlist code redirects to `/playlists/{id}?share={code}`; the player bar stays so the preview can be controlled
+- **`SharesApi`** — Typed HTTP service in @hummi/api. Calls `GET /api/shares/{code}`; `TracksApi` then loads the track
 - **`PlayerStore`** — Signal store in @hummi/api. Owns the queue, the current track, position and play state, and drives the `HTMLAudioElement`
 
 **Backend — Hummi.Api application**
@@ -41,7 +41,7 @@ The feature realizes the following level-2 (L2) requirements. Each L2 requiremen
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-026` | `L1-006` | **Shared track landing page.** 1. Given a signed-out visitor, when they open a share link `/s/{code}` for Paper Planes at 2 a.m., then the page shows the heading "Paper Planes at 2 a.m.", the overline "Shared with you", "Paper Satellites · Study Hall · 2:56 · CC BY 4.0", the buttons "Play preview" and "Sign up to save it", and a waveform.<br>2. Given the landing page, when it renders, then an info alert reads "Free to listen, free to keep" with "Hummi is free. Create an account to save this track to a playlist, follow Paper Satellites and keep your place."<br>3. Given "Play preview", when activated, then the track plays without an account; given "Sign up to save it", when activated, then Sign up opens.<br>4. Given an incomplete link or a removed track, when the page loads, then it shows "This link didn’t work" with "The link may be incomplete or the track may have been removed." |
+| `L2-026` | `L1-006` | **Shared track landing page.** 1. Given a signed-out visitor, when they open a share link `/s/{code}` for Wine Slow, then the page shows the heading "Wine Slow", the overline "Shared with you", "Marisol Vega · Slow Wine · 2:56 · CC BY 4.0", the buttons "Play preview" and "Sign up to save it", and a waveform.<br>2. Given the landing page, when it renders, then an info alert reads "Free to listen, free to keep" with "Hummi is free. Create an account to save this track to a playlist, follow Marisol Vega and keep your place."<br>3. Given "Play preview", when activated, then the track plays without an account; given "Sign up to save it", when activated, then Sign up opens.<br>4. Given an incomplete link or a removed track, when the page loads, then it shows "This link didn’t work" with "The link may be incomplete or the track may have been removed." |
 
 ## Diagrams
 

@@ -90,14 +90,14 @@ public sealed class DemoSeederTests : IDisposable
     {
         await DemoSeeder.SeedAsync(db, mediaRoot, TimeProvider.System);
 
-        var listener = await db.Listeners.SingleAsync();
-        Assert.Equal(DemoSeeder.DemoEmail, listener.Email);
+        var listener = await db.Listeners.SingleAsync(l => l.Email == DemoSeeder.DemoEmail);
         Assert.Equal("Nadia Charles", listener.DisplayName);
         Assert.True(listener.EmailConfirmed);
         Assert.True(new Hummi.Infrastructure.Accounts.IdentityPasswordHasher().Verify(listener.PasswordHash, DemoSeeder.DemoPassword));
         Assert.Equal(DemoSeeder.DemoLikes.Count, await db.TrackLikes.CountAsync(l => l.ListenerId == listener.Id));
         Assert.Equal(DemoSeeder.DemoFollows.Count, await db.ArtistFollows.CountAsync(f => f.ListenerId == listener.Id));
-        var playlist = await db.Playlists.Include(p => p.Entries).SingleAsync();
+        var playlist = await db.Playlists.Include(p => p.Entries).SingleAsync(p => p.OwnerId == listener.Id);
+        Assert.True(await db.Playlists.AnyAsync(p => p.Name == "Sunday kitchen" && p.IsPublic));
         Assert.Equal(DemoSeeder.DemoPlaylist, playlist.Name);
         Assert.Equal(DemoSeeder.DemoLikes.Count, playlist.Entries.Count);
     }

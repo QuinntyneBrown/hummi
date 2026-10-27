@@ -47,6 +47,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-27. Open [index.html]
 | [Tooltip](components/tooltip.html) | Containers | On an icon button | home/default |
 | [Divider](components/divider.html) | Containers | Horizontal, In a menu | track/default |
 | [Layout primitives](components/layout.html) | Containers | Stack, Cluster, Auto grid | home/default, settings/default |
+| [Share sheet](components/share-sheet.html) | Containers | Link, Copied | share/default, share/embed |
 | [Table](components/table.html) | Data display | Default | licence/default |
 | [List](components/list.html) | Data display | Two-line, Interactive | notifications/default |
 | [Description list](components/description-list.html) | Data display | Default | track/default |

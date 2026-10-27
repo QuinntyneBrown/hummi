@@ -1,13 +1,21 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { LibraryStore, PlayerOverlays, PlayerStore, SearchStore, SignInGate, TrackMenuState } from '@hummi/api';
+import {
+  LibraryStore,
+  PlayerOverlays,
+  PlayerStore,
+  SearchStore,
+  ShareDialogs,
+  SignInGate,
+  TrackMenuState,
+} from '@hummi/api';
 import { ToastService, TrackMenuComponent } from '@hummi/components';
 
 /**
  * The shell's track menu (L2-053) for PlayerOverlays.trackMenu(): Play next and Add to queue line the
  * track up and confirm with a toast (L2-016, L2-041); More from {artist} opens search for the artist;
  * Go to {genre} opens the genre. Save to library likes the track, or removes the like, with an Undo toast; signed out it asks
- * SignInGate first (L2-018, L2-032). Share closes the menu until the sharing journey wires it.
+ * SignInGate first (L2-018, L2-032). Share opens the Share dialog (L2-025).
  */
 @Component({
   selector: 'hm-track-menu-host',
@@ -20,7 +28,7 @@ import { ToastService, TrackMenuComponent } from '@hummi/components';
         (playNext)="playNext(menu)"
         (addToQueue)="addToQueue(menu)"
         (save)="save(menu)"
-        (share)="overlays.closeTrackMenu()"
+        (share)="share(menu)"
         (moreFromArtist)="moreFrom(menu)"
         (goToGenre)="goToGenre(menu)"
         (dismiss)="overlays.closeTrackMenu()"
@@ -37,6 +45,7 @@ export class TrackMenuHostComponent {
   private readonly router = inject(Router);
   private readonly gate = inject(SignInGate);
   private readonly library = inject(LibraryStore);
+  private readonly shares = inject(ShareDialogs);
   readonly menuTrack = computed(() => {
     const menu = this.overlays.trackMenu();
     return menu && this.library.withLikes([menu.track])[0];
@@ -69,6 +78,18 @@ export class TrackMenuHostComponent {
     this.toasts.show(liked ? `Removed “${track.title}” from your library` : `Saved “${track.title}” to your library`, {
       track,
       undo: () => void this.library.toggleLike(track),
+    });
+  }
+
+  share({ track }: TrackMenuState): void {
+    this.overlays.closeTrackMenu(false);
+    this.shares.share({
+      type: 'track',
+      id: track.id,
+      name: track.title,
+      byline: track.artistName,
+      coverUrl: track.coverUrl,
+      slug: track.slug,
     });
   }
 
