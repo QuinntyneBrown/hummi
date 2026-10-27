@@ -31,6 +31,13 @@ export async function fakeSignedOutVisitor(page: Page): Promise<void> {
   );
 }
 
+/** A signed-in listener: GET /api/auth/me answers 200 with this user. Registered later, so it wins. */
+export async function fakeSignedInVisitor(page: Page, user: { displayName: string; email: string }): Promise<void> {
+  await page.route('**/api/auth/me', (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(user) }),
+  );
+}
+
 export const test = base.extend<{ visitor: void }>({
   visitor: [
     async ({ page }, use) => {

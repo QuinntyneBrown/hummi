@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 
 import { API_BASE_URL } from '../api-base-url';
 import { ApiResult, toResult } from '../api-result';
@@ -15,7 +15,7 @@ export interface CurrentUser {
  * knows who is signed in by asking the Hummi API; nothing is kept in web storage.
  */
 @Injectable({ providedIn: 'root' })
-export class AuthState {
+export class SessionStore {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = inject(API_BASE_URL);
   private readonly current = signal<CurrentUser | null>(null);
@@ -24,6 +24,8 @@ export class AuthState {
 
   /** The signed-in user, or null for a visitor. */
   readonly user = this.current.asReadonly();
+  /** True when a listener is signed in; false for a visitor. */
+  readonly signedIn = computed(() => this.current() !== null);
   /** True once the first GET /api/auth/me has answered. */
   readonly ready = this.loaded.asReadonly();
 

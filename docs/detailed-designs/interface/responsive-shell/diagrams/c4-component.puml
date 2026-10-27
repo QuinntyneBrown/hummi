@@ -10,5 +10,5 @@ Container_Boundary(spa, "Hummi web application") {
 }
 Rel(shell, session, "signedIn()")
 Rel(shell, nav, "links, open (L2-050)")
-Rel(nav, shell, "toggle")
+Rel(nav, shell, "menuToggle")
 @enduml

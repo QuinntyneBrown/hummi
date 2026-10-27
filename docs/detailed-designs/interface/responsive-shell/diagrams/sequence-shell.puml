@@ -27,7 +27,7 @@ alt wide (64rem and up)
 else narrow
   nav --> u : Links hidden, "Open navigation" aria-expanded=false (L2-050)
   u -> nav : Activate "Open navigation"
-  nav -> shell : toggle
+  nav -> shell : menuToggle
   shell -> nav : open=true
   nav --> u : Links shown, aria-expanded=true (L2-050)
 end

@@ -19,7 +19,7 @@ class ShellComponent {
 class TopNavComponent <<hm-top-nav>> {
   +links: input<NavLink[]>
   +open: input<boolean>
-  +toggle: output<void>
+  +menuToggle: output<void>
 }
 ShellComponent --> TopNavComponent
 ShellComponent ..> SessionStore

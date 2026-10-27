@@ -144,6 +144,8 @@
   --color-accent-subtle-hover: var(--palette-coral-100);
   --color-fg-on-accent: var(--palette-white);
   --color-fg-accent: var(--palette-coral-700);       /* accent-coloured text on surfaces */
+  --color-brand: var(--palette-coral-500);        /* brand coral: the logo dot */
+  --color-logo: var(--palette-coral-500);         /* logo strokes: coral on light */
 
   --color-focus-ring: var(--palette-coral-600);
   --color-focus-ring-offset: var(--color-bg-surface);
@@ -328,6 +330,8 @@
   --color-accent-subtle-hover: var(--palette-coral-900);
   --color-fg-on-accent: var(--palette-gray-900);
   --color-fg-accent: var(--palette-coral-300);
+  --color-brand: var(--palette-coral-500);
+  --color-logo: var(--color-fg-default);          /* logo strokes: cream on dark */
 
   --color-focus-ring: var(--palette-coral-300);
 
@@ -394,6 +398,8 @@
     --color-accent-subtle-hover: var(--palette-coral-900);
     --color-fg-on-accent: var(--palette-gray-900);
     --color-fg-accent: var(--palette-coral-300);
+    --color-brand: var(--palette-coral-500);
+    --color-logo: var(--color-fg-default);          /* logo strokes: cream on dark */
     --color-focus-ring: var(--palette-coral-300);
     --color-info-bg: var(--palette-sky-950);
     --color-info-fg: var(--palette-sky-200);

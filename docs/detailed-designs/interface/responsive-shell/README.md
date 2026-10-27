@@ -43,13 +43,13 @@ The layout runs entirely in the Angular application.
 
 ### Components
 
-`ShellComponent` reads `SessionStore` for the header's end controls and passes `navOpen` to `TopNavComponent`, whose toggle emits `toggle`.
+`ShellComponent` reads `SessionStore` for the header's end controls and passes `navOpen` to `TopNavComponent`, whose toggle emits `menuToggle`.
 
 ![C4 component view for adapt the shell to the viewport](diagrams/c4-component.png)
 
 ### Class structure
 
-`ShellComponent` holds the `navOpen` signal; `TopNavComponent` takes the links and `open` as inputs and emits `toggle`.
+`ShellComponent` holds the `navOpen` signal; `TopNavComponent` takes the links and `open` as inputs and emits `menuToggle`.
 
 ![Class diagram for adapt the shell to the viewport](diagrams/class-structure.png)
 

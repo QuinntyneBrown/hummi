@@ -786,3 +786,17 @@ a.avatar { text-decoration: none; }
 .card-track__title { color: inherit; text-decoration: none; }
 .card-track__title:hover span { text-decoration: underline; }
 .card-track__play { pointer-events: none; }
+
+/* ---------- Angular bindings (@hummi/components) -------------------------
+   Controls that are links or decorative spans in the mocks are buttons in the
+   app, because they act on the player rather than navigate. */
+.track__play { display: grid; place-items: center; width: 1.5rem; height: var(--target-min); padding: 0; border: 0; border-radius: var(--radius-sm); background: none; cursor: pointer; }
+.track__text { min-width: 0; }
+.track__title a { color: inherit; text-decoration: none; }
+.track__title a:hover { text-decoration: underline; }
+button.card-track__play { pointer-events: auto; border: 0; cursor: pointer; }
+button.pbar__art { padding: 0; border: 0; background: none; cursor: pointer; }
+button.pbar__title { max-width: 100%; padding: 0; border: 0; background: none; cursor: pointer; text-align: left; }
+.pbar__artist--error { color: var(--color-danger-fg); }
+.pbar__next .icon { rotate: 180deg; }
+@media (min-width: 64rem) { .topnav .topnav__menu { display: none; } } /* .ibtn, declared later, would otherwise show the toggle on wide viewports */

@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { Observable, catchError, shareReplay, switchMap, throwError } from 'rxjs';
 
 import { API_BASE_URL } from '../api-base-url';
-import { AuthState } from './auth-state';
+import { SessionStore } from './session-store';
 
 let refreshing: Observable<unknown> | null = null;
 
@@ -13,7 +13,7 @@ let refreshing: Observable<unknown> | null = null;
  */
 export const sessionInterceptor: HttpInterceptorFn = (request, next) => {
   const baseUrl = inject(API_BASE_URL);
-  const auth = inject(AuthState);
+  const auth = inject(SessionStore);
   if (!request.url.startsWith(baseUrl)) return next(request);
 
   const withCookies = request.clone({ withCredentials: true });
