@@ -62,7 +62,7 @@ public sealed class GetLibraryQueryHandler(IHummiDbContext db) : IRequestHandler
             .Select(p => new
             {
                 Tile = new PlaylistTileDto(
-                    p.Id.ToString().ToLower(),
+                    IdText.Of(p.Id),
                     p.Name,
                     p.Entries.Count,
                     db.Listeners.Where(l => l.Id == p.OwnerId).Select(l => l.DisplayName).FirstOrDefault() ?? owner,

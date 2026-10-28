@@ -11,12 +11,11 @@ public sealed record TrackSummaryDto(string Id, string Slug, string Title, strin
 public static class TrackSummaryProjection
 {
     /// <summary>
-    /// Projects tracks with their artist into summaries in the database. The id is lower-case like
-    /// <see cref="Guid.ToString()"/>: SQL Server would otherwise render a uniqueidentifier in upper case, and ids
-    /// built in memory (likes, playlist entries, fresh badges) would no longer match.
+    /// Projects tracks with their artist into summaries in the database; the id is formatted on the client by
+    /// <see cref="Common.IdText"/>, so it is lower-case like every other id.
     /// </summary>
     public static IQueryable<TrackSummaryDto> ToSummaries(this IQueryable<Track> tracks) =>
-        tracks.Select(t => new TrackSummaryDto(t.Id.ToString().ToLower(), t.Slug, t.Title, t.Artist!.Name, t.DurationSeconds, t.CoverUrl, false,
+        tracks.Select(t => new TrackSummaryDto(Common.IdText.Of(t.Id), t.Slug, t.Title, t.Artist!.Name, t.DurationSeconds, t.CoverUrl, false,
             t.Genre == null ? null : t.Genre.Slug, t.Genre == null ? null : t.Genre.Name));
 }
 
