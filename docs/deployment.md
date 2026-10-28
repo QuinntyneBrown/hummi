@@ -72,6 +72,9 @@ The quick way, on the cheapest Azure setup (ADR 0022, about US$10 a month): with
 `bash deploy/provision.sh [location]`, then push to `main`. It creates the VM, a free-offer Azure SQL
 database, `/opt/hummi/.env` and the `production` secrets; the site is on the VM's
 `*.cloudapp.azure.com` name. `az group delete -n hummi-rg` tears it all down.
+On Windows, run it from Git Bash after `winget install Microsoft.AzureCLI GitHub.cli`, then `az login` and `gh auth login`.
+Until the `production` secrets exist, the Deploy workflow's `deploy` job fails at the SSH step; the next push after
+provisioning deploys normally.
 
 By hand:
 
