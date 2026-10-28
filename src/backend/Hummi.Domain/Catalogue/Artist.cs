@@ -22,7 +22,7 @@ public sealed class Artist
 
     public string Name { get; private set; }
 
-    /// <summary>The open-weights model the artist's tracks are generated with, e.g. openmusic-3b; null when unknown.</summary>
+    /// <summary>The open-weights model the artist's tracks are generated with; null when unknown, as for every Pixabay uploader.</summary>
     public string? ModelName { get; private set; }
 
     public string Description { get; private set; }

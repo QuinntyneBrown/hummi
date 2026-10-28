@@ -42,7 +42,7 @@ public static class CliApp
             case "import":
                 return Import(args, output, configuration, web);
             case "seed":
-                return Seed(output, configuration);
+                return Seed(args, output, configuration);
             default:
                 output.WriteLine("Usage: hummi <import|seed|reset> [--manifest <path>]");
                 return ExitCodes.Usage;
@@ -82,8 +82,8 @@ public static class CliApp
     private static string MediaRoot(IConfiguration configuration) =>
         configuration["MediaStorage:RootPath"] is { Length: > 0 } root ? root : Path.Combine(AppContext.BaseDirectory, "media");
 
-    /// <summary>Seeds a migrated database (run Hummi.Migrator first) and the media root.</summary>
-    private static int Seed(TextWriter output, IConfiguration configuration)
+    /// <summary>Seeds a migrated database (run Hummi.Migrator first) and the media root from the manifest (L2-057).</summary>
+    private static int Seed(string[] args, TextWriter output, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("Hummi");
         if (string.IsNullOrWhiteSpace(connectionString))
@@ -92,10 +92,23 @@ public static class CliApp
             return ExitCodes.Usage;
         }
 
-        var mediaRoot = configuration["MediaStorage:RootPath"] is { Length: > 0 } root ? root : Path.Combine(AppContext.BaseDirectory, "media");
+        var mediaRoot = MediaRoot(configuration);
+        var manifest = PixabayManifest.Load(ManifestPath(args, configuration));
         using var db = new HummiDbContext(new DbContextOptionsBuilder<HummiDbContext>().UseSqlServer(connectionString).Options);
-        var added = DemoSeeder.SeedAsync(db, mediaRoot, TimeProvider.System).GetAwaiter().GetResult();
-        output.WriteLine(added == 0 ? "The catalogue is already seeded." : $"Seeded {added} tracks; audio written to {mediaRoot}. Sign in as {DemoSeeder.DemoEmail} with {DemoSeeder.DemoPassword}.");
+        var report = DemoSeeder.SeedAsync(db, manifest, mediaRoot, TimeProvider.System).GetAwaiter().GetResult();
+        if (report.AlreadySeeded)
+        {
+            output.WriteLine("The catalogue is already seeded.");
+            return ExitCodes.Success;
+        }
+
+        foreach (var reason in report.Skipped)
+        {
+            output.WriteLine($"Skipped {reason}");
+        }
+
+        var tracks = report.Added == 1 ? "track" : "tracks";
+        output.WriteLine($"Seeded {report.Added} Pixabay {tracks}; audio written to {mediaRoot}. Sign in as {DemoSeeder.DemoEmail} with {DemoSeeder.DemoPassword}.");
         return ExitCodes.Success;
     }
 }
