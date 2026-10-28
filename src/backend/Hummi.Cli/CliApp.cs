@@ -16,7 +16,8 @@ public static class ExitCodes
 /// <summary>
 /// Developer tooling: <c>import</c> reads the Pixabay track pages of the manifest into it and the media cache;
 /// <c>seed</c> writes the manifest's tracks and the demo listeners into a database (ADR 0021); <c>reset</c> is a
-/// stub until it is needed. <c>--manifest {path}</c> or <c>Catalogue:ManifestPath</c> picks the manifest.
+/// stub until it is needed. <c>--manifest {path}</c> or <c>Catalogue:ManifestPath</c> picks the manifest;
+/// <c>--pages {folder}</c> makes <c>import</c> read Pixabay pages saved from a browser (<see cref="SavedPagesPixabayWeb"/>).
 /// </summary>
 public static class CliApp
 {
@@ -44,7 +45,7 @@ public static class CliApp
             case "seed":
                 return Seed(args, output, configuration);
             default:
-                output.WriteLine("Usage: hummi <import|seed|reset> [--manifest <path>]");
+                output.WriteLine("Usage: hummi <import|seed|reset> [--manifest <path>] [--pages <folder>]");
                 return ExitCodes.Usage;
         }
     }
@@ -55,7 +56,14 @@ public static class CliApp
         var path = ManifestPath(args, configuration);
         var manifest = PixabayManifest.Load(path);
         using var http = web is null ? HttpPixabayWeb.CreateClient() : null;
-        var importer = new PixabayImporter(web ?? new HttpPixabayWeb(http!), MediaRoot(configuration), TimeProvider.System);
+        IPixabayWeb source = web ?? new HttpPixabayWeb(http!);
+        var pages = Option(args, "--pages");
+        if (pages is not null)
+        {
+            source = new SavedPagesPixabayWeb(Path.GetFullPath(pages), source);
+        }
+
+        var importer = new PixabayImporter(source, MediaRoot(configuration), TimeProvider.System);
         var report = importer.ImportAsync(manifest).GetAwaiter().GetResult();
         manifest.Save(path);
         foreach (var reason in report.Refused)
@@ -63,20 +71,27 @@ public static class CliApp
             output.WriteLine($"Refused {reason}");
         }
 
+        if (report.Refused.Any(r => r.EndsWith("page could not be fetched", StringComparison.Ordinal) || r.EndsWith("licence page could not be read", StringComparison.Ordinal)))
+        {
+            output.WriteLine(pages is null
+                ? "pixabay.com answers plain requests with a bot check. Save each page from your browser as {id}.html (the licence summary as license-summary.html) into a folder and run import again with --pages <folder>."
+                : $"Save the missing pages into {Path.GetFullPath(pages)} as {{id}}.html (the licence summary as license-summary.html) and run import again.");
+        }
+
         var tracks = report.Imported == 1 ? "track" : "tracks";
         output.WriteLine($"Imported {report.Imported} {tracks}, {report.Present} already present, {report.Restored} restored, {report.Refused.Count} refused. The manifest at {path} holds {manifest.Tracks.Count}.");
         return report.Refused.Count == 0 ? ExitCodes.Success : ExitCodes.Refused;
     }
 
-    private static string ManifestPath(string[] args, IConfiguration configuration)
-    {
-        var flag = Array.IndexOf(args, "--manifest");
-        if (flag >= 0 && flag + 1 < args.Length)
-        {
-            return Path.GetFullPath(args[flag + 1]);
-        }
+    private static string ManifestPath(string[] args, IConfiguration configuration) =>
+        Option(args, "--manifest") is { } manifest
+            ? Path.GetFullPath(manifest)
+            : configuration["Catalogue:ManifestPath"] is { Length: > 0 } configured ? configured : PixabayManifest.DefaultPath;
 
-        return configuration["Catalogue:ManifestPath"] is { Length: > 0 } configured ? configured : PixabayManifest.DefaultPath;
+    private static string? Option(string[] args, string name)
+    {
+        var flag = Array.IndexOf(args, name);
+        return flag >= 0 && flag + 1 < args.Length ? args[flag + 1] : null;
     }
 
     private static string MediaRoot(IConfiguration configuration) =>
