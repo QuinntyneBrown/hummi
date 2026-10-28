@@ -79,7 +79,7 @@ public sealed class GetMyPlaylistsQueryHandler(IHummiDbContext db) : IRequestHan
         var choices = await db.Playlists.AsNoTracking()
             .Where(p => p.OwnerId == request.ListenerId)
             .OrderByDescending(p => p.CreatedAt).ThenBy(p => p.Name)
-            .Select(p => new PlaylistChoiceDto(p.Id.ToString(), p.Name, p.Entries.Count, p.Entries.Any(e => e.TrackId == trackId)))
+            .Select(p => new PlaylistChoiceDto(p.Id.ToString().ToLower(), p.Name, p.Entries.Count, p.Entries.Any(e => e.TrackId == trackId)))
             .ToListAsync(cancellationToken);
         return choices;
     }

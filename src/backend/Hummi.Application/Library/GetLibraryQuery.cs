@@ -32,7 +32,7 @@ public sealed class GetLibraryQueryHandler(IHummiDbContext db) : IRequestHandler
             .Select(l => new { l.TrackId, l.LikedAt }).ToListAsync(cancellationToken);
         var likedIds = likes.Select(l => l.TrackId).ToList();
         var tracks = await db.Tracks.AsNoTracking().Where(t => likedIds.Contains(t.Id) && !t.Withdrawn).ToSummaries().ToListAsync(cancellationToken);
-        // Compare ids as Guids: SQL Server renders a uniqueidentifier as upper-case text, Guid.ToString() is lower-case.
+        // Compare ids as Guids, whatever the case of their text.
         var likedAt = likes.ToDictionary(l => l.TrackId, l => l.LikedAt);
         var liked = tracks
             .OrderByDescending(t => likedAt[Guid.Parse(t.Id)])
@@ -62,7 +62,7 @@ public sealed class GetLibraryQueryHandler(IHummiDbContext db) : IRequestHandler
             .Select(p => new
             {
                 Tile = new PlaylistTileDto(
-                    p.Id.ToString(),
+                    p.Id.ToString().ToLower(),
                     p.Name,
                     p.Entries.Count,
                     db.Listeners.Where(l => l.Id == p.OwnerId).Select(l => l.DisplayName).FirstOrDefault() ?? owner,
