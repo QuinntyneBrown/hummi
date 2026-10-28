@@ -40,7 +40,7 @@ hummi/
 ├── README.md
 ├── .github/workflows/          ci.yml runs `npm run verify` on ubuntu-latest; deploy.yml deploys green pushes to main
 ├── .agents/skills/             agent skills (mirrored in .claude/skills/)
-├── deploy/                     production stack: compose, Dockerfiles, Caddyfile, cloud-init
+├── deploy/                     production stack: compose, Dockerfiles, Caddyfile, cloud-init, provision.sh (ADR 0022)
 ├── docs/
 │   ├── journeys.md             user journeys with effort
 │   ├── deployment.md           production host, deploy workflow, rollback

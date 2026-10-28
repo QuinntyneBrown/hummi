@@ -68,6 +68,16 @@ docker compose up -d
 
 ## Building from scratch
 
+The quick way, on the cheapest Azure setup (ADR 0022, about US$10 a month): with `az` and `gh` logged in, run
+`bash deploy/provision.sh [location]`, then push to `main`. It creates the VM, a free-offer Azure SQL
+database, `/opt/hummi/.env` and the `production` secrets; the site is on the VM's
+`*.cloudapp.azure.com` name. `az group delete -n hummi-rg` tears it all down.
+On Windows, run it from Git Bash after `winget install Microsoft.AzureCLI GitHub.cli`, then `az login` and `gh auth login`.
+Until the `production` secrets exist, the Deploy workflow's `deploy` job fails at the SSH step; the next push after
+provisioning deploys normally.
+
+By hand:
+
 1. Create a SQL database and a Linux VM with a static public IP, using `deploy/cloud-init.yaml` as custom data. Open ports 22, 80 and 443.
 2. Allow the VM's public IP through the database firewall.
 3. On the VM, create `/opt/hummi/.env` from `deploy/.env.example` with real values.
