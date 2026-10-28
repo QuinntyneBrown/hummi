@@ -10,12 +10,13 @@ import {
 } from '@hummi/components';
 
 import { CatalogueNotFoundComponent, isNotFound, slugResource } from '../shared/catalogue-page';
-import { LICENCE_TERMS } from './licence-terms';
+import { LICENCE_TERMS, TABLE_LICENCES } from './licence-terms';
 
 /**
  * The licence and credit page (`/tracks/{slug}/licence`): the track's licence with a ready-made credit
- * line, the table of the three licences and the way back to the track (L2-012). Every track has a
- * licence, so there is no empty state.
+ * line and, for a Pixabay track, links to the licence and the track's Pixabay page; the table of the
+ * catalogue's licences and the way back to the track (L2-012, ADR 0021). Every track has a licence, so
+ * there is no empty state.
  */
 @Component({
   selector: 'hm-licence',
@@ -40,16 +41,29 @@ export class LicenceComponent {
   );
   readonly isNotFound = isNotFound;
   readonly columns = ['Licence', 'You may', 'You must'];
-  readonly rows = Object.values(LICENCE_TERMS).map((term) => [term.name, term.may, term.must]);
+  readonly rows = TABLE_LICENCES.map((licence) => LICENCE_TERMS[licence]).map((term) => [
+    term.name,
+    term.may,
+    term.must,
+  ]);
+  readonly terms = LICENCE_TERMS;
   readonly skeletonRows = [1, 2, 3];
 
   heading(track: TrackDetailDto): string {
     return `${track.title} is ${LICENCE_TERMS[track.licence].short}`;
   }
 
-  /** The terms followed by the credit line “{title} by {artist}, generated with {model}.” */
+  /**
+   * The terms followed by the credit line: “{title} by {artist}, generated with {model}.” when the model is
+   * known, else “{title} by {artist}, from Pixabay.” for a Pixabay track and “{title} by {artist}.” otherwise.
+   */
   credit(track: TrackDetailDto): string {
     const terms = LICENCE_TERMS[track.licence].terms.replace('{artist}', track.artist.name);
-    return `${terms} “${track.title} by ${track.artist.name}, generated with ${track.generatedWith}.”`;
+    const origin = track.generatedWith
+      ? `, generated with ${track.generatedWith}`
+      : track.licence === 'pixabay'
+        ? ', from Pixabay'
+        : '';
+    return `${terms} “${track.title} by ${track.artist.name}${origin}.”`;
   }
 }

@@ -13,7 +13,7 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
-Hummi is a free streaming platform for open-source AI-generated music. Discover, play and share tracks across every genre.
+Hummi is a free streaming platform for openly shared music. Discover, play and share tracks across every genre. The catalogue is made only of real tracks from [Pixabay Music](https://pixabay.com/music/), with their real audio, metadata and cover art, under the [Pixabay Content License](https://pixabay.com/service/license-summary/) (ADR 0021).
 
 Hummi is a responsive web application built with [Angular](https://angular.dev) and [ASP.NET Core](https://dotnet.microsoft.com).
 
@@ -22,6 +22,7 @@ Hummi is a responsive web application built with [Angular](https://angular.dev) 
 
 ## Features
 
+- **Real music**: every track is a real Pixabay Music track, imported with `hummi import` into a committed manifest; a cover is generated only when a track has none. The manifest holds 11 real Pixabay tracks (7 of them Soca), checked against their Pixabay pages; the page reader is checked against real Pixabay pages.
 - **Discover**: browse the home feed, genres and curated collections.
 - **Play**: a persistent player with queue, seek, volume and keyboard control.
 - **Search**: find tracks, artists and genres.
@@ -97,12 +98,17 @@ npm run verify
    dotnet run --project src/backend/Hummi.Migrator
    ```
 
-3. Seed the demo catalogue: 18 tracks with generated audio written under `MediaStorage__RootPath` (default: a `media` folder next to the CLI).
+3. Import the catalogue's audio from Pixabay, then seed it. `src/backend/Hummi.Cli/Catalogue/pixabay-manifest.json` lists the Pixabay track pages (`sources`) and the imported tracks (`tracks`). `import` reads each new page, records its metadata and licence text in the manifest and downloads its MP3 to `pixabay/{id}.mp3` under `MediaStorage__RootPath` (default: a `media` folder next to the CLI); it also restores audio missing from that folder. `seed` writes exactly the manifest's tracks, plus the demo listeners, into the database. With no imported tracks the app runs with an empty catalogue.
+
+   pixabay.com answers plain requests (and so `import` on its own) with a bot check; Hummi does not try to get past it. Save each source page from your normal browser instead (Chrome or Edge: Ctrl+S, "Webpage, HTML Only") into one folder, named by the number at the end of its address (`203465.html` for `https://pixabay.com/music/reggae-shamrock-high-times-happy-420-203465/`), plus the licence summary <https://pixabay.com/service/license-summary/> as `license-summary.html`, and pass the folder with `--pages`. The audio still downloads from `cdn.pixabay.com`.
 
    ```powershell
    $env:DOTNET_ENVIRONMENT = 'Development'
-   dotnet run --project src/backend/Hummi.Cli -- seed
+   dotnet run --project src/backend/Hummi.Cli -- import --manifest src/backend/Hummi.Cli/Catalogue/pixabay-manifest.json --pages C:\path\to\saved-pages
+   dotnet run --project src/backend/Hummi.Cli -- seed --manifest src/backend/Hummi.Cli/Catalogue/pixabay-manifest.json
    ```
+
+   To add tracks, add Pixabay music track page URLs to `sources`, save their pages, run `import` and commit the manifest. Audio and saved pages are never committed.
 
 4. Start the API.
 
@@ -129,7 +135,7 @@ The API reads standard ASP.NET Core configuration: `appsettings.json`, `appsetti
 | ------------------------ | ------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `ConnectionStrings:Hummi` | `ConnectionStrings__Hummi` | SQL Server connection string. Required to run the API and the migrator.                                   |
 | `Auth:SigningKey`        | `Auth__SigningKey`        | Key that signs access tokens. The development value in `appsettings.Development.json` is for local use only. |
-| `MediaStorage:RootPath`  | `MediaStorage__RootPath`  | Folder holding track audio at `tracks/{trackId}.wav`. The API and `Hummi.Cli seed` read it; production mounts the media volume at `/data/media`. |
+| `MediaStorage:RootPath`  | `MediaStorage__RootPath`  | Folder holding track audio at `tracks/{trackId}.mp3` (older rows `.wav`) and the Pixabay download cache at `pixabay/{id}.mp3`. The API and `Hummi.Cli import` and `seed` use it; production mounts the media volume at `/data/media`. |
 | `App:BaseUrl`            | `App__BaseUrl`            | Public URL of the frontend, used in links such as email verification.                                     |
 
 ## Testing

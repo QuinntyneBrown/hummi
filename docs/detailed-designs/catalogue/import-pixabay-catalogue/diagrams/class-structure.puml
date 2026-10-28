@@ -1,0 +1,85 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+hide empty members
+title Class structure — Import the Pixabay catalogue
+
+class PixabayManifest {
+  +Sources: List<string>
+  +Tracks: List<ManifestTrack>
+  +Load(path): PixabayManifest
+  +Save(path)
+}
+class ManifestTrack {
+  +PixabayId: long
+  +SourceUrl: string
+  +Title: string
+  +Artist: string
+  +ArtistUrl: string?
+  +DurationSeconds: int
+  +Genre: string?
+  +Tags: List<string>
+  +CoverUrl: string?
+  +AudioUrl: string
+  +AudioFile: string
+  +AudioBytes: long
+  +AudioSha256: string
+  +Licence: ManifestLicence
+  +ImportedAt: DateTimeOffset
+}
+class ManifestLicence {
+  +Name: string
+  +Url: string
+  +Text: string
+}
+interface IPixabayWeb {
+  +GetPageAsync(Uri): Task<string?>
+  +GetFileAsync(Uri): Task<byte[]?>
+}
+class HttpPixabayWeb
+class PixabayTrackPage {
+  +Parse(Uri, html): PageParse
+  +LicenceText(html): string?
+}
+class PixabayImporter {
+  +ImportAsync(PixabayManifest): ImportReport
+}
+class ImportReport {
+  +Imported: int
+  +Present: int
+  +Refused: List<string>
+}
+class DemoSeeder {
+  +SeedAsync(db, manifest, mediaRoot, clock): SeedReport
+}
+class GenreMatch {
+  +Slug(genre, tags): string?
+}
+class GeneratedCover {
+  +DataUrl(title, tone): string
+}
+enum Licence {
+  Cc0 = 1
+  CcBy4 = 2
+  CcBySa4 = 3
+  Pixabay = 4
+}
+PixabayManifest "1" *-- "*" ManifestTrack
+ManifestTrack *-- ManifestLicence
+HttpPixabayWeb ..|> IPixabayWeb
+PixabayImporter --> IPixabayWeb
+PixabayImporter ..> PixabayTrackPage
+PixabayImporter ..> ImportReport
+DemoSeeder ..> PixabayManifest
+DemoSeeder ..> GenreMatch
+DemoSeeder ..> GeneratedCover
+DemoSeeder ..> Licence
+@enduml

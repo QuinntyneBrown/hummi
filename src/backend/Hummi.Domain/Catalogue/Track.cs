@@ -40,7 +40,7 @@ public sealed class Track
 
     public int AlbumPosition { get; private set; }
 
-    /// <summary>Exactly one of the three open licences (L2-012).</summary>
+    /// <summary>Exactly one licence (L2-012); the Pixabay Content License for imported tracks.</summary>
     public Licence Licence { get; private set; }
 
     /// <summary>Precomputed amplitude peaks, 0 to 100, drawn as the waveform; empty until computed.</summary>
@@ -49,6 +49,12 @@ public sealed class Track
     public int DurationSeconds { get; private set; }
 
     public string? CoverUrl { get; private set; }
+
+    /// <summary>The track's page at its source, e.g. its Pixabay Music page (ADR 0021); null when unknown.</summary>
+    public string? SourceUrl { get; private set; }
+
+    /// <summary>The audio file's extension with its dot: ".mp3" for imported tracks, ".wav" for older rows.</summary>
+    public string AudioExtension { get; private set; } = ".mp3";
 
     public DateTimeOffset AddedAt { get; private set; }
 
@@ -59,7 +65,7 @@ public sealed class Track
     public bool IsPlayable => !Withdrawn;
 
     /// <summary>Location of the audio file, relative to the media root.</summary>
-    public string AudioPath => $"tracks/{Id}.wav";
+    public string AudioPath => $"tracks/{Id}{AudioExtension}";
 
     public static Track Create(
         string title,
@@ -71,19 +77,28 @@ public sealed class Track
         Licence licence = Licence.Cc0,
         string? slug = null,
         Guid? albumId = null,
-        int albumPosition = 0)
+        int albumPosition = 0,
+        string? sourceUrl = null,
+        string audioExtension = ".mp3")
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
+        if (audioExtension is not ['.', _, ..])
+        {
+            throw new ArgumentException("An audio extension starts with a dot, e.g. .mp3.", nameof(audioExtension));
+        }
+
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(durationSeconds);
         if (!Enum.IsDefined(licence))
         {
-            throw new ArgumentOutOfRangeException(nameof(licence), licence, "A track carries one of the three Hummi licences.");
+            throw new ArgumentOutOfRangeException(nameof(licence), licence, "A track carries one of the Hummi licences.");
         }
 
         return new Track(Guid.NewGuid(), slug ?? Catalogue.Slug.From(title), title.Trim(), artistId, durationSeconds, coverUrl, addedAt, genreId, licence)
         {
             AlbumId = albumId,
             AlbumPosition = albumId is null ? 0 : albumPosition,
+            SourceUrl = string.IsNullOrWhiteSpace(sourceUrl) ? null : sourceUrl.Trim(),
+            AudioExtension = audioExtension.ToLowerInvariant(),
         };
     }
 

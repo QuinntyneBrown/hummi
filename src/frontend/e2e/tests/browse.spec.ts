@@ -2,13 +2,13 @@ import { DIRECTORY, expect, fakeGenres, fakeGenreTracks, test } from '../fixture
 import { BrowsePage } from '../pages/browse.page';
 import { GenrePage } from '../pages/genre.page';
 
-test('L2-003 AC1: Browse is headed "Browse" with the genre and openly licensed track counts', async ({ page }) => {
+test('L2-003 AC1: Browse is headed "Browse" with the genre and freely licensed track counts', async ({ page }) => {
   await fakeGenres(page);
   const browse = new BrowsePage(page);
   await browse.goto();
 
   await expect(browse.heading).toHaveText('Browse');
-  await expect(browse.subtitle).toHaveText('10 genres · 4,812 openly licensed tracks');
+  await expect(browse.subtitle).toHaveText('10 genres · 4,812 freely licensed tracks');
 });
 
 test('L2-003 AC2: a Moods shelf of genre chips and an All genres tile for each of the ten genres', async ({ page }) => {

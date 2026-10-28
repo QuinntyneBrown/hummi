@@ -30,9 +30,9 @@ box "Backend — Hummi Infrastructure" #FFF4E5
   participant "HummiDbContext" as ctx
   database "Hummi database" as db
 end box
-u -> page : Open /tracks/feathers-up/licence
-page -> client : get("feathers-up")
-client -> ctl : GET /api/tracks/feathers-up
+u -> page : Open /tracks/high-times/licence
+page -> client : get("high-times")
+client -> ctl : GET /api/tracks/high-times
 ctl -> q : Send GetTrackQuery
 q -> ctx : Load track
 ctx -> db : SELECT
@@ -41,7 +41,7 @@ ctx --> q : Track
 q --> ctl : Result<TrackDetailDto>
 ctl --> client : 200
 client --> page : Track
-page -> terms : Lookup Cc0
+page -> terms : Lookup pixabay
 terms --> page : Label and terms
-page --> u : Alert "Feathers Up is CC0" with credit line, licence table, Back to Feathers Up (L2-012)
+page --> u : Alert "{title} is under the Pixabay Content License" with credit line and links, licence table, Back to {title} (L2-012)
 @enduml

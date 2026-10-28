@@ -50,7 +50,7 @@ Extracted from [docs/mocks](../mocks/README.md) on 2026-10-27. Open [index.html]
 | [Share sheet](components/share-sheet.html) | Containers | Link, Copied | share/default, share/embed |
 | [Table](components/table.html) | Data display | Default | licence/default |
 | [List](components/list.html) | Data display | Two-line, Interactive | notifications/default |
-| [Description list](components/description-list.html) | Data display | Default | track/default |
+| [Description list](components/description-list.html) | Data display | Default, External link | track/default |
 | [Avatar](components/avatar.html) | Data display | Initials, As account link | home/default, settings/default |
 | [Badge](components/badge.html) | Data display | Status and count | home/default, notifications/default |
 | [Chip](components/chip.html) | Data display | Filter and link | library/default, genre/default |

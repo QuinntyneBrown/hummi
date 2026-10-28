@@ -16,7 +16,8 @@ public sealed record AlbumRefDto(string Slug, string Title);
 
 /// <summary>
 /// One track with everything its page shows. A playable track carries More from its artist; a withdrawn
-/// one carries Similar tracks instead. Waveform holds peaks from 0 to 100.
+/// one carries Similar tracks instead. Waveform holds peaks from 0 to 100. GeneratedWith is null when the
+/// model is unknown; SourceUrl is the track's Pixabay page (ADR 0021).
 /// </summary>
 public sealed record TrackDetailDto(
     string Id,
@@ -27,9 +28,10 @@ public sealed record TrackDetailDto(
     ArtistRefDto Artist,
     AlbumRefDto? Album,
     string? Genre,
-    string GeneratedWith,
+    string? GeneratedWith,
     Licence Licence,
     string LicenceLabel,
+    string? SourceUrl,
     long Plays,
     bool Playable,
     bool Liked,
@@ -84,6 +86,7 @@ public sealed class GetTrackQueryHandler(IHummiDbContext db) : IRequestHandler<G
             artist.ModelName,
             track.Licence,
             LicenceLabels.Of(track.Licence),
+            track.SourceUrl,
             track.PlayCount,
             track.IsPlayable,
             false,

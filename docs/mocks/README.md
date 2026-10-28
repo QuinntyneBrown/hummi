@@ -30,33 +30,33 @@ Legend: ✅ mock exists · ➖ not applicable (reason in manifest) · ❌ missin
 
 ### Pages
 
-| Screen | default | loading | empty | error | offline | partial | kids | no-results | unavailable | selected | read-only | liked | following | signed-out | paused | invalid | submitting | success | unread | read | Requirements |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Home (`home`) | [✅](pages/home/default.html) | [✅](pages/home/loading.html) | [✅](pages/home/empty.html) | [✅](pages/home/error.html) | [✅](pages/home/offline.html) | [✅](pages/home/partial.html) | [✅](pages/home/kids.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Browse (`browse`) | [✅](pages/browse/default.html) | [✅](pages/browse/loading.html) | ➖ | [✅](pages/browse/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Genre (`genre`) | [✅](pages/genre/default.html) | [✅](pages/genre/loading.html) | [✅](pages/genre/empty.html) | [✅](pages/genre/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Search (`search`) | [✅](pages/search/default.html) | [✅](pages/search/loading.html) | [✅](pages/search/empty.html) | [✅](pages/search/error.html) |  |  |  | [✅](pages/search/no-results.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Track (`track`) | [✅](pages/track/default.html) | [✅](pages/track/loading.html) | ➖ | [✅](pages/track/error.html) |  |  |  |  | [✅](pages/track/unavailable.html) |  |  |  |  |  |  |  |  |  |  |  |  |
-| Artist (`artist`) | [✅](pages/artist/default.html) | [✅](pages/artist/loading.html) | [✅](pages/artist/empty.html) | [✅](pages/artist/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Album (`album`) | [✅](pages/album/default.html) | [✅](pages/album/loading.html) | ➖ | [✅](pages/album/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Playlist (`playlist`) | [✅](pages/playlist/default.html) | [✅](pages/playlist/loading.html) | [✅](pages/playlist/empty.html) | [✅](pages/playlist/error.html) |  |  |  |  |  | [✅](pages/playlist/selected.html) | [✅](pages/playlist/read-only.html) |  |  |  |  |  |  |  |  |  |  |
-| Library (`library`) | [✅](pages/library/default.html) | [✅](pages/library/loading.html) | [✅](pages/library/empty.html) | [✅](pages/library/error.html) |  |  |  |  |  |  |  | [✅](pages/library/liked.html) | [✅](pages/library/following.html) | [✅](pages/library/signed-out.html) |  |  |  |  |  |  |  |
-| Now playing (`now-playing`) | [✅](pages/now-playing/default.html) | [✅](pages/now-playing/loading.html) | [✅](pages/now-playing/empty.html) | [✅](pages/now-playing/error.html) |  |  |  |  |  |  |  |  |  |  | [✅](pages/now-playing/paused.html) |  |  |  |  |  |  |
-| Queue (`queue`) | [✅](pages/queue/default.html) | [✅](pages/queue/loading.html) | [✅](pages/queue/empty.html) | [✅](pages/queue/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Shared track (`shared-track`) | [✅](pages/shared-track/default.html) | [✅](pages/shared-track/loading.html) | ➖ | [✅](pages/shared-track/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Sign in (`sign-in`) | [✅](pages/sign-in/default.html) | ➖ | ➖ | [✅](pages/sign-in/error.html) |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/sign-in/invalid.html) | [✅](pages/sign-in/submitting.html) |  |  |  |  |
-| Sign up (`sign-up`) | [✅](pages/sign-up/default.html) | ➖ | ➖ | [✅](pages/sign-up/error.html) |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/sign-up/invalid.html) | [✅](pages/sign-up/submitting.html) | [✅](pages/sign-up/success.html) |  |  |  |
-| Reset password (`reset-password`) | [✅](pages/reset-password/default.html) | ➖ | ➖ | [✅](pages/reset-password/error.html) |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/reset-password/invalid.html) | [✅](pages/reset-password/submitting.html) | [✅](pages/reset-password/success.html) |  |  |  |
-| New password (`new-password`) | [✅](pages/new-password/default.html) | ➖ | ➖ | [✅](pages/new-password/error.html) |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/new-password/invalid.html) | [✅](pages/new-password/submitting.html) | [✅](pages/new-password/success.html) |  |  |  |
-| Verify email (`verify-email`) | [✅](pages/verify-email/default.html) | ➖ | ➖ | [✅](pages/verify-email/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/verify-email/success.html) |  |  |  |
-| Settings (`settings`) | [✅](pages/settings/default.html) | [✅](pages/settings/loading.html) | ➖ | [✅](pages/settings/error.html) |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/settings/invalid.html) | [✅](pages/settings/submitting.html) | [✅](pages/settings/success.html) |  |  |  |
-| Notifications (`notifications`) | [✅](pages/notifications/default.html) | [✅](pages/notifications/loading.html) | [✅](pages/notifications/empty.html) | [✅](pages/notifications/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/notifications/unread.html) | [✅](pages/notifications/read.html) |  |
-| Licence and credit (`licence`) | [✅](pages/licence/default.html) | [✅](pages/licence/loading.html) | ➖ | [✅](pages/licence/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Not found (`not-found`) | [✅](pages/not-found/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Forbidden (`forbidden`) | [✅](pages/forbidden/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Server error (`server-error`) | [✅](pages/server-error/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Offline (`offline`) | [✅](pages/offline/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Saved on this device (`saved`) | [✅](pages/saved/default.html) | ➖ | [✅](pages/saved/empty.html) | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Screen | default | loading | empty | error | no-music | offline | partial | kids | no-results | unavailable | selected | read-only | liked | following | signed-out | paused | invalid | submitting | success | unread | read | Requirements |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Home (`home`) | [✅](pages/home/default.html) | [✅](pages/home/loading.html) | [✅](pages/home/empty.html) | [✅](pages/home/error.html) | [✅](pages/home/no-music.html) | [✅](pages/home/offline.html) | [✅](pages/home/partial.html) | [✅](pages/home/kids.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Browse (`browse`) | [✅](pages/browse/default.html) | [✅](pages/browse/loading.html) | ➖ | [✅](pages/browse/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Genre (`genre`) | [✅](pages/genre/default.html) | [✅](pages/genre/loading.html) | [✅](pages/genre/empty.html) | [✅](pages/genre/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Search (`search`) | [✅](pages/search/default.html) | [✅](pages/search/loading.html) | [✅](pages/search/empty.html) | [✅](pages/search/error.html) |  |  |  |  | [✅](pages/search/no-results.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Track (`track`) | [✅](pages/track/default.html) | [✅](pages/track/loading.html) | ➖ | [✅](pages/track/error.html) |  |  |  |  |  | [✅](pages/track/unavailable.html) |  |  |  |  |  |  |  |  |  |  |  |  |
+| Artist (`artist`) | [✅](pages/artist/default.html) | [✅](pages/artist/loading.html) | [✅](pages/artist/empty.html) | [✅](pages/artist/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Album (`album`) | [✅](pages/album/default.html) | [✅](pages/album/loading.html) | ➖ | [✅](pages/album/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Playlist (`playlist`) | [✅](pages/playlist/default.html) | [✅](pages/playlist/loading.html) | [✅](pages/playlist/empty.html) | [✅](pages/playlist/error.html) |  |  |  |  |  |  | [✅](pages/playlist/selected.html) | [✅](pages/playlist/read-only.html) |  |  |  |  |  |  |  |  |  |  |
+| Library (`library`) | [✅](pages/library/default.html) | [✅](pages/library/loading.html) | [✅](pages/library/empty.html) | [✅](pages/library/error.html) |  |  |  |  |  |  |  |  | [✅](pages/library/liked.html) | [✅](pages/library/following.html) | [✅](pages/library/signed-out.html) |  |  |  |  |  |  |  |
+| Now playing (`now-playing`) | [✅](pages/now-playing/default.html) | [✅](pages/now-playing/loading.html) | [✅](pages/now-playing/empty.html) | [✅](pages/now-playing/error.html) |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/now-playing/paused.html) |  |  |  |  |  |  |
+| Queue (`queue`) | [✅](pages/queue/default.html) | [✅](pages/queue/loading.html) | [✅](pages/queue/empty.html) | [✅](pages/queue/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Shared track (`shared-track`) | [✅](pages/shared-track/default.html) | [✅](pages/shared-track/loading.html) | ➖ | [✅](pages/shared-track/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Sign in (`sign-in`) | [✅](pages/sign-in/default.html) | ➖ | ➖ | [✅](pages/sign-in/error.html) |  |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/sign-in/invalid.html) | [✅](pages/sign-in/submitting.html) |  |  |  |  |
+| Sign up (`sign-up`) | [✅](pages/sign-up/default.html) | ➖ | ➖ | [✅](pages/sign-up/error.html) |  |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/sign-up/invalid.html) | [✅](pages/sign-up/submitting.html) | [✅](pages/sign-up/success.html) |  |  |  |
+| Reset password (`reset-password`) | [✅](pages/reset-password/default.html) | ➖ | ➖ | [✅](pages/reset-password/error.html) |  |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/reset-password/invalid.html) | [✅](pages/reset-password/submitting.html) | [✅](pages/reset-password/success.html) |  |  |  |
+| New password (`new-password`) | [✅](pages/new-password/default.html) | ➖ | ➖ | [✅](pages/new-password/error.html) |  |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/new-password/invalid.html) | [✅](pages/new-password/submitting.html) | [✅](pages/new-password/success.html) |  |  |  |
+| Verify email (`verify-email`) | [✅](pages/verify-email/default.html) | ➖ | ➖ | [✅](pages/verify-email/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/verify-email/success.html) |  |  |  |
+| Settings (`settings`) | [✅](pages/settings/default.html) | [✅](pages/settings/loading.html) | ➖ | [✅](pages/settings/error.html) |  |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/settings/invalid.html) | [✅](pages/settings/submitting.html) | [✅](pages/settings/success.html) |  |  |  |
+| Notifications (`notifications`) | [✅](pages/notifications/default.html) | [✅](pages/notifications/loading.html) | [✅](pages/notifications/empty.html) | [✅](pages/notifications/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/notifications/unread.html) | [✅](pages/notifications/read.html) |  |
+| Licence and credit (`licence`) | [✅](pages/licence/default.html) | [✅](pages/licence/loading.html) | ➖ | [✅](pages/licence/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Not found (`not-found`) | [✅](pages/not-found/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Forbidden (`forbidden`) | [✅](pages/forbidden/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Server error (`server-error`) | [✅](pages/server-error/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Offline (`offline`) | [✅](pages/offline/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Saved on this device (`saved`) | [✅](pages/saved/default.html) | ➖ | [✅](pages/saved/empty.html) | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
 ### Dialogs
 

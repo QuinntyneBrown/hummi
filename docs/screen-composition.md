@@ -35,6 +35,8 @@ Mock: every page under `docs/mocks/pages/` (header, main, player bar). Routes wi
 | Error | `hm-error-block` ("We couldn’t load this page") when every part failed | None |
 | Empty | `hm-empty-state` ("Your Home fills up as you listen"), `hmButton="primary"` link "Browse genres", `hm-shelf` "Start with a genre" of six `hm-genre-tile` | `GET /api/home/summary` |
 | Offline | `hm-alert` (warning, banner, "You are offline. …"); only the billboard and saved shelves | `HomeApi` localStorage copies (ADR 0015) |
+| Small catalogue | A shelf that loaded no tracks is not rendered; no billboard when nothing is featured (L2-002 AC4) | `@if` on the shelf's tracks |
+| No music | `hm-empty-state` ("No music yet", "Hummi’s catalogue is empty. …"), `hmButton="primary"` link "Browse genres" when nothing is featured and every shelf loaded empty (L2-002 AC5, ADR 0021) | None |
 
 ## Not found (`pages/not-found`)
 
@@ -46,7 +48,7 @@ Mock: every page under `docs/mocks/pages/` (header, main, player bar). Routes wi
 
 | Part | Library components | Local UI |
 |---|---|---|
-| Header | `hm-page-header` ("Browse", "{n} genres · {n} openly licensed tracks") | None |
+| Header | `hm-page-header` ("Browse", "{n} genres · {n} freely licensed tracks", "1 freely licensed track" or "no tracks yet") | None |
 | Moods | `hm-shelf` with `hmChip` links in a `.pill-row` | None |
 | All genres | `hm-shelf` with one `hm-genre-tile` per genre in a `.tile-grid` | None |
 | Loading | `hm-shelf` (`busy`) with `hm-skeleton` tiles | Layout only |
@@ -70,7 +72,7 @@ Mock: every page under `docs/mocks/pages/` (header, main, player bar). Routes wi
 | Header | `hm-page-header` (title) with a projected `subtitle` paragraph: artist link · album | None |
 | Hero | `hm-hero` (cover, overline "Track · {m:ss}") holding the actions and `hm-waveform` (played proportion from `PlayerStore`) | None |
 | Actions | `hmButton` Play (primary, `hm-icon` play), Add to playlist (`hm-icon` plus), Share (`hm-icon` share); ghost icon `hmButton`s "Like {title}" (`pressed`, `hm-icon` heart) and "Report this track" (`hm-icon` flag) | `.cluster` row |
-| Details | `hm-description-list` (Artist, Album, Genre, Generated with, Licence, Plays) | Section heading |
+| Details | `hm-description-list` (Artist, Album when on one, Genre when classified, Generated with when the model is known, Source "Pixabay" as an external `href` item, Licence, Plays) | Section heading |
 | More from {artist} | `hm-shelf` with `hm-track-list` | None |
 | Loading | `hm-skeleton` hero block and rows inside an `aria-busy` region | Layout only |
 | Unavailable | `hm-alert` (warning, "This track is no longer available") and `hm-shelf` "Similar tracks" with `hm-track-list` | None |
@@ -82,7 +84,7 @@ Mock: every page under `docs/mocks/pages/` (header, main, player bar). Routes wi
 | Part | Library components | Local UI |
 |---|---|---|
 | Header | `hm-page-header` (name, "{n} monthly listeners") | None |
-| Hero | `hm-hero` (round cover, overline "Artist · {model}", description) | None |
+| Hero | `hm-hero` (round cover, overline "Artist · {model}" or "Artist" when the model is unknown, description when it has one) | None |
 | Actions | `hmButton` Play (primary), Follow (`pressed`, `hm-icon` plus), Share (`hm-icon` share) | `.cluster` row |
 | Popular | `hm-shelf` with `hm-track-list` labelled "Popular tracks" | None |
 | Releases | `hm-shelf` with one `hm-media-tile` per album ("{year} · {n} tracks") in a `.card-grid` | None |
@@ -108,8 +110,8 @@ Mock: every page under `docs/mocks/pages/` (header, main, player bar). Routes wi
 | Part | Library components | Local UI |
 |---|---|---|
 | Header | `hm-page-header` ("Licence and credit", "How you can reuse what you hear on Hummi") | None |
-| Credit | `hm-alert` (info, "{title} is {licence}") with the credit line | Text from `LICENCE_TERMS` |
-| Licences on Hummi | `hm-table` (caption "Licences used on Hummi"; Licence, You may, You must) | Section heading; rows from `LICENCE_TERMS` |
+| Credit | `hm-alert` (info, "{title} is under the Pixabay Content License") with the terms, the credit line and the links "Read the Pixabay Content License" and "View on Pixabay" | Text from `LICENCE_TERMS`; plain external links (`target="_blank"`, `rel="noopener noreferrer"`) in a `.cluster` |
+| Licences on Hummi | `hm-table` (caption "Licences used on Hummi"; Licence, You may, You must; one row, the Pixabay Content License) | Section heading; row from `LICENCE_TERMS` |
 | Back to {title} | None | Router link to the track page |
 | Loading | `hm-skeleton` block and lines inside an `aria-busy` region | Layout only |
 | Not found | Not found composition above | None |

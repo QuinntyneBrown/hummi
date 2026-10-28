@@ -134,10 +134,11 @@ def notifications(state):
 def licence(state):
     t = T[NOW]
     tbl = ('<div class="table-wrap"><table class="table"><caption class="visually-hidden">Licences used on Hummi</caption><thead><tr><th scope="col">Licence</th><th scope="col">You may</th><th scope="col">You must</th></tr></thead><tbody>'
-           '<tr><th scope="row">CC0 1.0</th><td>Use, remix and share for any purpose</td><td>Nothing</td></tr>'
-           '<tr><th scope="row">CC BY 4.0</th><td>Use, remix and share, including commercially</td><td>Credit the artist and model</td></tr>'
-           '<tr><th scope="row">CC BY-SA 4.0</th><td>Use, remix and share, including commercially</td><td>Credit, and share changes under the same licence</td></tr></tbody></table></div>')
-    c = {"default": alert("info", "Feathers Up is CC0", "Kaiso Collective released it into the public domain. Credit is appreciated but not required: “Feathers Up by Kaiso Collective, generated with openmusic-3b.”") + f'<section class="section"><h2 style="font:var(--text-h3);margin-bottom:var(--space-3)">Licences on Hummi</h2>{tbl}</section>'
+           '<tr><th scope="row">Pixabay Content License</th><td>Use, change and share for free, including commercially</td><td>Nothing; credit is appreciated. Don’t sell or redistribute it unaltered on its own, or claim it as your own</td></tr></tbody></table></div>')
+    terms = ('<p>Kaiso Collective shared it on Pixabay under the Pixabay Content License. You may use it for free, including commercially, and change it. Credit is not required but is appreciated: “Feathers Up by Kaiso Collective, from Pixabay.”</p>'
+             '<p class="cluster"><a href="https://pixabay.com/service/license-summary/" target="_blank" rel="noopener noreferrer">Read the Pixabay Content License</a>'
+             '<a href="https://pixabay.com/music/" target="_blank" rel="noopener noreferrer">View on Pixabay</a></p>')
+    c = {"default": alert("info", "Feathers Up is under the Pixabay Content License", terms) + f'<section class="section"><h2 style="font:var(--text-h3);margin-bottom:var(--space-3)">Licences on Hummi</h2>{tbl}</section>'
          + f'<p><a href="{P("track")}">Back to Feathers Up</a></p>',
          "loading": '<div class="skeleton skeleton--rect" style="height:6rem"></div>' + skel_rows(3), "error": err("Licence details didn’t load")}
     return frame(state, "browse", "Licence and credit", "How you can reuse what you hear on Hummi", c, player=False)

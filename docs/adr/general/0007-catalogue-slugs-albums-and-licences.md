@@ -2,6 +2,8 @@
 
 Status: Accepted (2026-10-27)
 
+Amended by ADR 0021: the catalogue is real Pixabay music with the Pixabay Content License and no albums; the Creative Commons licences remain valid values.
+
 ## Context
 
 Journey 04 (explore catalogue pages) adds the track, artist, album and licence pages (L2-008 to L2-012)

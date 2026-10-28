@@ -16,7 +16,7 @@ public sealed class TrackTests
 
         Assert.Equal(0, track.PlayCount);
         Assert.True(track.IsPlayable);
-        Assert.Equal($"tracks/{track.Id}.wav", track.AudioPath);
+        Assert.Equal($"tracks/{track.Id}.mp3", track.AudioPath);
     }
 
     [Fact]

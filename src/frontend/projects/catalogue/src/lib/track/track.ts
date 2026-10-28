@@ -90,7 +90,8 @@ export class TrackComponent {
       { term: 'Artist', value: track.artist.name, link: `/artists/${track.artist.slug}` },
       ...(track.album ? [{ term: 'Album', value: track.album.title, link: `/albums/${track.album.slug}` }] : []),
       ...(track.genre ? [{ term: 'Genre', value: track.genre }] : []),
-      { term: 'Generated with', value: `${track.generatedWith} (open weights)` },
+      ...(track.generatedWith ? [{ term: 'Generated with', value: `${track.generatedWith} (open weights)` }] : []),
+      ...(track.sourceUrl ? [{ term: 'Source', value: 'Pixabay', href: track.sourceUrl }] : []),
       { term: 'Licence', value: track.licenceLabel, link: `/tracks/${track.slug}/licence` },
       { term: 'Plays', value: track.plays.toLocaleString('en-GB') },
     ];

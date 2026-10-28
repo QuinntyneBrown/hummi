@@ -31,6 +31,22 @@ public sealed class CatalogueEndpointTests : IDisposable
     }
 
     [Fact]
+    public async Task L2_008_a_pixabay_track_names_its_source_and_licence_and_no_model()
+    {
+        const string source = "https://pixabay.com/music/reggae-shamrock-high-times-happy-420-203465/";
+        await factory.SeedPixabayAsync("SoundUniverseStudio", "High Times", source);
+        using var client = factory.CreateClient();
+
+        using var body = JsonDocument.Parse(await client.GetStringAsync("/api/tracks/high-times"));
+
+        var track = body.RootElement;
+        Assert.Equal(JsonValueKind.Null, track.GetProperty("generatedWith").ValueKind);
+        Assert.Equal("pixabay", track.GetProperty("licence").GetString());
+        Assert.Equal("Pixabay Content License", track.GetProperty("licenceLabel").GetString());
+        Assert.Equal(source, track.GetProperty("sourceUrl").GetString());
+    }
+
+    [Fact]
     public async Task L2_009_an_unknown_track_is_404_problem_details()
     {
         using var client = factory.CreateClient();

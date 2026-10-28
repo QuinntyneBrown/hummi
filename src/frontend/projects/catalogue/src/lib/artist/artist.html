@@ -29,8 +29,10 @@
         <hm-page-header [heading]="a.name" [subtitle]="listeners(a.monthlyListeners)" />
         @if (a.popular.length) {
           <hm-hero label="Artist" [coverUrl]="a.coverUrl" [round]="true">
-            <span class="overline">Artist · {{ a.modelName }}</span>
-            <p class="text-muted">{{ a.description }}</p>
+            <span class="overline">{{ a.modelName ? 'Artist · ' + a.modelName : 'Artist' }}</span>
+            @if (a.description) {
+              <p class="text-muted">{{ a.description }}</p>
+            }
             <div class="cluster">
               <button hmButton="primary" type="button" (click)="player.playFrom(a.popular, 0)">
                 <hm-icon name="play" />Play

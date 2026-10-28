@@ -3,7 +3,7 @@
 ## Overview
 
 An artist page (`/artists/{slug}`) presents one artist: a named generator persona that publishes
-tracks made with one open-weights model. It shows monthly listeners, the model, a description, a
+tracks, a Pixabay uploader for every imported track (ADR 0021). It shows monthly listeners, the model and a description when known, a
 Popular track list and the artist's releases. The listener can play the artist, follow it and share
 it. Following is part of the library subsystem (`L2-018`).
 
@@ -42,7 +42,7 @@ The feature realizes the following level-2 (L2) requirements. Each L2 requiremen
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-010` | `L1-003` | **Artist page.** 1. Given the artist Kaiso Collective, when a listener opens `/artists/kaiso-collective`, then the heading is "Kaiso Collective", the subtitle is "48,210 monthly listeners", the overline is "Artist · openmusic-3b" and the artist description is shown.<br>2. Given the artist page, when it loads, then it shows "Play", "Follow" (not pressed) and "Share" buttons, a "Popular" track list and a "Releases" shelf of album tiles with year and track count (e.g. "Mas on the Avenue", "2026 · 2 tracks").<br>3. Given an artist with no published tracks, when the page loads, then it shows "No tracks released yet" with "Kaiso Collective hasn’t published anything. Follow to hear when they do." and a "Follow" button. |
+| `L2-010` | `L1-003` | **Artist page.** 1. Given the artist Kaiso Collective, when a listener opens `/artists/kaiso-collective`, then the heading is "Kaiso Collective", the subtitle is "48,210 monthly listeners", the overline is "Artist · openmusic-3b" and the artist description is shown; given an artist whose model is not known (every Pixabay uploader, ADR 0021), then the overline is "Artist" and an empty description shows nothing.<br>2. Given the artist page, when it loads, then it shows "Play", "Follow" (not pressed) and "Share" buttons, a "Popular" track list and a "Releases" shelf of album tiles with year and track count (e.g. "Mas on the Avenue", "2026 · 2 tracks").<br>3. Given an artist with no published tracks, when the page loads, then it shows "No tracks released yet" with "Kaiso Collective hasn’t published anything. Follow to hear when they do." and a "Follow" button. |
 
 ## Diagrams
 

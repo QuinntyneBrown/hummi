@@ -58,7 +58,7 @@ ARTISTS = [
     {"id": "lofi-lagoon", "name": "lofi lagoon", "genre": "Island chill", "model": "openmusic-3b", "listeners": "11,008", "cover": art("banana-leaf-rain")},
 ]
 A = {a["id"]: a for a in ARTISTS}
-LICENCES = {"CC0": "CC0 1.0 (public domain)", "CC-BY": "CC BY 4.0", "CC-BY-SA": "CC BY-SA 4.0"}
+LICENCES = {"CC0": "CC0 1.0 (public domain)", "CC-BY": "CC BY 4.0", "CC-BY-SA": "CC BY-SA 4.0", "PIXABAY": "Pixabay Content License"}
 TRACKS = [
     # id, title, artist, album, genre, duration, licence, plays
     ("feathers-up", "Feathers Up", "kaiso-collective", "Mas on the Avenue", "Soca", "3:42", "CC0", "128,904"),

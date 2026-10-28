@@ -24,20 +24,22 @@ public sealed class CatalogueTests
     }
 
     [Fact]
-    public void L2_012_AC4_a_track_has_exactly_one_of_the_three_licences()
+    public void L2_012_AC4_a_track_has_exactly_one_licence()
     {
         var artist = Guid.NewGuid();
 
         Assert.Equal(Licence.Cc0, Track.Create("Feathers Up", artist, 222, null, Now).Licence);
         Assert.Equal(Licence.CcBySa4, Track.Create("Fisherman Dawn", artist, 288, null, Now, licence: Licence.CcBySa4).Licence);
         Assert.Throws<ArgumentOutOfRangeException>(() => Track.Create("Wine Slow", artist, 214, null, Now, licence: (Licence)7));
-        Assert.Equal(3, Enum.GetValues<Licence>().Length);
+        Assert.Equal(Licence.Pixabay, Track.Create("High Times", artist, 180, null, Now, licence: Licence.Pixabay).Licence);
+        Assert.Equal(4, Enum.GetValues<Licence>().Length);
     }
 
     [Theory]
     [InlineData(Licence.Cc0, "CC0 1.0 (public domain)")]
     [InlineData(Licence.CcBy4, "CC BY 4.0")]
     [InlineData(Licence.CcBySa4, "CC BY-SA 4.0")]
+    [InlineData(Licence.Pixabay, "Pixabay Content License")]
     public void Each_licence_has_the_label_the_pages_show(Licence licence, string label) =>
         Assert.Equal(label, LicenceLabels.Of(licence));
 
@@ -50,6 +52,28 @@ public sealed class CatalogueTests
         Assert.Equal("openmusic-3b", artist.ModelName);
         Assert.Equal("A soca band.", artist.Description);
         Assert.Equal(0, artist.MonthlyListeners);
+    }
+
+    [Fact]
+    public void L2_010_AC1_an_artist_from_pixabay_has_no_model_and_no_description()
+    {
+        var artist = Artist.Create("SoundUniverseStudio", modelName: null);
+
+        Assert.Null(artist.ModelName);
+        Assert.Equal(string.Empty, artist.Description);
+    }
+
+    [Fact]
+    public void L2_057_AC1_a_pixabay_track_keeps_its_source_and_mp3_audio()
+    {
+        var track = Track.Create(
+            "High Times", Guid.NewGuid(), 180, null, Now, licence: Licence.Pixabay,
+            sourceUrl: "https://pixabay.com/music/reggae-shamrock-high-times-happy-420-203465/");
+
+        Assert.Equal("https://pixabay.com/music/reggae-shamrock-high-times-happy-420-203465/", track.SourceUrl);
+        Assert.Equal(".mp3", track.AudioExtension);
+        Assert.Equal($"tracks/{track.Id}.mp3", track.AudioPath);
+        Assert.Throws<ArgumentException>(() => Track.Create("High Times", Guid.NewGuid(), 180, null, Now, audioExtension: "mp3"));
     }
 
     [Fact]

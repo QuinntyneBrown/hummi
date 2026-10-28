@@ -1,6 +1,6 @@
 # Estimates
 
-- Overall effort: 132 days
+- Overall effort: 136 days
 - Complete: 98%
 
 | Subsystem | Effort | Complete |
@@ -8,7 +8,7 @@
 | [interface](interface.md) | 11 days | 100% |
 | [system-feedback](system-feedback.md) | 17 days | 97% |
 | [accounts](accounts.md) | 19 days | 98% |
-| [catalogue](catalogue.md) | 10 days | 97% |
+| [catalogue](catalogue.md) | 14 days | 98% |
 | [discovery](discovery.md) | 12 days | 100% |
 | [playback](playback.md) | 13 days | 93% |
 | [library](library.md) | 22 days | 100% |
@@ -25,3 +25,4 @@
 3. catalogue, discovery and playback: browse, track pages and the player
 4. library, sharing and search: likes, playlists, share links and search
 5. settings, notifications and reporting
+6. catalogue import: the real Pixabay catalogue (ADR 0021), done: 11 real tracks imported and checked in the app

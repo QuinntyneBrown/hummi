@@ -32,8 +32,10 @@ public sealed class GetLibraryQueryHandler(IHummiDbContext db) : IRequestHandler
             .Select(l => new { l.TrackId, l.LikedAt }).ToListAsync(cancellationToken);
         var likedIds = likes.Select(l => l.TrackId).ToList();
         var tracks = await db.Tracks.AsNoTracking().Where(t => likedIds.Contains(t.Id) && !t.Withdrawn).ToSummaries().ToListAsync(cancellationToken);
+        // Compare ids as Guids, whatever the case of their text.
+        var likedAt = likes.ToDictionary(l => l.TrackId, l => l.LikedAt);
         var liked = tracks
-            .OrderByDescending(t => likes.First(l => l.TrackId.ToString() == t.Id).LikedAt)
+            .OrderByDescending(t => likedAt[Guid.Parse(t.Id)])
             .Select(t => t with { Liked = true })
             .ToList();
 
@@ -60,7 +62,7 @@ public sealed class GetLibraryQueryHandler(IHummiDbContext db) : IRequestHandler
             .Select(p => new
             {
                 Tile = new PlaylistTileDto(
-                    p.Id.ToString(),
+                    IdText.Of(p.Id),
                     p.Name,
                     p.Entries.Count,
                     db.Listeners.Where(l => l.Id == p.OwnerId).Select(l => l.DisplayName).FirstOrDefault() ?? owner,

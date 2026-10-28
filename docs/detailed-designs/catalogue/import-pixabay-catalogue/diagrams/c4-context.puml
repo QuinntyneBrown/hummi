@@ -1,0 +1,11 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Import the Pixabay catalogue
+
+Person(dev, "Developer", "Builds a local or demo install of Hummi")
+System(hummi, "Hummi", "Free streaming platform; its catalogue is real Pixabay music")
+System_Ext(pixabay, "Pixabay Music", "Track pages, the licence summary, MP3 files and cover images")
+Rel(dev, hummi, "Runs hummi import and hummi seed")
+Rel(hummi, pixabay, "Reads track pages and downloads audio", "HTTPS")
+@enduml

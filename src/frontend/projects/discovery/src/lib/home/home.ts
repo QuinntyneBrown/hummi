@@ -118,6 +118,18 @@ export class HomeComponent {
       this.featured.state().status === 'error' &&
       this.shelves.every((s) => s.resource.state().status === 'error'),
   );
+  /**
+   * The catalogue has no tracks: nothing is featured and every shelf loaded empty, so Home shows "No music
+   * yet" instead of an empty page (L2-002 AC5, ADR 0021).
+   */
+  readonly noMusic = computed(
+    () =>
+      this.featured.state().status === 'error' &&
+      this.shelves.every((s) => {
+        const state = s.resource.state();
+        return state.status === 'ready' && state.value.tracks.length === 0;
+      }),
+  );
   /** The billboard's album is playing. */
   readonly albumPlaying = computed(() => {
     const state = this.featured.state();

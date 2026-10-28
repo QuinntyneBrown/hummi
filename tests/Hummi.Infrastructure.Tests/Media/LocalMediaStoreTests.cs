@@ -34,6 +34,18 @@ public sealed class LocalMediaStoreTests : IDisposable
     }
 
     [Fact]
+    public void Reports_the_mp3_content_type_of_imported_pixabay_audio()
+    {
+        Directory.CreateDirectory(Path.Combine(root, "tracks"));
+        File.WriteAllBytes(Path.Combine(root, "tracks", "a.mp3"), [1]);
+
+        var file = new LocalMediaStore(root).Open("tracks/a.mp3")!;
+        file.Content.Dispose();
+
+        Assert.Equal("audio/mpeg", file.ContentType);
+    }
+
+    [Fact]
     public void A_missing_file_is_null()
     {
         Assert.Null(new LocalMediaStore(root).Open("tracks/missing.wav"));
