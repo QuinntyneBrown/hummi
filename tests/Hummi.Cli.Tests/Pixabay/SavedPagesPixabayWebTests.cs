@@ -17,11 +17,11 @@ public sealed class SavedPagesPixabayWebTests : IDisposable
     [InlineData("https://pixabay.com/", null)]
     [InlineData("https://example.com/service/license-summary/", null)]
     [InlineData("https://cdn.pixabay.com/download/audio/2024/04/20/audio_8b1c1802d1.mp3", null)]
-    public void A_page_is_saved_as_its_id_or_its_last_path_segment(string url, string? file) =>
+    public void L2_056_AC6_a_page_is_saved_as_its_id_or_its_last_path_segment(string url, string? file) =>
         Assert.Equal(file, SavedPagesPixabayWeb.FileNameOf(new Uri(url)));
 
     [Fact]
-    public async Task Pages_come_from_the_folder_and_files_from_the_inner_source()
+    public async Task L2_056_AC6_pages_come_from_the_folder_and_files_from_the_inner_source()
     {
         var pages = Directory.CreateDirectory(Path.Combine(root, "pages")).FullName;
         await File.WriteAllTextAsync(Path.Combine(pages, "203465.html"), "saved track page");
@@ -37,7 +37,7 @@ public sealed class SavedPagesPixabayWebTests : IDisposable
     }
 
     [Fact]
-    public void L2_056_AC1_import_with_pages_reads_saved_pages_and_downloads_only_the_audio()
+    public void L2_056_AC6_import_with_pages_reads_saved_pages_and_downloads_only_the_audio()
     {
         var pages = Directory.CreateDirectory(Path.Combine(root, "pages")).FullName;
         File.WriteAllText(Path.Combine(pages, "203465.html"), RealPages.Read("203465.html"));
@@ -64,7 +64,7 @@ public sealed class SavedPagesPixabayWebTests : IDisposable
     }
 
     [Fact]
-    public void Import_without_pages_explains_the_bot_check_when_a_page_cannot_be_fetched()
+    public void L2_056_AC6_import_without_pages_explains_the_bot_check_when_a_page_cannot_be_fetched()
     {
         var manifestPath = Path.Combine(root, "pixabay-manifest.json");
         new PixabayManifest { Sources = [RealPages.HighTimesUrl] }.Save(manifestPath);

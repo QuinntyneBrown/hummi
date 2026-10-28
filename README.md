@@ -22,7 +22,7 @@ Hummi is a responsive web application built with [Angular](https://angular.dev) 
 
 ## Features
 
-- **Real music**: every track is a real Pixabay Music track, imported with `hummi import` into a committed manifest; a cover is generated only when a track has none.
+- **Real music**: every track is a real Pixabay Music track, imported with `hummi import` into a committed manifest; a cover is generated only when a track has none. The manifest lists five Pixabay track pages; none is imported yet (see [Run locally](#run-locally), step 3). The page reader is checked against real Pixabay pages.
 - **Discover**: browse the home feed, genres and curated collections.
 - **Play**: a persistent player with queue, seek, volume and keyboard control.
 - **Search**: find tracks, artists and genres.
@@ -100,13 +100,15 @@ npm run verify
 
 3. Import the catalogue's audio from Pixabay, then seed it. `src/backend/Hummi.Cli/Catalogue/pixabay-manifest.json` lists the Pixabay track pages (`sources`) and the imported tracks (`tracks`). `import` reads each new page, records its metadata and licence text in the manifest and downloads its MP3 to `pixabay/{id}.mp3` under `MediaStorage__RootPath` (default: a `media` folder next to the CLI); it also restores audio missing from that folder. `seed` writes exactly the manifest's tracks, plus the demo listeners, into the database. With no imported tracks the app runs with an empty catalogue.
 
+   pixabay.com answers plain requests (and so `import` on its own) with a bot check; Hummi does not try to get past it. Save each source page from your normal browser instead (Chrome or Edge: Ctrl+S, "Webpage, HTML Only") into one folder, named by the number at the end of its address (`203465.html` for `https://pixabay.com/music/reggae-shamrock-high-times-happy-420-203465/`), plus the licence summary <https://pixabay.com/service/license-summary/> as `license-summary.html`, and pass the folder with `--pages`. The audio still downloads from `cdn.pixabay.com`.
+
    ```powershell
    $env:DOTNET_ENVIRONMENT = 'Development'
-   dotnet run --project src/backend/Hummi.Cli -- import --manifest src/backend/Hummi.Cli/Catalogue/pixabay-manifest.json
+   dotnet run --project src/backend/Hummi.Cli -- import --manifest src/backend/Hummi.Cli/Catalogue/pixabay-manifest.json --pages C:\path\to\saved-pages
    dotnet run --project src/backend/Hummi.Cli -- seed --manifest src/backend/Hummi.Cli/Catalogue/pixabay-manifest.json
    ```
 
-   To add tracks, add Pixabay music track page URLs to `sources`, run `import` and commit the manifest. Audio is never committed.
+   To add tracks, add Pixabay music track page URLs to `sources`, save their pages, run `import` and commit the manifest. Audio and saved pages are never committed.
 
 4. Start the API.
 

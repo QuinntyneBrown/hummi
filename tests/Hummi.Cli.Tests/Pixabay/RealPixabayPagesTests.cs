@@ -12,7 +12,7 @@ public sealed class RealPixabayPagesTests
     private const string LicenceUrl = "https://pixabay.com/service/license-summary/";
 
     [Fact]
-    public void L2_056_AC1_a_real_track_page_gives_the_title_as_shown_without_the_artist_and_site_suffix()
+    public void L2_056_AC7_a_real_track_page_gives_the_title_as_shown_without_the_artist_and_site_suffix()
     {
         var parse = PixabayTrackPage.Parse(new Uri(RealPages.HighTimesUrl), RealPages.Read("203465.html"));
 
@@ -36,7 +36,7 @@ public sealed class RealPixabayPagesTests
     }
 
     [Fact]
-    public void L2_056_AC1_a_title_that_itself_contains_a_bar_keeps_it()
+    public void L2_056_AC7_a_title_that_itself_contains_a_bar_keeps_it()
     {
         var parse = PixabayTrackPage.Parse(new Uri(RealPages.DanceLikeUsykUrl), RealPages.Read("211087.html"));
 
@@ -50,7 +50,7 @@ public sealed class RealPixabayPagesTests
     }
 
     [Fact]
-    public void L2_057_AC3_a_real_track_without_its_own_cover_has_no_cover_url_not_the_generic_gradient()
+    public void L2_056_AC7_a_real_track_without_its_own_cover_has_no_cover_url_not_the_generic_gradient()
     {
         var parse = PixabayTrackPage.Parse(new Uri(RealPages.DreamingOfReggaeUrl), RealPages.Read("217732.html"));
 
@@ -68,7 +68,7 @@ public sealed class RealPixabayPagesTests
     [InlineData("https://pixabay.com/static/img/blank.gif")]
     [InlineData("https://pixabay.com/static/img/logo_square.png")]
     [InlineData("https://cdn.pixabay.com/user/2024/04/14/01-35-28-196_96x96.jpg")]
-    public void L2_057_AC3_a_generic_pixabay_or_site_image_is_never_taken_as_a_cover(string image)
+    public void L2_056_AC7_a_generic_pixabay_or_site_image_is_never_taken_as_a_cover(string image)
     {
         var html = PixabayPages.OpenGraph(7).Replace(PixabayPages.CoverUrl(7), image, StringComparison.Ordinal);
 
@@ -79,7 +79,7 @@ public sealed class RealPixabayPagesTests
     }
 
     [Fact]
-    public void L2_056_AC1_the_real_licence_page_gives_only_the_licence_text_without_menus_or_the_cookie_panel()
+    public void L2_056_AC7_the_real_licence_page_gives_only_the_licence_text_without_menus_or_the_cookie_panel()
     {
         var text = PixabayTrackPage.LicenceText(RealPages.Read("license-summary.html"));
 

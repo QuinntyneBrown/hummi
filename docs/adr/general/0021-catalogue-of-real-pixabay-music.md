@@ -24,7 +24,10 @@ Content License. The fixed genre list of ADR 0006 does not match Pixabay's genre
   plus when it was imported.
 - **Importer.** `hummi import` fetches each source page through the `IPixabayWeb` port, reads its metadata from
   the page's JSON-LD and Open Graph tags (`PixabayTrackPage`), fetches the licence page the track links to, and
-  downloads the audio into the media cache `pixabay/{id}.mp3`. A page that lacks a title, artist, duration, audio
+  downloads the audio into the media cache `pixabay/{id}.mp3`. pixabay.com answers plain requests with a bot
+  check, which the importer never tries to get past: `hummi import --pages {folder}` reads the track pages
+  (`{id}.html`) and the licence summary (`license-summary.html`) saved from a normal browser, and still downloads
+  the audio from `cdn.pixabay.com`. A page that lacks a title, artist, duration, audio
   file or the Pixabay Content License is refused and reported; nothing is filled in. A track already in the
   manifest is not fetched again; its audio is downloaded again, and checked against its SHA-256, when the cache
   lacks it.
@@ -43,8 +46,9 @@ Content License. The fixed genre list of ADR 0006 does not match Pixabay's genre
   does and links to it; the track page links to the track's Pixabay page.
 - **Model.** `Artist.ModelName` becomes optional. Pixabay pages name no model, so the track page, artist page and
   credit line leave it out when it is unknown.
-- **Cover art.** The cover is the image the Pixabay page gives the track (`og:image` or the JSON-LD image),
-  shown from Pixabay's CDN. A track without one gets a generated SVG cover (`GeneratedCover`), deterministic from
+- **Cover art.** The cover is the image the Pixabay page gives the track (the JSON-LD `thumbnailUrl` or image,
+  else `og:image`), shown from Pixabay's CDN, and only when it lies under `cdn.pixabay.com/audio/`: a page whose
+  track has no cover of its own still carries a generic gradient as `og:image`, which is never taken. A track without one gets a generated SVG cover (`GeneratedCover`), deterministic from
   its title and genre and drawn with the cover gradients of the design tokens, stored as a `data:` URL.
 - **Small catalogues.** Home hides a shelf that has no tracks and, with no tracks at all, shows "No music yet".
   Every other screen already had an empty state.
@@ -57,11 +61,16 @@ Content License. The fixed genre list of ADR 0006 does not match Pixabay's genre
 
 ## Consequences
 
-- When this ADR was written the session's network policy denied `pixabay.com`, so no page could be read and no
-  audio downloaded. The committed manifest lists four real track pages under `sources` and no `tracks`, so a
-  fresh install has an empty catalogue until `hummi import` runs where Pixabay is reachable. `PixabayTrackPage`
-  has only been exercised against fixtures written from the JSON-LD and Open Graph conventions; the first real
-  import must be checked against the pages.
+- When this ADR was written the session's network policy denied `pixabay.com`, so no page could be read. On
+  2026-10-28 the reader was checked against real pages and three differences were fixed test-first, with fixtures
+  trimmed from those pages: the JSON-LD name is "{title} by {artist} | Royalty-free Music" (the title keeps a bar
+  of its own, as in "Dance Like Usyk | Soca|Suno Music Show YouTube"); a track without its own cover has a generic
+  gradient as `og:image`; and the licence summary has no `main`, so its cookie-consent panel leaked into the text.
+- Plain requests to pixabay.com pages get a Cloudflare challenge, from a cloud session and from a developer's
+  machine alike, while `cdn.pixabay.com` serves audio and covers; hence `--pages`.
+- The committed manifest lists five real track pages under `sources`, one of them ("Dreaming Of Reggae",
+  217732) without a cover of its own, and no `tracks` yet: no real track has been imported. A fresh install has
+  an empty catalogue until the pages are saved and `hummi import --pages` runs on a developer's machine.
 - The Pixabay Content License forbids redistributing content on a standalone basis. Streaming unmodified tracks
   may count as such use; the owner must clear this before a production catalogue is published. Local and demo
   installs only, until then.
