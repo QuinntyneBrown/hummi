@@ -11,7 +11,9 @@ public sealed record PageParse(PixabayTrackPage? Page, IReadOnlyList<string> Mis
 /// <summary>
 /// The metadata of one Pixabay music track page, read from its schema.org JSON-LD and, where that is silent,
 /// its Open Graph and <c>music:</c> meta tags (ADR 0021, L2-056). Nothing is filled in: a required field the
-/// page does not give is reported as missing. Only files on Pixabay's own hosts are accepted.
+/// page does not give is reported as missing. Only files on Pixabay's own hosts are accepted. Checked against
+/// real pages: the JSON-LD name reads "{title} by {artist} | Royalty-free Music", and a track without a cover of
+/// its own still carries a generic og:image, so only an image under <c>cdn.pixabay.com/audio/</c> is a cover.
 /// </summary>
 public sealed partial record PixabayTrackPage(
     long PixabayId,
@@ -27,6 +29,8 @@ public sealed partial record PixabayTrackPage(
     string LicenceUrl)
 {
     public const string ContentLicense = "Pixabay Content License";
+
+    private static readonly string[] SiteEndings = [" - Pixabay", " | Royalty-free Music", " | Pixabay"];
 
     /// <summary>The Pixabay id of a music track page (<c>https://pixabay.com/music/{slug}-{id}/</c>), else null.</summary>
     public static long? IdOf(Uri url)
@@ -48,9 +52,9 @@ public sealed partial record PixabayTrackPage(
             .Select(n => (JsonElement?)n).FirstOrDefault();
         var meta = MetaTags(html);
 
-        var title = Text(ld, "name") ?? WithoutSiteSuffix(meta.GetValueOrDefault("og:title")) ?? WithoutSiteSuffix(TitleElement(html));
         var artistNode = ld is { } n ? First(n, "byArtist", "author", "creator") : null;
         var artist = (artistNode is { } a ? Text(a, "name") ?? AsString(a) : null) ?? meta.GetValueOrDefault("author") ?? meta.GetValueOrDefault("music:musician");
+        var title = ShownTitle(Text(ld, "name"), artist) ?? ShownTitle(meta.GetValueOrDefault("og:title"), artist) ?? ShownTitle(TitleElement(html), artist);
         var artistUrl = artistNode is { } au ? Text(au, "url") : null;
         if (artistUrl is null && artist is not null)
         {
@@ -64,7 +68,7 @@ public sealed partial record PixabayTrackPage(
         var genre = ld is { } g ? Strings(g, "genre").FirstOrDefault() : null;
         var tags = ld is { } k ? Strings(k, "keywords").SelectMany(t => t.Split(',')).Select(t => t.Trim()).Where(t => t.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToList() : [];
 
-        var cover = OnPixabay(ld is { } i ? Url(First(i, "image", "thumbnailUrl")) : null) ?? OnPixabay(meta.GetValueOrDefault("og:image"));
+        var cover = TrackCover(ld is { } i ? Url(First(i, "image", "thumbnailUrl")) : null) ?? TrackCover(meta.GetValueOrDefault("og:image"));
         var audio = OnPixabay(ld is { } au2 ? AudioOf(au2) : null)
             ?? OnPixabay(meta.GetValueOrDefault("og:audio:secure_url"))
             ?? OnPixabay(meta.GetValueOrDefault("og:audio:url"))
@@ -91,18 +95,38 @@ public sealed partial record PixabayTrackPage(
             []);
     }
 
-    /// <summary>The licence page's main text, one line per block, whitespace collapsed; null when it has none.</summary>
+    /// <summary>
+    /// The licence page's main text, one line per block, whitespace collapsed; null when it has none. The real
+    /// licence summary has no <c>main</c>, so without one the text runs from the first heading to the footer,
+    /// which leaves out the menus and the cookie-consent panel the page injects after it.
+    /// </summary>
     public static string? LicenceText(string html)
     {
-        var main = MainElement().Match(html) is { Success: true } m ? m.Groups[1].Value : BodyElement().Match(html) is { Success: true } b ? b.Groups[1].Value : html;
+        var main = MainElement().Match(html) is { Success: true } m ? m.Groups[1].Value : HeadingToFooter(html);
         main = Noise().Replace(main, " ");
         main = BlockEnd().Replace(main, "\n");
+        main = InlineTag().Replace(main, string.Empty);
         main = Tag().Replace(main, " ");
         var lines = WebUtility.HtmlDecode(main).Split('\n')
             .Select(line => Spaces().Replace(line, " ").Trim())
             .Where(line => line.Length > 0)
             .ToList();
         return lines.Count == 0 ? null : string.Join("\n", lines);
+    }
+
+    private static string HeadingToFooter(string html)
+    {
+        var body = BodyElement().Match(html) is { Success: true } b ? b.Groups[1].Value : html;
+        if (HeadingStart().Match(body) is { Success: true } heading)
+        {
+            body = body[heading.Index..];
+            if (FooterStart().Match(body) is { Success: true } footer)
+            {
+                body = body[..footer.Index];
+            }
+        }
+
+        return body;
     }
 
     private static bool IsPixabayLicence(string url) =>
@@ -116,6 +140,14 @@ public sealed partial record PixabayTrackPage(
         && uri.Scheme == Uri.UriSchemeHttps
         && (uri.Host == "pixabay.com" || uri.Host.EndsWith(".pixabay.com", StringComparison.Ordinal))
             ? uri.ToString()
+            : null;
+
+    /// <summary>A track's own cover lives under cdn.pixabay.com/audio/; gradients, site images and avatars do not.</summary>
+    private static string? TrackCover(string? url) =>
+        OnPixabay(url) is { } cover
+        && new Uri(cover) is { Host: "cdn.pixabay.com" } uri
+        && uri.AbsolutePath.StartsWith("/audio/", StringComparison.Ordinal)
+            ? cover
             : null;
 
     private static string? AudioOf(JsonElement node)
@@ -153,22 +185,30 @@ public sealed partial record PixabayTrackPage(
         }
     }
 
-    private static string? WithoutSiteSuffix(string? title)
+    /// <summary>
+    /// The title as the player shows it: Pixabay names a track "{title} by {artist} | Royalty-free Music" (and the
+    /// document title adds " - Pixabay"). Only those exact endings are removed, so a title that itself contains a
+    /// bar keeps it; " by {artist}" goes only when a site ending was there.
+    /// </summary>
+    private static string? ShownTitle(string? name, string? artist)
     {
-        if (string.IsNullOrWhiteSpace(title))
+        if (string.IsNullOrWhiteSpace(name))
         {
             return null;
         }
 
-        title = WebUtility.HtmlDecode(title).Trim();
-        var bar = title.IndexOf('|', StringComparison.Ordinal);
-        if (bar >= 0 && title[bar..].Contains("Pixabay", StringComparison.OrdinalIgnoreCase))
+        var title = WebUtility.HtmlDecode(name).Trim();
+        var siteEnding = false;
+        string? ending;
+        while ((ending = SiteEndings.FirstOrDefault(e => title.EndsWith(e, StringComparison.OrdinalIgnoreCase))) is not null)
         {
-            title = title[..bar].Trim();
+            title = title[..^ending.Length].TrimEnd();
+            siteEnding = true;
         }
-        else if (title.EndsWith(" - Pixabay", StringComparison.OrdinalIgnoreCase))
+
+        if (siteEnding && !string.IsNullOrWhiteSpace(artist) && title.EndsWith($" by {artist.Trim()}", StringComparison.OrdinalIgnoreCase))
         {
-            title = title[..^" - Pixabay".Length].Trim();
+            title = title[..^$" by {artist.Trim()}".Length].TrimEnd();
         }
 
         return title.Length > 0 ? title : null;
@@ -327,6 +367,15 @@ public sealed partial record PixabayTrackPage(
 
     [GeneratedRegex(@"</(p|h[1-6]|li|div|section|tr)>|<br\s*/?>", RegexOptions.IgnoreCase)]
     private static partial Regex BlockEnd();
+
+    [GeneratedRegex(@"</?(a|abbr|b|code|em|i|label|mark|small|span|strong|sub|sup|u)\b[^>]*>", RegexOptions.IgnoreCase)]
+    private static partial Regex InlineTag();
+
+    [GeneratedRegex(@"<h1[\s>]", RegexOptions.IgnoreCase)]
+    private static partial Regex HeadingStart();
+
+    [GeneratedRegex(@"<footer[\s>]", RegexOptions.IgnoreCase)]
+    private static partial Regex FooterStart();
 
     [GeneratedRegex(@"<[^>]+>")]
     private static partial Regex Tag();
