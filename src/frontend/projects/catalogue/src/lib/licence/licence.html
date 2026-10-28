@@ -20,6 +20,16 @@
         @let t = state.value;
         <hm-alert tone="info" [heading]="heading(t)">
           <p>{{ credit(t) }}</p>
+          @if (terms[t.licence].url || t.sourceUrl) {
+            <p class="cluster">
+              @if (terms[t.licence].url; as url) {
+                <a [href]="url" target="_blank" rel="noopener noreferrer">Read the {{ terms[t.licence].name }}</a>
+              }
+              @if (t.sourceUrl; as source) {
+                <a [href]="source" target="_blank" rel="noopener noreferrer">View on Pixabay</a>
+              }
+            </p>
+          }
         </hm-alert>
         <section class="section">
           <h2 class="section-title">Licences on Hummi</h2>

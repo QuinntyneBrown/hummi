@@ -1,6 +1,7 @@
 import {
   EMPTY_LIBRARY,
   NADIA,
+  NOTIFICATIONS_NOW,
   expect,
   fakeHome,
   fakeLibrary,
@@ -22,6 +23,7 @@ test.beforeEach(async ({ page }) => {
 // ---------------------------------------------------------------- L2-036 Notification list
 
 test('L2-036 AC1, AC2: each kind shows its icon, linked text and a relative or dated time', async ({ page }) => {
+  await page.clock.setFixedTime(NOTIFICATIONS_NOW);
   await fakeNotifications(page);
   const notifications = new NotificationsPage(page);
 

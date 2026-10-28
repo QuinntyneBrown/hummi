@@ -22,6 +22,14 @@
 } @else if (failed()) {
   <h1 class="visually-hidden">Home</h1>
   <hm-error-block (retry)="reloadAll()" />
+} @else if (noMusic()) {
+  <h1 class="visually-hidden">Home</h1>
+  <hm-empty-state
+    heading="No music yet"
+    text="Hummi’s catalogue is empty. Tracks appear here once they are imported from Pixabay Music."
+  >
+    <a hmButton="primary" routerLink="/browse">Browse genres</a>
+  </hm-empty-state>
 } @else {
   @let feature = featured.state();
   @switch (feature.status) {
@@ -83,7 +91,9 @@
       }
       @case ('ready') {
         @let value = state.value;
-        @if (shelf.spec.list) {
+        @if (!value.tracks.length) {
+          <!-- A shelf with no tracks is not shown (L2-002 AC4). -->
+        } @else if (shelf.spec.list) {
           <hm-shelf [heading]="shelf.spec.heading" [note]="shelf.spec.note" [moreLink]="shelf.spec.more">
             <hm-track-list
               [tracks]="library.withLikes(value.tracks)"

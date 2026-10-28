@@ -7,6 +7,7 @@ import {
   fakePlays,
   fakeTrack,
   KAISO_DETAIL,
+  PIXABAY_DETAIL,
   test,
 } from '../fixtures';
 import { AlbumPage, ArtistPage, LicencePage, NotFoundPage } from '../pages/catalogue.page';
@@ -108,24 +109,19 @@ test('L2-011 AC3: an album that is not published is not found; there is no empty
   await expect(page.locator('main .album-summary')).toHaveCount(0);
 });
 
-test('L2-012 AC1: the licence page heads "Licence and credit" with the credit alert for Feathers Up', async ({
-  page,
-}) => {
-  await fakeTrack(page);
+test('L2-012 AC1: the licence page heads "Licence and credit" with the credit alert', async ({ page }) => {
+  await fakeTrack(page, { detail: PIXABAY_DETAIL });
   const licence = new LicencePage(page);
-  await licence.goto('feathers-up');
+  await licence.goto('fixture-song');
 
   await expect(licence.heading).toHaveText('Licence and credit');
   await expect(licence.subtitle).toHaveText('How you can reuse what you hear on Hummi');
   await expect(licence.alert).toHaveClass(/alert--info/);
-  await expect(licence.alert.locator('.alert__title')).toHaveText('Feathers Up is CC0');
-  await expect(licence.alert).toContainText(
-    'Kaiso Collective released it into the public domain. Credit is appreciated but not required: “Feathers Up by Kaiso Collective, generated with openmusic-3b.”',
-  );
+  await expect(licence.alert.locator('.alert__title')).toHaveText('Fixture Song is under the Pixabay Content License');
   await expect(page).toHaveTitle('Licence and credit · Hummi');
 });
 
-test('L2-012 AC1: a CC BY track’s licence page says credit is required', async ({ page }) => {
+test('L2-012 AC4: a track whose model is known keeps the credit line naming it', async ({ page }) => {
   await fakeTrack(page, { detail: { ...FEATHERS_UP_DETAIL, licence: 'ccBy4', licenceLabel: 'CC BY 4.0' } });
   const licence = new LicencePage(page);
   await licence.goto('feathers-up');
@@ -136,20 +132,18 @@ test('L2-012 AC1: a CC BY track’s licence page says credit is required', async
   );
 });
 
-test('L2-012 AC2: the "Licences on Hummi" table lists the three licences', async ({ page }) => {
-  await fakeTrack(page);
+test('L2-012 AC2: the "Licences on Hummi" table lists the Pixabay Content License', async ({ page }) => {
+  await fakeTrack(page, { detail: PIXABAY_DETAIL });
   const licence = new LicencePage(page);
-  await licence.goto('feathers-up');
+  await licence.goto('fixture-song');
 
   await expect(licence.main.getByRole('heading', { name: 'Licences on Hummi', level: 2 })).toBeVisible();
   await expect(licence.table.locator('thead th')).toHaveText(['Licence', 'You may', 'You must']);
   expect(await licence.rows()).toEqual([
-    ['CC0 1.0', 'Use, remix and share for any purpose', 'Nothing'],
-    ['CC BY 4.0', 'Use, remix and share, including commercially', 'Credit the artist and model'],
     [
-      'CC BY-SA 4.0',
-      'Use, remix and share, including commercially',
-      'Credit, and share changes under the same licence',
+      'Pixabay Content License',
+      'Use, change and share for free, including commercially',
+      'Nothing; credit is appreciated. Don’t sell or redistribute it unaltered on its own, or claim it as your own',
     ],
   ]);
 });

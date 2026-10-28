@@ -50,6 +50,7 @@ def home(state, extra="", inert=False, pkw=None, kids=False):
         "default": bb + recent + top + soca + kid + pan + dance + chill,
         "loading": skel_bb + shelf("Recently added", skel_tiles(6)) + shelf("Top 10 on Hummi this week", skel_rows(6)),
         "empty": empty("music", "Your Home fills up as you listen", "Play a few tracks and we’ll line up what to hear next. Pick a genre to begin.", btn("Browse genres", "primary", href=P("browse"))) + first,
+        "no-music": empty("music", "No music yet", "Hummi’s catalogue is empty. Tracks appear here once they are imported from Pixabay Music.", btn("Browse genres", "primary", href=P("browse"))),
         "error": err(),
         "offline": bb + recent + soca,
         "partial": bb + recent + partial + kid,
@@ -69,7 +70,7 @@ def browse(state):
     mood = shelf("Moods", GENRE_PILLS)
     c = {"default": mood + shelf("All genres", g),
          "loading": skel_tiles(6) + skel_tiles(6), "error": err("Genres didn’t load")}
-    return frame(state, "browse", "Browse", "10 genres · 4,812 openly licensed tracks", c)
+    return frame(state, "browse", "Browse", "10 genres · 4,812 freely licensed tracks", c)
 
 
 def genre(state):
@@ -94,20 +95,19 @@ def track(state):
     t = T[NOW]; a = A[t["artist"]]
     acts = btn("Play", "primary", "play", href=P("now-playing")) + ibtn("Like Feathers Up", "heart", ' aria-pressed="false"') + btn("Add to playlist", "", "plus", href=D("add-to-playlist")) + btn("Share", "", "share", href=D("share")) + ibtn("Report this track", "flag")
     dl = (f'<dl class="dl"><dt>Artist</dt><dd><a href="{P("artist")}">{a["name"]}</a></dd><dt>Album</dt><dd><a href="{P("album")}">{t["album"]}</a></dd><dt>Genre</dt><dd>{t["genre"]}</dd>'
-          f'<dt>Generated with</dt><dd>{a["model"]} (open weights)</dd><dt>Licence</dt><dd><a href="{P("licence")}">{LICENCES[t["licence"]]}</a></dd><dt>Plays</dt><dd>{t["plays"]}</dd></dl>')
+          f'<dt>Source</dt><dd><a href="https://pixabay.com/music/" target="_blank" rel="noopener noreferrer">Pixabay</a></dd><dt>Licence</dt><dd><a href="{P("licence")}">{LICENCES["PIXABAY"]}</a></dd><dt>Plays</dt><dd>{t["plays"]}</dd></dl>')
     default = (f'<section class="hero" aria-label="Track">{cover(a["cover"])}<div class="stack"><span class="overline">Track · {t["dur"]}</span>'
                f'<div class="cluster">{acts}</div>{wave()}</div></section><section class="section"><h2 style="font:var(--text-h3);margin-bottom:var(--space-3)">Details</h2>{dl}</section>'
                + shelf("More from Kaiso Collective", track_list(["jouvert-morning"], label="More from Kaiso Collective")))
     sk = '<div class="skeleton skeleton--rect" style="height:14rem"></div>' + skel_rows(3)
-    gone = alert("warning", "This track is no longer available", "Its creator withdrew it, so we can’t play it. It was licensed {0}; copies already shared keep that licence.".format(LICENCES["CC0"])) + shelf("Similar tracks", track_list(["road-march-riddim", "panyard-nights"], label="Similar tracks"))
+    gone = alert("warning", "This track is no longer available", "Its creator withdrew it, so we can’t play it. It was licensed {0}; copies already shared keep that licence.".format(LICENCES["PIXABAY"])) + shelf("Similar tracks", track_list(["road-march-riddim", "panyard-nights"], label="Similar tracks"))
     c = {"default": default, "loading": sk, "error": err("This track didn’t load"), "unavailable": gone}
     return frame(state, "browse", "Feathers Up", f'<a href="{P("artist")}">Kaiso Collective</a> · Mas on the Avenue', c)
 
 
 def artist(state):
     a = A["kaiso-collective"]
-    default = (f'<section class="hero">{cover(a["cover"]).replace("cover ", "cover round ", 1)}<div class="stack"><span class="overline">Artist · {a["model"]}</span>'
-               f'<p class="text-muted">A soca band generated with an open-weights model. Brass sections, iron rhythm and road-march hooks, recorded live on the Avenue.</p>'
+    default = (f'<section class="hero">{cover(a["cover"]).replace("cover ", "cover round ", 1)}<div class="stack"><span class="overline">Artist</span>'
                f'<div class="cluster">{btn("Play", "primary", "play")}{btn("Follow", "", "plus", " aria-pressed=\"false\"")}{btn("Share", "", "share", href=D("share"))}</div></div></section>'
                + shelf("Popular", track_list(["feathers-up", "jouvert-morning"], playing="feathers-up", label="Popular tracks"))
                + shelf("Releases", f'<div class="card-grid"><a class="card-track" href="{P("album")}"><span class="card-track__art">{cover(a["cover"])}</span><span class="card-track__title"><span>Mas on the Avenue</span></span><span class="card-track__meta">2026 · 2 tracks</span></a></div>'))
@@ -174,11 +174,11 @@ def shared_track(state):
 
 
 SCREENS = [
-    dict(id="home", kind="page", title="Home", route="/", states=["default", "loading", "empty", "error", "offline", "partial", "kids"], render=home, desc="Home with the featured album billboard and shelves of tracks"),
+    dict(id="home", kind="page", title="Home", route="/", states=["default", "loading", "empty", "no-music", "error", "offline", "partial", "kids"], render=home, desc="Home with the featured album billboard and shelves of tracks"),
     dict(id="browse", kind="page", title="Browse", route="/browse", states=["default", "loading", "error"], na={"empty": "Genres and moods are fixed catalogue categories; the list is never empty."}, render=browse, desc="Genre and mood directory"),
     dict(id="genre", kind="page", title="Genre", route="/genres/:slug", states=["default", "loading", "empty", "error"], render=genre, desc="Tracks in one genre with play-all and sort"),
     dict(id="search", kind="page", title="Search", route="/search", states=["default", "loading", "empty", "no-results", "error"], render=search, desc="Search overlay over the current page: recent searches, browse by sound and results"),
-    dict(id="track", kind="page", title="Track", route="/tracks/:id", states=["default", "loading", "error", "unavailable"], na={"empty": "A track page always has its track; a missing track is the 404 screen."}, render=track, desc="Track details with waveform, licence and model credit"),
+    dict(id="track", kind="page", title="Track", route="/tracks/:id", states=["default", "loading", "error", "unavailable"], na={"empty": "A track page always has its track; a missing track is the 404 screen."}, render=track, desc="Track details with waveform, source, licence and credit"),
     dict(id="artist", kind="page", title="Artist", route="/artists/:id", states=["default", "loading", "empty", "error"], render=artist, desc="Artist profile with popular tracks and releases"),
     dict(id="album", kind="page", title="Album", route="/albums/:id", states=["default", "loading", "error"], na={"empty": "An album exists only when it has at least one track."}, render=album, desc="Album track list and licence summary"),
     dict(id="playlist", kind="page", title="Playlist", route="/playlists/:id", states=["default", "loading", "empty", "error", "selected", "read-only"], render=playlist, desc="Playlist with owner actions, multi-select and read-only view of someone else's playlist"),

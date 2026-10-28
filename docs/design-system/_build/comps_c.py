@@ -32,14 +32,15 @@ SPECS.append(dict(
     tokens=[("Divider", "--color-border-default"), ("Hover", "--color-bg-subtle"), ("Title", "--color-fg-default"), ("Meta", "--color-fg-muted")], classes=[("list / list__item / list__body", "Structure"), ("list__title / list__meta", "Text"), ("list__item--interactive", "Hover and focus")], sources=["pages/notifications/default"]))
 
 DL = '<dl class="dl"><dt>Artist</dt><dd><a href="#code">Lumen Fox</a></dd><dt>Genre</dt><dd>Ambient</dd><dt>Licence</dt><dd>CC0 1.0 (public domain)</dd></dl>'
+DL_EXTERNAL = '<dl class="dl"><dt>Source</dt><dd><a href="https://pixabay.com/music/" target="_blank" rel="noopener noreferrer" aria-label="Pixabay (opens in a new tab)">Pixabay</a></dd><dt>Licence</dt><dd><a href="#code">Pixabay Content License</a></dd></dl>'
 SPECS.append(dict(
     slug="description-list", name="Description list", group="Data display", lead="Key and value pairs for facts about one thing.",
     overview="Use for details such as a track’s artist, genre and licence.",
     parts=[("Term", "Muted label"), ("Description", "The value")],
-    variants=[("Default", DL)], sizes=None, sizes_na="Inherits text size.", states=None,
+    variants=[("Default", DL), ("External link", DL_EXTERNAL)], sizes=None, sizes_na="Inherits text size.", states=None,
     responsive="Terms sit beside values from 768px; stacked above values on phones.",
-    a11y=dict(role="Native <code>&lt;dl&gt;</code>.", keys=[("n/a", "Not interactive; links inside are tab stops")], focus="Standard ring on links.", label="Terms name their values.", pairs=[("Term", "--color-fg-muted", "--color-bg-canvas", 4.5)]),
-    content="<p>Terms are nouns without colons.</p>",
+    a11y=dict(role="Native <code>&lt;dl&gt;</code>.", keys=[("n/a", "Not interactive; links inside are tab stops")], focus="Standard ring on links.", label="Terms name their values; an external link opens in a new tab and its accessible name says so.", pairs=[("Term", "--color-fg-muted", "--color-bg-canvas", 4.5)]),
+    content="<p>Terms are nouns without colons. A value that leads off Hummi, such as a track’s Source on Pixabay, is an external link: <code>href</code> instead of an in-app route, opening in a new tab with <code>rel=\"noopener noreferrer\"</code>. In Angular an item is <code>{ term, value, link? }</code> for an in-app route or <code>{ term, value, href? }</code> for an external page.</p>",
     dodont=[(DL, "Short noun terms.", DL.replace("<dt>Artist</dt>", "<dt>Who made this track:</dt>"), "Long terms with colons."), (DL, "Real dl markup.", "<p>Artist: Lumen Fox</p><p>Genre: Ambient</p>", "Paragraphs lose the pairing.")],
     tokens=[("Term text", "--color-fg-muted"), ("Gap", "--space-2")], classes=[("dl", "Grid of terms and descriptions")], sources=["pages/track/default"]))
 

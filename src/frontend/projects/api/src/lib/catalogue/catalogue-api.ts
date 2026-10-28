@@ -5,8 +5,8 @@ import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../api-base-url';
 import { TrackSummaryDto } from '../playback/playback-api';
 
-/** The three open licences; every track carries exactly one. */
-export type Licence = 'cc0' | 'ccBy4' | 'ccBySa4';
+/** The licences Hummi accepts; every track carries exactly one, and imported tracks the Pixabay one (ADR 0021). */
+export type Licence = 'cc0' | 'ccBy4' | 'ccBySa4' | 'pixabay';
 
 export interface ArtistRefDto {
   slug: string;
@@ -31,11 +31,13 @@ export interface TrackDetailDto {
   artist: ArtistRefDto;
   album: AlbumRefDto | null;
   genre: string | null;
-  /** The open-weights model, for example "openmusic-3b". */
-  generatedWith: string;
+  /** The open-weights model that generated the track; null when unknown, as for every Pixabay track. */
+  generatedWith: string | null;
   licence: Licence;
-  /** For example "CC0 1.0 (public domain)". */
+  /** For example "Pixabay Content License". */
   licenceLabel: string;
+  /** The track's page at its source, its Pixabay Music page; null when unknown. */
+  sourceUrl: string | null;
   plays: number;
   playable: boolean;
   liked: boolean;
@@ -57,7 +59,9 @@ export interface AlbumTileDto {
 export interface ArtistDetailDto {
   slug: string;
   name: string;
-  modelName: string;
+  /** Null when unknown, as for every Pixabay uploader. */
+  modelName: string | null;
+  /** Empty when the artist has none. */
   description: string;
   monthlyListeners: number;
   coverUrl: string | null;

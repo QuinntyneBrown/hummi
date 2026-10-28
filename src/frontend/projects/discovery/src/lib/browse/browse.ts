@@ -32,6 +32,12 @@ export class BrowseComponent {
   readonly tiles = [1, 2, 3, 4, 5, 6];
 
   subtitle(genres: number, tracks: number): string {
-    return `${genres} genres · ${tracks.toLocaleString('en-GB')} openly licensed tracks`;
+    const count =
+      tracks === 0
+        ? 'no tracks yet'
+        : tracks === 1
+          ? '1 freely licensed track'
+          : `${tracks.toLocaleString('en-GB')} freely licensed tracks`;
+    return `${genres} genres · ${count}`;
   }
 }

@@ -121,6 +121,8 @@ const GENRE_NAMES: Record<string, string> = {
   soca: 'Soca',
   steelpan: 'Steelpan & Calypso',
   'island-chill': 'Island chill',
+  reggae: 'Reggae',
+  zouk: 'Zouk',
 };
 
 const track = (
@@ -203,6 +205,8 @@ export async function fakeHome(
     delayMs?: number;
     hasHistory?: boolean;
     featured?: unknown;
+    /** Answers the billboard with this status instead, e.g. 404 NO_FEATURED_ALBUM when no album exists. */
+    featuredStatus?: number;
     shelves?: Record<string, number>;
     newIds?: string[];
     tracks?: Record<string, FakeTrack[]>;
@@ -227,7 +231,7 @@ export async function fakeHome(
   );
   await page.route('**/api/home/featured', (route) => {
     calls++;
-    return answer(route, options.status ?? 200, options.featured ?? FEATURED);
+    return answer(route, options.featuredStatus ?? options.status ?? 200, options.featured ?? FEATURED);
   });
   await page.route(/\/api\/home\/shelves\/[^/?]+$/, (route) => {
     const key = new URL(route.request().url()).pathname.split('/').pop()!;
@@ -261,12 +265,12 @@ export const DIRECTORY = (() => {
   return { genreCount: 10, openlyLicensedTrackCount: 4812, moods: genres.slice(0, 7), genres };
 })();
 
-/** Answers GET /api/genres. */
-export async function fakeGenres(page: Page, options: { status?: number } = {}): Promise<void> {
+/** Answers GET /api/genres (the demo DIRECTORY unless another directory is given). */
+export async function fakeGenres(page: Page, options: { status?: number; directory?: unknown } = {}): Promise<void> {
   await page.route('**/api/genres', (route) =>
     route.fulfill(
       (options.status ?? 200) === 200
-        ? { status: 200, contentType: 'application/json', body: JSON.stringify(DIRECTORY) }
+        ? { status: 200, contentType: 'application/json', body: JSON.stringify(options.directory ?? DIRECTORY) }
         : {
             status: options.status,
             contentType: 'application/problem+json',
@@ -285,7 +289,12 @@ export const SOCA_NEWEST = [TRACKS.feathersUp, TRACKS.bigTruck, TRACKS.panyard, 
  */
 export async function fakeGenreTracks(
   page: Page,
-  options: { empty?: boolean; trackCount?: number; tracks?: FakeTrack[] } = {},
+  options: {
+    empty?: boolean;
+    trackCount?: number;
+    tracks?: FakeTrack[];
+    genre?: { slug: string; name: string; description: string; tone: number };
+  } = {},
 ): Promise<{ sorts: string[] }> {
   const sorts: string[] = [];
   await page.route(/\/api\/genres\/[^/]+\/tracks/, (route) => {
@@ -298,10 +307,12 @@ export async function fakeGenreTracks(
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
-        slug: 'soca',
-        name: 'Soca',
-        description: 'road-march riddims, J’ouvert mornings and fete anthems',
-        tone: 1,
+        ...(options.genre ?? {
+          slug: 'soca',
+          name: 'Soca',
+          description: 'road-march riddims, J’ouvert mornings and fete anthems',
+          tone: 1,
+        }),
         trackCount: options.empty ? 0 : (options.trackCount ?? 1204),
         sort,
         page: 1,
@@ -349,6 +360,7 @@ export const PEAKS = Array.from({ length: 64 }, (_, i) =>
 
 /** GET /api/tracks/feathers-up as the demo catalogue answers it. */
 export const FEATHERS_UP_DETAIL = {
+  sourceUrl: null as string | null,
   id: TRACKS.feathersUp.id,
   slug: 'feathers-up',
   title: 'Feathers Up',
@@ -508,7 +520,7 @@ export const PAN_RESULTS = {
  */
 export async function fakeSearch(
   page: Page,
-  options: { status?: number; delayMs?: number } = {},
+  options: { status?: number; delayMs?: number; results?: Record<string, unknown> } = {},
 ): Promise<{ queries: string[] }> {
   const queries: string[] = [];
   await page.route('**/api/search?*', async (route) => {
@@ -525,7 +537,9 @@ export async function fakeSearch(
           code: 'SEARCH_UNAVAILABLE',
         }),
       });
-    const body = q === 'pan' ? PAN_RESULTS : { query: q, topResult: null, artists: [], songs: [] };
+    const body =
+      options.results?.[q] ??
+      (q === 'pan' && !options.results ? PAN_RESULTS : { query: q, topResult: null, artists: [], songs: [] });
     return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
   });
   return { queries };
@@ -861,7 +875,13 @@ export async function fakeSettings(
   return { saved, current: () => current };
 }
 
-const hoursAgo = (h: number) => new Date(Date.now() - h * 3_600_000).toISOString();
+/**
+ * The moment the notification fixtures are written for: Tuesday 27 October 2026, 14:00 local time. Tests that
+ * check relative times pin the browser clock to it, so "Yesterday" does not depend on when the suite runs.
+ */
+export const NOTIFICATIONS_NOW = new Date(2026, 9, 27, 14);
+
+const hoursAgo = (h: number) => new Date(NOTIFICATIONS_NOW.getTime() - h * 3_600_000).toISOString();
 
 /** The four kinds of the mocks, newest first; the first three unread (L2-036 AC2). */
 export const NOTIFICATIONS = [
@@ -953,3 +973,81 @@ export const test = base.extend<{ visitor: void }>({
 });
 
 export { expect };
+
+/**
+ * A small catalogue of Pixabay tracks (ADR 0021, L2-058), as the API answers once `hummi seed` has run on a
+ * manifest of one or a few tracks. The values are test fixtures, not catalogue data.
+ */
+export const PIXABAY = {
+  first: track('fixture-song', 'Fixture Song', 'fixture_artist', 171, false, 'reggae'),
+  second: track('second-fixture', 'Second Fixture', 'other_artist', 125, false, 'zouk'),
+  third: track('third-fixture', 'Third Fixture', 'fixture_artist', 98, false, null),
+};
+
+/** The Reggae genre as GET /api/genres/reggae/tracks names it. */
+export const REGGAE = {
+  slug: 'reggae',
+  name: 'Reggae',
+  description: 'one-drop basslines and Sunday sound systems',
+  tone: 4,
+};
+
+export const PIXABAY_SOURCE = 'https://pixabay.com/music/beats-fixture-song-1/';
+
+/** GET /api/tracks/fixture-song: no album, no model, the Pixabay licence and its source page. */
+export const PIXABAY_DETAIL = {
+  id: PIXABAY.first.id,
+  slug: PIXABAY.first.slug,
+  title: PIXABAY.first.title,
+  durationSeconds: PIXABAY.first.durationSeconds,
+  coverUrl: null,
+  artist: { slug: 'fixture-artist', name: 'fixture_artist' },
+  album: null,
+  genre: 'Reggae',
+  generatedWith: null,
+  licence: 'pixabay',
+  licenceLabel: 'Pixabay Content License',
+  sourceUrl: PIXABAY_SOURCE,
+  plays: 0,
+  playable: true,
+  liked: false,
+  waveform: [],
+  moreFromArtist: [],
+  similar: [],
+};
+
+/** GET /api/artists/fixture-artist: an uploader with no model and no description. */
+export const PIXABAY_ARTIST = {
+  slug: 'fixture-artist',
+  name: 'fixture_artist',
+  modelName: null,
+  description: '',
+  monthlyListeners: 0,
+  coverUrl: null,
+  following: false,
+  popular: [PIXABAY.first],
+  releases: [],
+};
+
+/** Home's shelves for a catalogue of these tracks: newest first, Top 10 by title (no plays), genres by slug. */
+export function smallCatalogueShelves(tracks: FakeTrack[]): Record<string, FakeTrack[]> {
+  const inGenre = (slug: string) => tracks.filter((t) => t.genreSlug === slug);
+  return {
+    'recently-added': tracks.slice(0, 6),
+    'top-10': [...tracks].sort((a, b) => a.title.localeCompare(b.title)).slice(0, 10),
+    soca: inGenre('soca'),
+    kids: inGenre('kids'),
+    steelpan: inGenre('steelpan'),
+    dancehall: inGenre('dancehall'),
+    'island-chill': inGenre('island-chill'),
+  };
+}
+
+/** GET /api/genres for a catalogue of these tracks. */
+export function smallCatalogueDirectory(tracks: FakeTrack[]): typeof DIRECTORY {
+  const genres = DIRECTORY.genres.map((g) => ({
+    ...g,
+    trackCount: tracks.filter((t) => t.genreSlug === g.slug).length,
+  }));
+  return { genreCount: 10, openlyLicensedTrackCount: tracks.length, moods: genres.slice(0, 7), genres };
+}

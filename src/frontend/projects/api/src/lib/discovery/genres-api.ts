@@ -13,7 +13,7 @@ export interface GenreTileDto {
   trackCount: number;
 }
 
-/** GET /api/genres: the ten genres, the mood chips and the openly licensed track count. */
+/** GET /api/genres: the ten genres, the mood chips and the count of playable, freely licensed tracks. */
 export interface GenreDirectoryDto {
   genreCount: number;
   openlyLicensedTrackCount: number;

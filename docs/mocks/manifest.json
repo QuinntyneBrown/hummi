@@ -9,6 +9,7 @@
         "default",
         "loading",
         "empty",
+        "no-music",
         "error",
         "offline",
         "partial",
