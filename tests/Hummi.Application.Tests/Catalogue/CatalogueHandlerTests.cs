@@ -72,6 +72,30 @@ public sealed class CatalogueHandlerTests
     }
 
     [Fact]
+    public async Task L2_008_AC3_a_pixabay_track_has_its_source_and_licence_and_no_model()
+    {
+        using var c = new Catalogue();
+        var uploader = Artist.Create("SoundUniverseStudio");
+        c.Db.Artists.Add(uploader);
+        c.Db.Tracks.Add(Track.Create(
+            "High Times", uploader.Id, 180, null, TestDb.Now, licence: Licence.Pixabay,
+            sourceUrl: "https://pixabay.com/music/reggae-shamrock-high-times-happy-420-203465/"));
+        c.Db.SaveChanges();
+
+        var track = (await new GetTrackQueryHandler(c.Db).Handle(new GetTrackQuery("high-times"), default)).Value!;
+        var artist = (await new GetArtistQueryHandler(c.Db).Handle(new GetArtistQuery("sounduniversestudio"), default)).Value!;
+
+        Assert.Null(track.GeneratedWith);
+        Assert.Equal(Licence.Pixabay, track.Licence);
+        Assert.Equal("Pixabay Content License", track.LicenceLabel);
+        Assert.Equal("https://pixabay.com/music/reggae-shamrock-high-times-happy-420-203465/", track.SourceUrl);
+        Assert.Null(track.Album);
+        Assert.Null(track.Genre);
+        Assert.Null(artist.ModelName);
+        Assert.Equal(string.Empty, artist.Description);
+    }
+
+    [Fact]
     public async Task L2_008_AC4_more_from_lists_the_artists_other_playable_tracks_and_no_similar_shelf()
     {
         using var c = new Catalogue();

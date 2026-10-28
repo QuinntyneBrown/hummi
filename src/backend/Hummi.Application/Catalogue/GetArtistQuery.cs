@@ -19,7 +19,7 @@ public sealed record AlbumTileDto(string Slug, string Title, int Year, int Track
 public sealed record ArtistDetailDto(
     string Slug,
     string Name,
-    string ModelName,
+    string? ModelName,
     string Description,
     int MonthlyListeners,
     string? CoverUrl,

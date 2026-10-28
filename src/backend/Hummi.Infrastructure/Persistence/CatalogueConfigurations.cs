@@ -12,7 +12,7 @@ internal sealed class ArtistConfiguration : IEntityTypeConfiguration<Artist>
         builder.Property(a => a.Id).ValueGeneratedNever();
         builder.Property(a => a.Name).HasMaxLength(200).IsRequired();
         builder.Property(a => a.Slug).HasMaxLength(200).IsRequired();
-        builder.Property(a => a.ModelName).HasMaxLength(100).IsRequired();
+        builder.Property(a => a.ModelName).HasMaxLength(100);
         builder.Property(a => a.Description).HasMaxLength(2000).IsRequired();
         builder.HasIndex(a => a.Slug).IsUnique();
     }
@@ -26,6 +26,8 @@ internal sealed class TrackConfiguration : IEntityTypeConfiguration<Track>
         builder.Property(t => t.Id).ValueGeneratedNever();
         builder.Property(t => t.Title).HasMaxLength(300).IsRequired();
         builder.Property(t => t.CoverUrl).HasMaxLength(2048);
+        builder.Property(t => t.SourceUrl).HasMaxLength(2048);
+        builder.Property(t => t.AudioExtension).HasMaxLength(8).IsRequired().HasDefaultValue(".wav");
         builder.Property(t => t.Slug).HasMaxLength(300).IsRequired();
         builder.Property(t => t.Waveform).HasMaxLength(256).IsRequired();
         builder.HasIndex(t => t.Slug).IsUnique();

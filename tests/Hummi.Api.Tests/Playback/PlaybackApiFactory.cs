@@ -47,6 +47,20 @@ public sealed class PlaybackApiFactory : WebApplicationFactory<Program>
         return tracks;
     }
 
+    /// <summary>Adds one Pixabay track by an uploader with no model, with an MP3 file (ADR 0021).</summary>
+    public async Task<Track> SeedPixabayAsync(string uploader, string title, string sourceUrl)
+    {
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<HummiDbContext>();
+        var artist = Artist.Create(uploader);
+        var track = Track.Create(title, artist.Id, 180, null, DateTimeOffset.UnixEpoch, licence: Licence.Pixabay, sourceUrl: sourceUrl);
+        db.Artists.Add(artist);
+        db.Tracks.Add(track);
+        await db.SaveChangesAsync();
+        Media.Files[track.AudioPath] = [0x49, 0x44, 0x33, 4, 0, 0, 0, 0, 0, 0];
+        return track;
+    }
+
     /// <summary>Creates the schema with its ten seeded genres and adds tracks to one of them, newest last.</summary>
     public async Task<Track[]> SeedGenreAsync(string slug, params string[] titles)
     {
