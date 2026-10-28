@@ -18,10 +18,37 @@ Hummi is a free streaming platform for open-source AI-generated music. Discover,
 Hummi is a responsive web application built with [Angular](https://angular.dev) and [ASP.NET Core](https://dotnet.microsoft.com).
 
 > [!NOTE]
-> Hummi is at the scaffold stage. The workspace builds and tests; product journeys are defined in `docs/journeys.md` and built one at a time.
+> All planned product journeys are implemented. `npm run verify` passes on `main`, and every push to `main` that passes CI is deployed.
+
+## Features
+
+- **Discover**: browse the home feed, genres and curated collections.
+- **Play**: a persistent player with queue, seek, volume and keyboard control.
+- **Search**: find tracks, artists and genres.
+- **Accounts**: register, verify email, sign in and manage settings.
+- **Library**: like tracks, build playlists and keep a listening history.
+- **Share**: share tracks and playlists with a link.
+- **Listen offline**: saved pages and audio keep working without a connection.
+- **Notifications and feedback**: clear banners, dialogs and error pages.
+- **Report**: flag a track for review.
+- **Responsive and accessible**: light and dark themes, WCAG 2.2 AA design system.
+
+See [docs/journeys.md](docs/journeys.md) for the full list of user journeys.
+
+## Architecture
+
+| Layer    | Technology                                                                                          |
+| -------- | --------------------------------------------------------------------------------------------------- |
+| Frontend | Angular workspace: one application, a shared `components` library, an `api` library and one library per feature area |
+| Backend  | ASP.NET Core Web API, MediatR, EF Core on SQL Server, a hosted-service worker                       |
+| Hosting  | Docker Compose on one Linux VM behind Caddy, deployed by GitHub Actions                             |
+
+The backend follows Clean Architecture: `Api` and `Worker` depend on `Application`, which depends on `Domain`; `Infrastructure` implements the `Application` ports. Architecture tests enforce this. Decisions are recorded in [docs/adr/](docs/adr).
 
 ## Contents
 
+- [Features](#features)
+- [Architecture](#architecture)
 - [Getting started](#getting-started)
 - [Configuration](#configuration)
 - [Testing](#testing)
@@ -133,7 +160,7 @@ hummi/
 ├── docs/           journeys, specs, mocks, design system, detailed designs, estimates, ADRs
 ├── src/
 │   ├── backend/    .NET solution (Api, Application, Domain, Infrastructure, Worker, Migrator, Cli)
-│   └── frontend/   Angular workspace (app, api and components libraries, Playwright e2e)
+│   └── frontend/   Angular workspace (app, api, components and feature libraries, Playwright e2e)
 └── tests/          backend unit, integration and architecture tests
 ```
 
@@ -141,6 +168,10 @@ hummi/
 
 - [AGENTS.md](AGENTS.md): working agreement for coding agents (folder structure, testing rules, conventions)
 - [docs/journeys.md](docs/journeys.md): user journeys with effort
+- [docs/specs/](docs/specs): L1 and L2 requirements
+- [docs/design-system/](docs/design-system): tokens and components
+- [docs/detailed-designs/](docs/detailed-designs): per-feature designs
+- [CHANGELOG.md](CHANGELOG.md): release history
 - [docs/deployment.md](docs/deployment.md): production host, deploy workflow, rollback
 - [docs/adr/](docs/adr): architecture decision records
 
