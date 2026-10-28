@@ -49,6 +49,12 @@ Content License. The fixed genre list of ADR 0006 does not match Pixabay's genre
 - **Small catalogues.** Home hides a shelf that has no tracks and, with no tracks at all, shows "No music yet".
   Every other screen already had an empty state.
 
+## Deferred
+
+- Uploading by users, streaming from Pixabay itself and any non-Pixabay source.
+- Committing audio: Pixabay MP3s are several MB each, beyond the repository's size norms. The manifest is the
+  source of truth and `hummi import` restores the audio from it.
+
 ## Consequences
 
 - When this ADR was written the session's network policy denied `pixabay.com`, so no page could be read and no

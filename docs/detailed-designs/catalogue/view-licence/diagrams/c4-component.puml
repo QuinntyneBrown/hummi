@@ -5,7 +5,7 @@ title Components — View licence and credit
 
 Container_Boundary(spa, "Hummi web application") {
   Component(page, "LicencePage", "Routed component in @hummi/catalogue", "Renders the header, the info hm-alert with\nthe credit line, the Licences on Hummi\nhm-table and the Back to {title} link")
-  Component(terms, "LICENCE_TERMS", "Constant in @hummi/catalogue", "Maps each Licence to its label, permissions\nand conditions")
+  Component(terms, "LICENCE_TERMS", "Constant in @hummi/catalogue", "Maps each Licence to its label, permissions,\nconditions and licence URL")
   Component(client, "TracksApi", "Typed HTTP service in @hummi/api", "Calls GET /api/tracks/{slug}")
 }
 Container_Boundary(api, "Hummi.Api") {
@@ -19,5 +19,5 @@ Rel(client, ctl, "GET /api/tracks/slow-orbit")
 Rel(ctl, q, "Send GetTrackQuery")
 Rel(q, ctx, "Load track")
 Rel(ctx, db, "SELECT")
-Rel(page, terms, "Lookup Cc0")
+Rel(page, terms, "Lookup pixabay")
 @enduml

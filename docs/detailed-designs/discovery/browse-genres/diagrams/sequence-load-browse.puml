@@ -41,7 +41,7 @@ q --> ctl : Result<GenreDirectoryDto>
 alt success
   ctl --> client : 200 GenreDirectoryDto
   client --> page : Directory
-  page --> u : "10 genres · 4,812 openly licensed tracks", Moods, All genres (L2-003)
+  page --> u : "10 genres · 4,812 freely licensed tracks", Moods, All genres (L2-003)
 else failure
   ctl --> client : 5xx ProblemDetails
   client --> page : Error

@@ -14,7 +14,8 @@ Anything listed here is **deferred and must not be looked at**: do not write spe
 mocks, designs, estimates, prompts, code or tests for it, and do not re-add references to it.
 Record each deferral as an ADR in `docs/adr/general/`.
 
-- None yet.
+- Uploading by users, streaming from Pixabay itself, and any catalogue source other than Pixabay Music (ADR 0021).
+- Committing audio files to the repository; the Pixabay manifest is the source of truth (ADR 0021).
 
 ## Testing rules (CRITICAL)
 
@@ -60,7 +61,7 @@ hummi/
 │   │   ├── Hummi.Infrastructure/ EF Core DbContext, repositories, adapters
 │   │   ├── Hummi.Worker/        hosted background jobs
 │   │   ├── Hummi.Migrator/      applies EF Core migrations
-│   │   └── Hummi.Cli/           developer tool: `reset` and `seed` a local demo install
+│   │   └── Hummi.Cli/           developer tool: `import` Pixabay tracks into Catalogue/pixabay-manifest.json, `seed` and `reset` a local install
 │   └── frontend/               Angular workspace (see below)
 │       ├── angular.json
 │       ├── package.json
@@ -77,6 +78,14 @@ hummi/
 ```
 
 `Hummi.Cli` is a developer tool only: deployments and CI never run it against a database.
+
+## Catalogue (ADR 0021)
+
+- Every track is a real track from Pixabay Music. `src/backend/Hummi.Cli/Catalogue/pixabay-manifest.json` is
+  the source of truth; never add invented tracks, artists, albums, descriptions, licences or model names to
+  code, seed data or the manifest. A field Pixabay does not give stays empty.
+- Audio is never committed; `hummi import` restores it from the manifest's URLs and SHA-256.
+- Tests use fixture pages and fixture tracks through fakes (`IPixabayWeb`, `page.route`); they never fetch Pixabay.
 
 ## Backend conventions
 

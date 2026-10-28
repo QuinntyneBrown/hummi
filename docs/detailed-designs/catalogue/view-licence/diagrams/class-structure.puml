@@ -16,12 +16,14 @@ enum Licence {
   Cc0
   CcBy4
   CcBySa4
+  Pixabay
 }
 class LicenceTerm {
   +licence: Licence
   +label: string
   +youMay: string
   +youMust: string
+  +url?: string
 }
 class LicencePage {
   +track: Signal<TrackDetailDto>
@@ -31,10 +33,11 @@ class LicencePage {
 class TrackDetailDto {
   +string Title
   +string ArtistName
-  +string GeneratedWith
+  +string? GeneratedWith
   +Licence Licence
+  +string? SourceUrl
 }
 LicencePage ..> TrackDetailDto
-LicencePage ..> LicenceTerm : renders 3
+LicencePage ..> LicenceTerm : renders TABLE_LICENCES
 LicenceTerm --> Licence
 @enduml

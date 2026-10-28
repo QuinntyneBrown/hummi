@@ -4,11 +4,13 @@
 
 The catalogue subsystem presents what Hummi carries: tracks, artists, albums and their licences. The
 track page (`/tracks/{slug}`) is the canonical page of one track. It shows the track's artist and
-album, its waveform, a details list that names the open-weights model that generated it and its
-licence, and a shelf of more tracks by the same artist. From here the listener plays, likes, adds to
+album, its waveform, a details list that names its source (the track's Pixabay page), the
+open-weights model that generated it when one is known, and its licence, and a shelf of more tracks by
+the same artist. From here the listener plays, likes, adds to
 a playlist, shares or reports the track.
 
-- **open-weights model** — generative model whose weights are publicly released, named in "Generated with" (e.g. `openmusic-3b`)
+- **open-weights model** — generative model whose weights are publicly released, named in "Generated with" when known; Pixabay tracks name none (ADR 0021)
+- **source** — the track's Pixabay Music page, linked from the "Source" row in a new tab
 - **withdrawn track** — track its creator removed from playback; its page remains, with a notice and similar tracks
 - **waveform** — precomputed amplitude peaks drawn as bars, filled up to the played proportion
 
@@ -32,8 +34,8 @@ The slice is one read query and the page that renders it; actions delegate to ot
 
 **Backend — Hummi Application and Domain**
 
-- **`GetTrackQueryHandler`** — MediatR query handler. Loads the track with artist, published album and genre, and sets `Playable`. A playable track gets More from: up to 6 of the artist's other playable tracks, most played first. A withdrawn track gets Similar tracks instead: up to 6 playable tracks of the same genre (of the same artist when it has no genre), most played first. "Generated with" is the artist's `ModelName`
-- **`Track`** — Domain entity. `IsPlayable` is false once `Withdrawn` (`L2-009`); `Licence` is exactly one of the three licences; `Waveform` holds 64 precomputed peaks from 0 to 100
+- **`GetTrackQueryHandler`** — MediatR query handler. Loads the track with artist, published album and genre, and sets `Playable`. A playable track gets More from: up to 6 of the artist's other playable tracks, most played first. A withdrawn track gets Similar tracks instead: up to 6 playable tracks of the same genre (of the same artist when it has no genre), most played first. "Generated with" is the artist's `ModelName` (null when unknown); `SourceUrl` is the track's Pixabay page
+- **`Track`** — Domain entity. `IsPlayable` is false once `Withdrawn` (`L2-009`); `Licence` is exactly one licence, `Pixabay` for imported tracks; `Waveform` holds 64 precomputed peaks from 0 to 100
 
 **Backend — Hummi Infrastructure**
 
@@ -46,7 +48,7 @@ The feature realizes the following level-2 (L2) requirements. Each L2 requiremen
 
 | L2 ID | Refines (L1) | Requirement |
 |-------|--------------|-------------|
-| `L2-008` | `L1-003` | **Track page.** 1. Given the track Feathers Up, when a listener opens `/tracks/feathers-up`, then the heading is "Feathers Up", the subtitle is "Kaiso Collective · Mas on the Avenue" with the artist linking to the artist page, and the overline is "Track · 3:42".<br>2. Given the track page, when it loads, then it shows the actions "Play", "Like Feathers Up", "Add to playlist", "Share" and "Report this track", and a waveform showing the played proportion.<br>3. Given the track page, when it loads, then a "Details" list shows Artist (link), Album (link), Genre, "Generated with" (e.g. "openmusic-3b (open weights)"), Licence (link to the licence page, e.g. "CC0 1.0 (public domain)") and Plays (e.g. "128,904").<br>4. Given the track page, when it loads, then a "More from {artist}" shelf lists other tracks by the same artist.<br>5. Given "Add to playlist", "Share" or "Report this track", when activated, then the matching dialog opens (L2-020, L2-025, L2-038). |
+| `L2-008` | `L1-003` | **Track page.** 1. Given the track Feathers Up, when a listener opens `/tracks/feathers-up`, then the heading is "Feathers Up", the subtitle is "Kaiso Collective · Mas on the Avenue" with the artist linking to the artist page, and the overline is "Track · 3:42".<br>2. Given the track page, when it loads, then it shows the actions "Play", "Like Feathers Up", "Add to playlist", "Share" and "Report this track", and a waveform showing the played proportion.<br>3. Given the track page, when it loads, then a "Details" list shows Artist (link), Album (link, only when the track is on an album), Genre (only when classified), "Generated with" (only when the model is known, e.g. "openmusic-3b (open weights)"), Source (for a Pixabay track, "Pixabay" linking to the track's Pixabay page in a new tab), Licence (link to the licence page, e.g. "Pixabay Content License") and Plays (e.g. "128,904").<br>4. Given the track page, when it loads, then a "More from {artist}" shelf lists other tracks by the same artist.<br>5. Given "Add to playlist", "Share" or "Report this track", when activated, then the matching dialog opens (L2-020, L2-025, L2-038). |
 | `L2-009` | `L1-003` | **Withdrawn track.** 1. Given a track its creator withdrew, when a listener opens its page, then a warning reads "This track is no longer available" with "Its creator withdrew it, so we can’t play it. It was licensed {licence}; copies already shared keep that licence." and the track cannot be played.<br>2. Given a withdrawn track, when its page loads, then a "Similar tracks" shelf lists playable tracks.<br>3. Given a track id that does not exist, when a listener opens it, then the Not found page (L2-044) is shown. |
 
 ## Diagrams

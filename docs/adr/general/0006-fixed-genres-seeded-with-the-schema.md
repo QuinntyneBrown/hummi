@@ -2,6 +2,8 @@
 
 Status: Accepted (2026-10-27)
 
+Amended by ADR 0021: imported Pixabay tracks are classified only when their Pixabay genre or a tag names one of the ten genres; the licence is the Pixabay Content License.
+
 ## Context
 
 Journey 03 (browse genres) needs genres for Browse and the genre pages. L2-003 names exactly ten genres
