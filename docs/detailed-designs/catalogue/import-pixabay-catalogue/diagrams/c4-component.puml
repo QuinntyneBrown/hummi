@@ -1,0 +1,30 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Import the Pixabay catalogue
+
+Container_Boundary(cli, "Hummi.Cli") {
+  Component(app, "CliApp", "Command dispatcher", "import, seed, reset")
+  Component(importer, "PixabayImporter", "Class", "Imports each source, refuses incomplete pages, restores missing audio")
+  Component(page, "PixabayTrackPage", "Parser", "Reads JSON-LD and Open Graph metadata of a track page")
+  Component(port, "IPixabayWeb", "Port", "Fetches a page or a file; HttpPixabayWeb adapts HttpClient")
+  Component(manifest, "PixabayManifest", "Record + JSON store", "Sources and ManifestTrack entries")
+  Component(seeder, "DemoSeeder", "Class", "Seeds artists, tracks and demo listeners from the manifest")
+  Component(genres, "GenreMatch", "Static", "Maps a Pixabay genre or tag to one of the ten genres")
+}
+Container_Boundary(appl, "Hummi.Application") {
+  Component(cover, "GeneratedCover", "Static", "Deterministic SVG data URL from title and genre tone")
+}
+Container_Boundary(dom, "Hummi.Domain") {
+  Component(track, "Track, Artist, Licence", "Entities", "Licence.Pixabay, optional model, source URL, audio extension")
+}
+Rel(app, importer, "ImportAsync")
+Rel(app, seeder, "SeedAsync")
+Rel(importer, port, "GetPageAsync, GetFileAsync")
+Rel(importer, page, "Parse")
+Rel(importer, manifest, "Adds tracks")
+Rel(seeder, manifest, "Reads tracks")
+Rel(seeder, genres, "Match")
+Rel(seeder, cover, "DataUrl when no cover")
+Rel(seeder, track, "Create")
+@enduml

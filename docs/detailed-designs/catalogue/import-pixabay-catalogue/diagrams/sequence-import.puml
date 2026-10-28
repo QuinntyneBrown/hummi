@@ -1,0 +1,41 @@
+@startuml
+title UML sequence behaviour — Import a Pixabay track
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Developer" as dev
+box "Hummi.Cli" #E0F2FE
+  participant "CliApp" as app
+  participant "PixabayImporter" as imp
+  participant "PixabayTrackPage" as page
+  participant "IPixabayWeb" as web
+end box
+participant "Pixabay Music" as px
+database "Media cache" as media
+dev -> app : hummi import
+app -> imp : ImportAsync(manifest)
+loop each source URL not yet in tracks
+  imp -> web : GetPageAsync(source)
+  web -> px : GET track page
+  px --> web : HTML
+  imp -> page : Parse(source, html)
+  alt title, artist, duration, audio or licence missing
+    page --> imp : missing fields
+    imp --> app : refused "{url}: no {field}"
+  else complete
+    imp -> web : GetPageAsync(licence URL)
+    web -> px : GET licence summary
+    imp -> web : GetFileAsync(audio URL)
+    web -> px : GET MP3
+    imp -> media : write pixabay/{id}.mp3
+    imp -> imp : add ManifestTrack with SHA-256
+  end
+end
+loop each track whose audio is not cached
+  imp -> web : GetFileAsync(audio URL)
+  imp -> media : write only if SHA-256 matches
+end
+app -> app : save manifest, print report (L2-056)
+@enduml

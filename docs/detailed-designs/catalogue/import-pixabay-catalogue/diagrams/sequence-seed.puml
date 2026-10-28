@@ -1,0 +1,39 @@
+@startuml
+title UML sequence behaviour — Seed the catalogue from the manifest
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Developer" as dev
+box "Hummi.Cli" #E0F2FE
+  participant "CliApp" as app
+  participant "DemoSeeder" as seed
+  participant "GenreMatch" as gm
+end box
+participant "GeneratedCover" as cover
+database "Media volume" as media
+database "Hummi database" as db
+dev -> app : hummi seed
+app -> seed : SeedAsync(db, manifest, mediaRoot)
+seed -> db : any tracks?
+alt already seeded
+  seed --> app : nothing added
+else empty catalogue
+  loop each manifest track
+    seed -> media : read pixabay/{id}.mp3
+    alt missing or checksum differs
+      seed --> app : skipped "{title}"
+    else ok
+      seed -> gm : Slug(genre, tags)
+      opt no cover URL
+        seed -> cover : DataUrl(title, tone)
+      end
+      seed -> db : add Artist (no model), Track (Licence.Pixabay, source URL)
+      seed -> media : copy to tracks/{trackId}.mp3
+    end
+  end
+  seed -> db : demo listeners, likes, follows and playlists of seeded tracks only
+  seed --> app : SeedReport (L2-057)
+end
+@enduml

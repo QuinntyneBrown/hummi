@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Import the Pixabay catalogue
+
+Person(dev, "Developer")
+System_Boundary(hummi, "Hummi") {
+  Container(cli, "Hummi.Cli", ".NET console tool", "import: Pixabay pages to manifest and media cache; seed: manifest to database")
+  ContainerDb(manifest, "pixabay-manifest.json", "JSON file in the repository", "Sources and imported tracks with licence text")
+  ContainerDb(media, "Media volume", "Directory", "pixabay/{id}.mp3 cache and tracks/{trackId}.mp3")
+  ContainerDb(db, "Hummi database", "Azure SQL", "Artists, tracks, demo listeners")
+  Container(api, "Hummi.Api", "ASP.NET Core", "Serves the catalogue and streams audio")
+}
+System_Ext(pixabay, "Pixabay Music")
+Rel(dev, cli, "hummi import / hummi seed")
+Rel(cli, pixabay, "GET track page, licence page, MP3", "HTTPS")
+Rel(cli, manifest, "Reads and writes")
+Rel(cli, media, "Writes audio")
+Rel(cli, db, "Inserts catalogue", "EF Core")
+Rel(api, db, "Reads")
+Rel(api, media, "Streams audio")
+@enduml
