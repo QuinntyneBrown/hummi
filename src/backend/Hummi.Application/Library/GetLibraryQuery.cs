@@ -32,8 +32,10 @@ public sealed class GetLibraryQueryHandler(IHummiDbContext db) : IRequestHandler
             .Select(l => new { l.TrackId, l.LikedAt }).ToListAsync(cancellationToken);
         var likedIds = likes.Select(l => l.TrackId).ToList();
         var tracks = await db.Tracks.AsNoTracking().Where(t => likedIds.Contains(t.Id) && !t.Withdrawn).ToSummaries().ToListAsync(cancellationToken);
+        // Compare ids as Guids: SQL Server renders a uniqueidentifier as upper-case text, Guid.ToString() is lower-case.
+        var likedAt = likes.ToDictionary(l => l.TrackId, l => l.LikedAt);
         var liked = tracks
-            .OrderByDescending(t => likes.First(l => l.TrackId.ToString() == t.Id).LikedAt)
+            .OrderByDescending(t => likedAt[Guid.Parse(t.Id)])
             .Select(t => t with { Liked = true })
             .ToList();
 
