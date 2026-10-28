@@ -197,7 +197,8 @@ public sealed partial record PixabayTrackPage(
             return null;
         }
 
-        var title = WebUtility.HtmlDecode(name).Trim();
+        // Padded with a space so a name that is nothing but an ending (" | Royalty-free Music - Pixabay") empties.
+        var title = " " + WebUtility.HtmlDecode(name).Trim();
         var siteEnding = false;
         string? ending;
         while ((ending = SiteEndings.FirstOrDefault(e => title.EndsWith(e, StringComparison.OrdinalIgnoreCase))) is not null)
@@ -206,11 +207,13 @@ public sealed partial record PixabayTrackPage(
             siteEnding = true;
         }
 
-        if (siteEnding && !string.IsNullOrWhiteSpace(artist) && title.EndsWith($" by {artist.Trim()}", StringComparison.OrdinalIgnoreCase))
+        var byArtist = $" by {artist?.Trim()}";
+        if (siteEnding && !string.IsNullOrWhiteSpace(artist) && title.EndsWith(byArtist, StringComparison.OrdinalIgnoreCase))
         {
-            title = title[..^$" by {artist.Trim()}".Length].TrimEnd();
+            title = title[..^byArtist.Length];
         }
 
+        title = title.Trim();
         return title.Length > 0 ? title : null;
     }
 

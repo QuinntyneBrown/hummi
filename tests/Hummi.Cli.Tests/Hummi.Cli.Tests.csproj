@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Pixabay\Pages\*.html" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Pixabay\Pages\*.html" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
