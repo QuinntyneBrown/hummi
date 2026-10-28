@@ -68,9 +68,16 @@ Content License. The fixed genre list of ADR 0006 does not match Pixabay's genre
   gradient as `og:image`; and the licence summary has no `main`, so its cookie-consent panel leaked into the text.
 - Plain requests to pixabay.com pages get a Cloudflare challenge, from a cloud session and from a developer's
   machine alike, while `cdn.pixabay.com` serves audio and covers; hence `--pages`.
-- The committed manifest lists five real track pages under `sources`, one of them ("Dreaming Of Reggae",
-  217732) without a cover of its own, and no `tracks` yet: no real track has been imported. A fresh install has
-  an empty catalogue until the pages are saved and `hummi import --pages` runs on a developer's machine.
+- On 2026-10-28 eleven real tracks were imported with `hummi import --pages` on a developer's machine and none
+  was refused: five from the first sources, and six Soca tracks picked from Pixabay's "soca" search (only tracks
+  their own page tags Soca and that are Caribbean soca or carnival music; Spanish-language pop that merely carries
+  the tag was left out). Each was checked against its Pixabay page. Three have no cover of their own and get a
+  generated cover. A freshly migrated and seeded install showed them with their real audio (the streamed file is
+  byte-identical to Pixabay's MP3) and covers on Home, Browse, the genres, Search, the Top 10, the artist pages,
+  Library and a playlist, at desktop width and 360px.
+- That check found an older bug the in-memory tests could not: ids converted to text inside SQL Server queries
+  came back upper-case while `Guid.ToString()` is lower-case, so the library failed to load and playlists showed
+  no tracks. Ids built in queries are now lower-case.
 - The Pixabay Content License forbids redistributing content on a standalone basis. Streaming unmodified tracks
   may count as such use; the owner must clear this before a production catalogue is published. Local and demo
   installs only, until then.

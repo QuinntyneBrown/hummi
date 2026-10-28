@@ -99,8 +99,9 @@ The manifest owns its tracks and each track its licence; the seeder maps a manif
 - **Bot check on pixabay.com.** Plain requests to pixabay.com pages, from the cloud or a developer's machine, get a
   Cloudflare challenge; `cdn.pixabay.com` serves the audio and covers. `hummi import --pages` reads pages saved from
   a normal browser instead of trying to get past the check.
-- **First import pending.** No track has been imported into the committed manifest yet: the five sources must be
-  saved from a browser on a developer's machine and imported with `--pages`, then seeded and checked in the app.
+- **First import — done.** On 2026-10-28 eleven real tracks, seven of them filed under Soca,
+  were imported with `--pages`, none refused, each checked against its Pixabay page,
+  and a fresh install showed them with real audio and covers (generated for the three without one).
 - **Standalone redistribution.** The Pixabay Content License forbids redistributing content unaltered on a
   standalone basis; whether streaming in Hummi counts must be cleared before a production catalogue (ADR 0021).
 - **Waveforms.** Imported tracks have no waveform peaks until an MP3 decoder is added.

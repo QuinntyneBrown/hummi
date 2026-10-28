@@ -12,10 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - The Pixabay Content License: the licence page describes it and links to it and to the track's Pixabay page; the track page shows a Source link.
 - Screens that work with no tracks, one track or a few: Home hides empty shelves and shows "No music yet" when the catalogue is empty.
 - `hummi import --pages {folder}` imports from Pixabay pages saved in a browser, because pixabay.com answers plain requests with a bot check; the audio still downloads from Pixabay's CDN.
-- "Dreaming Of Reggae" (Pixabay 217732), a real track without a cover of its own, in the manifest's sources (five in all; none imported yet).
+- The catalogue: 11 real Pixabay tracks imported and checked against their pages, 7 of them Soca; three without a cover of their own get a generated cover.
 
 ### Fixed
 
+- The library and playlists on SQL Server: ids built in database queries were upper-case text, so liked tracks and playlist entries did not match and the library failed to load.
 - The Pixabay page reader, checked against real pages: titles no longer end in " by {artist} | Royalty-free Music", a generic gradient is never taken as a track's cover (a cover is generated instead), and the licence text no longer includes the site's cookie-consent panel.
 
 ### Removed

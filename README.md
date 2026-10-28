@@ -22,7 +22,7 @@ Hummi is a responsive web application built with [Angular](https://angular.dev) 
 
 ## Features
 
-- **Real music**: every track is a real Pixabay Music track, imported with `hummi import` into a committed manifest; a cover is generated only when a track has none. The manifest lists five Pixabay track pages; none is imported yet (see [Run locally](#run-locally), step 3). The page reader is checked against real Pixabay pages.
+- **Real music**: every track is a real Pixabay Music track, imported with `hummi import` into a committed manifest; a cover is generated only when a track has none. The manifest holds 11 real Pixabay tracks (7 of them Soca), checked against their Pixabay pages; the page reader is checked against real Pixabay pages.
 - **Discover**: browse the home feed, genres and curated collections.
 - **Play**: a persistent player with queue, seek, volume and keyboard control.
 - **Search**: find tracks, artists and genres.
