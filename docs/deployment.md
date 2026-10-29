@@ -11,7 +11,7 @@ Hummi runs in production on one small Linux VM with Docker Compose, backed by a 
 | `web`      | VM, ports 80/443, 128 MB       | Caddy serves the Angular build, terminates TLS, proxies `/api` and `/media` to `api`    |
 | `api`      | VM, internal port 8080, 512 MB | `Hummi.Api`; uploaded audio and artwork on the `media` Docker volume at `/data/media`   |
 | `worker`   | VM, 384 MB                     | `Hummi.Worker`; shares the `media` volume                                               |
-| `migrator` | VM, run once per deploy        | `Hummi.Migrator`; applies EF Core migrations before the restart                         |
+| `migrator` | VM, run once per deploy        | `Hummi.Migrator`; applies migrations and publishes the manifest catalogue before restart                         |
 | Database   | SQL database                   | Firewall allows only the VM's public IP                                                 |
 
 One instance of each service, no load balancer, no staging environment. Logs use Docker's
@@ -35,9 +35,9 @@ Deploys queue in the `deploy-production` group and never overlap.
 1. **build**: builds `hummi-api`, `hummi-worker`, `hummi-migrator` and `hummi-web` from the
    tested commit and pushes them to GitHub Container Registry, tagged with the commit SHA and `latest`.
 2. **deploy** (`production` environment): over SSH, copies `docker-compose.yml`, logs in to
-   GHCR, sets `IMAGE_TAG`, pulls, runs the migrator, then `docker compose up -d`. A failed
-   migration stops the script before the restart, so the old containers keep serving.
-3. **smoke test**: polls `https://$SITE_HOST/api/health` for up to two minutes.
+   GHCR, sets `IMAGE_TAG`, pulls, runs the migrator, then `docker compose up -d`. The migrator also publishes the committed Pixabay manifest and downloads missing audio into the shared media volume, verifying SHA-256 before adding tracks. Existing track IDs and listening data are preserved, and demo accounts are never created. A failed
+   migration or catalogue publication stops the script before the restart, so the old containers keep serving.
+3. **smoke test**: polls `https://$SITE_HOST/api/health` for up to two minutes, then checks that a nonempty manifest produces a visible track with working byte-range audio playback.
 
 Secrets, in the repository's `production` environment only:
 

@@ -1,4 +1,4 @@
-using Hummi.Cli.Pixabay;
+using Hummi.Application.Catalogue;
 
 namespace Hummi.Cli.Tests.Pixabay;
 

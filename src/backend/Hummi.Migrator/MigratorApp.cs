@@ -1,3 +1,5 @@
+using System.Text.Json;
+using Hummi.Infrastructure.Catalogue;
 using Hummi.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,6 +32,17 @@ public static class MigratorApp
         }
 
         ApplyMigrations(db, output);
+        if (Environment.GetEnvironmentVariable("Catalogue__ManifestPath") is { Length: > 0 } manifestPath)
+        {
+            using var manifest = JsonDocument.Parse(File.ReadAllText(manifestPath));
+            var entries = manifest.RootElement.GetProperty("tracks").Deserialize<PublicationTrack[]>(new JsonSerializerOptions(JsonSerializerDefaults.Web))
+                ?? throw new InvalidDataException("Missing catalogue tracks.");
+            var mediaRoot = Environment.GetEnvironmentVariable("MediaStorage__RootPath")
+                ?? throw new InvalidOperationException("Set MediaStorage__RootPath for catalogue publication.");
+            using var http = new HttpClient { Timeout = TimeSpan.FromMinutes(2) };
+            new CataloguePublisher(db, mediaRoot, uri => http.GetByteArrayAsync(uri)).PublishAsync(entries).GetAwaiter().GetResult();
+            output.WriteLine($"Published and verified {entries.Length} manifest tracks.");
+        }
         return 0;
     }
 

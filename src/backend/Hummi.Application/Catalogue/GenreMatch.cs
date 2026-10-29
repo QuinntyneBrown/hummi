@@ -1,6 +1,6 @@
 using Hummi.Domain.Catalogue;
 
-namespace Hummi.Cli.Pixabay;
+namespace Hummi.Application.Catalogue;
 
 /// <summary>
 /// Puts a Pixabay track under one of Hummi's ten fixed genres (ADR 0006) only when its Pixabay genre or one of

@@ -59,6 +59,11 @@ services:
     mem_limit: 384m
     logging: *logging
     env_file: .env
+    environment:
+      Catalogue__ManifestPath: /app/Catalogue/pixabay-manifest.json
+      MediaStorage__RootPath: /data/media
+    volumes:
+      - media:/data/media
     profiles: ["migrate"]
 
 volumes:

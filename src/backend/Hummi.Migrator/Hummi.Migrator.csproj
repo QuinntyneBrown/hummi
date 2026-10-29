@@ -4,6 +4,10 @@
     <ProjectReference Include="..\Hummi.Infrastructure\Hummi.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="../Hummi.Cli/Catalogue/pixabay-manifest.json" Link="Catalogue/pixabay-manifest.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
   </PropertyGroup>

@@ -129,3 +129,9 @@ jobs:
             sleep 6
           done
           echo "health check failed" && exit 1
+      - name: Verify catalogue playback
+        run: |
+          if [ "$(jq '.tracks | length' src/backend/Hummi.Cli/Catalogue/pixabay-manifest.json)" -gt 0 ]; then
+            TRACK_ID=$(curl -fsS "https://${SITE_HOST}/api/home/shelves/recently-added" | jq -er '.tracks[0].id')
+            curl -fsS --range 0-1023 "https://${SITE_HOST}/media/tracks/${TRACK_ID}" -o /dev/null
+          fi

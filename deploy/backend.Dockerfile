@@ -37,5 +37,6 @@ ENTRYPOINT ["dotnet", "Hummi.Worker.dll"]
 FROM mcr.microsoft.com/dotnet/runtime:10.0 AS migrator
 WORKDIR /app
 COPY --from=build /out/migrator .
+RUN mkdir -p /data/media && chown app:app /data/media
 USER app
 ENTRYPOINT ["dotnet", "Hummi.Migrator.dll"]
