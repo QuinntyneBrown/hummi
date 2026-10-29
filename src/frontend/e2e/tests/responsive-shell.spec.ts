@@ -48,6 +48,28 @@ test.describe('narrow viewport', () => {
   });
 });
 
+test.describe('smallest phone', () => {
+  test.use({ viewport: { width: 360, height: 740 } });
+
+  test('L2-051 AC4: the wordmark and Open navigation keep their size beside Sign in and Sign up (L2-050 AC3)', async ({
+    page,
+  }) => {
+    const shell = new ShellPage(page);
+    await shell.goto();
+
+    await expect(shell.signIn).toBeVisible();
+    await expect(shell.signUp).toBeVisible();
+    // A crowded header used to shrink the flex row: the wordmark scaled down to a few pixels and the
+    // menu button collapsed. Both keep their full size and the page still does not scroll sideways.
+    const wordmark = await shell.brand.locator('svg').boundingBox();
+    expect(wordmark?.height).toBeGreaterThanOrEqual(28);
+    expect(wordmark?.width).toBeGreaterThanOrEqual(90);
+    const toggle = await shell.navToggle.boundingBox();
+    expect(toggle?.width).toBeGreaterThanOrEqual(36);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
+  });
+});
+
 test('L2-048 AC1: the first Tab shows Skip to content, which moves focus to the main content', async ({ page }) => {
   const shell = new ShellPage(page);
   await shell.goto();

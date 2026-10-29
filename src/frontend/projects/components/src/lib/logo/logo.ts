@@ -4,7 +4,8 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
  * The Hummi mark, inlined from docs/design-system/assets. `wordmark` is the full "hummi"
  * lettering; `icon` is the "h" glyph with the dot on its shoulder. Strokes take --color-logo
  * (coral on light, cream on dark) and the dot is always --color-brand coral. Decorative by
- * default: give the enclosing link or heading the accessible name. Size with --logo-height.
+ * default: give the enclosing link or heading the accessible name. Size with --logo-height; the
+ * width follows the aspect ratio and never shrinks in a flex row.
  */
 @Component({
   selector: 'hm-logo',
@@ -31,12 +32,20 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   styles: `
     :host {
       display: inline-block;
+      flex: none;
       line-height: 0;
     }
+    /* Explicit widths: an auto-width SVG in a crowded flex row shrinks to nothing and scales the
+       mark down with it. */
     .logo {
       display: block;
       height: var(--logo-height, 1.5rem);
-      width: auto;
+    }
+    .logo--wordmark {
+      width: calc(var(--logo-height, 1.5rem) * 552 / 168);
+    }
+    .logo--icon {
+      width: var(--logo-height, 1.5rem);
     }
     .stroke {
       fill: none;
