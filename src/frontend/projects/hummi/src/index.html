@@ -7,6 +7,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Hummi: a free streaming platform for open-source AI-generated music." />
     <meta name="theme-color" content="#f0533a" />
+    <!-- @@{.Req.Host}@@ is filled in by Caddy's templates directive (deploy/web/Caddyfile); scrapers need absolute URLs. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Hummi" />
+    <meta property="og:title" content="Hummi: free streaming for AI-generated music" />
+    <meta
+      property="og:description"
+      content="Discover, play and share open-source AI-generated music across every genre."
+    />
+    <meta property="og:url" content="https://@@{.Req.Host}@@/" />
+    <meta property="og:image" content="https://@@{.Req.Host}@@/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Hummi logo with the tagline: free streaming for open-source AI-generated music."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hummi: free streaming for AI-generated music" />
+    <meta
+      name="twitter:description"
+      content="Discover, play and share open-source AI-generated music across every genre."
+    />
+    <meta name="twitter:image" content="https://@@{.Req.Host}@@/og-image.png" />
+    <link rel="canonical" href="https://@@{.Req.Host}@@/" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

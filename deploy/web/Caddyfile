@@ -6,6 +6,11 @@
 	root * {args[0]}
 	try_files {path} /index.html
 	file_server
+	# Only index.html carries the @@{.Req.Host}@@ placeholders (Open Graph URLs); other files pass through untouched.
+	@index path / /index.html
+	templates @index {
+		between "@@{" "}@@"
+	}
 }
 
 {$SITE_ADDRESS:localhost} {
