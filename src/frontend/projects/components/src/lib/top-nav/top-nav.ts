@@ -47,7 +47,7 @@ export interface NavLink {
       <div class="topnav__end"><ng-content /></div>
     </header>
   `,
-  styles: ':host { display: contents; } .topnav__brand { --logo-height: 1.75rem; }',
+  styles: ':host { display: contents; }',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopNavComponent {

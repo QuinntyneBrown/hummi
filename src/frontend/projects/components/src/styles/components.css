@@ -606,6 +606,22 @@ a.avatar { text-decoration: none; }
 .topnav__link { position: relative; padding-block: var(--space-2); }
 .topnav__link[aria-current="page"]::after { content: ""; position: absolute; left: 50%; bottom: -0.25rem; width: 0.375rem; height: 0.375rem; margin-left: -0.1875rem; border-radius: 50%; background: var(--color-accent); }
 .topnav__end { gap: var(--space-3); }
+.topnav__brand { --logo-height: 1.75rem; flex: none; }
+.topnav__brand .brand-logo { height: var(--logo-height); }
+.topnav__menu, .topnav__end, .topnav__end > * { flex: none; }
+/* Under 64rem the header is one row of fixed-size controls, so nothing may shrink (a squeezed row
+   used to scale the wordmark down to a few pixels). The wordmark grows with the viewport instead,
+   1.75rem at 360px to 2rem from 400px, and under 48rem the signed-out pair tightens to leave it
+   room: Sign in becomes a text button and Sign up a small one. */
+@media (max-width: 63.99rem) {
+  .topnav { gap: var(--space-2); }
+  .topnav__brand { --logo-height: clamp(1.75rem, 1rem + 4vw, 2rem); }
+  .topnav__end { gap: var(--space-2); }
+}
+@media (max-width: 47.99rem) {
+  .topnav__end .btn { min-height: var(--control-height-sm); padding-inline: var(--space-2); font-size: var(--font-size-sm); }
+  .topnav__end .btn:not(.btn--primary) { --btn-bg: transparent; --btn-border: transparent; padding-inline: var(--space-1); }
+}
 .search-pill { display: none; align-items: center; gap: 0.625rem; width: 16.5rem; height: 2.5rem; padding: 0 0.5rem 0 1rem; border: 0; border-radius: var(--radius-full); background: color-mix(in srgb, var(--color-fg-default) 8%, transparent); color: var(--color-fg-subtle); font: var(--text-body-sm); text-decoration: none; cursor: pointer; transition: background-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard); }
 .search-pill:hover { background: color-mix(in srgb, var(--color-fg-default) 12%, transparent); color: var(--color-fg-muted); }
 .search-pill .icon { width: 1.0625rem; height: 1.0625rem; }
