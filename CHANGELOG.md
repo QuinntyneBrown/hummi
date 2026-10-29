@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- https://www.hummi.fm and https://hummi.fm failed to connect although DNS pointed at the VM: Caddy only held a certificate for the Azure `*.cloudapp.azure.com` name. The deploy workflow now derives the served hosts, the canonical `www.` host and `App__BaseUrl` from the `SITE_HOST` secret, Caddy redirects the bare domain to `www.`, and the smoke test checks the canonical host and the redirect. Setting `SITE_HOST` to `hummi.fm` and deploying brings the domain up (`docs/deployment.md`, "Moving to a custom domain").
 - The library and playlists on SQL Server: ids built in database queries were upper-case text, so liked tracks and playlist entries did not match and the library failed to load.
 - The Pixabay page reader, checked against real pages: titles no longer end in " by {artist} | Royalty-free Music", a generic gradient is never taken as a track's cover (a cover is generated instead), and the licence text no longer includes the site's cookie-consent panel.
 

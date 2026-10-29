@@ -16,9 +16,10 @@
 {$SITE_ADDRESS:localhost} {
 	encode zstd gzip
 
-	# The bare domain redirects to the canonical www host (both must be in SITE_ADDRESS so Caddy holds a certificate for each).
-	@apex host {$APEX_HOST:hummi.example}
-	redir @apex https://{$CANONICAL_HOST:www.hummi.example}{uri} permanent
+	# Every host in SITE_ADDRESS gets a certificate; all but the canonical one (www. on a real domain,
+	# set by the deploy workflow) redirect to it, so the bare domain lands on www.
+	@noncanonical not host {$CANONICAL_HOST:localhost}
+	redir @noncanonical https://{$CANONICAL_HOST:localhost}{uri} permanent
 
 	handle /api/* {
 		reverse_proxy api:8080

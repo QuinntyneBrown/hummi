@@ -20,7 +20,8 @@ services:
       - "443:443"
       - "443:443/udp"
     environment:
-      SITE_ADDRESS: ${SITE_ADDRESS}
+      SITE_ADDRESS: ${SITE_ADDRESS:?hosts Caddy serves, written by the deploy workflow}
+      CANONICAL_HOST: ${CANONICAL_HOST:?the host every other one redirects to, written by the deploy workflow}
     volumes:
       - caddy_data:/data
       - caddy_config:/config

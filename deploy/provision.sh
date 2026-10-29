@@ -51,6 +51,7 @@ if ! az sql server show -g "$RG" -n "$SQL_SERVER" -o none 2>/dev/null; then
       -e "s|^Reports__ReviewerKey=.*|Reports__ReviewerKey=$(openssl rand -hex 24)|" \
       -e "s|^App__BaseUrl=.*|App__BaseUrl=https://${SITE_HOST}|" \
       -e "s|^SITE_ADDRESS=.*|SITE_ADDRESS=${SITE_HOST}|" \
+      -e "s|^CANONICAL_HOST=.*|CANONICAL_HOST=${SITE_HOST}|" \
       "${HERE}/.env.example" > "$ENV_FILE"
   SSH=(ssh -i "$KEY" -o StrictHostKeyChecking=accept-new "azureuser@${VM_IP}")
   for _ in $(seq 1 30); do "${SSH[@]}" test -d /opt/hummi 2>/dev/null && break; sleep 10; done
@@ -63,3 +64,4 @@ gh secret set SITE_HOST -R "$REPO" -e production -b "$SITE_HOST"
 gh secret set DEPLOY_SSH_KEY -R "$REPO" -e production < "$KEY"
 
 echo "Ready: https://${SITE_HOST}  (VM ${VM_IP}). Push to main or run the Deploy workflow."
+echo "For a custom domain: point it and its www. host at ${VM_IP}, then: gh secret set SITE_HOST -R ${REPO} -e production -b <domain>"

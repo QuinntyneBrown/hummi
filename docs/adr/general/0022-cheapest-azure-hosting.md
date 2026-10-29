@@ -15,7 +15,9 @@ purchased domain with a `www.` host.
 - **Database.** Azure SQL Database on the free offer (serverless, 100,000 vCore seconds and 32 GB a month).
   When the allowance runs out the database pauses until the next month instead of billing.
 - **Domain.** The free `hummi-<suffix>.<region>.cloudapp.azure.com` name of the public IP; Caddy gets its
-  certificate. The workflow adds a `www.` host only for a real domain.
+  certificate. A real domain (hummi.fm) replaces it by pointing the bare and `www.` hosts at the VM's IP and
+  setting the `SITE_HOST` secret to the bare domain: the workflow then has Caddy hold certificates for both
+  and redirect the bare domain to `www.`, which is also `App__BaseUrl` for email links.
 - **Provisioning.** `deploy/provision.sh` creates the resource group `hummi-rg`, the VM, the database and
   `/opt/hummi/.env`, and sets the `production` secrets. `az group delete -n hummi-rg` removes everything.
 - **Email.** SMTP stays on placeholder values; sending fails quietly until a relay is configured.

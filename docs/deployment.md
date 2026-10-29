@@ -37,7 +37,7 @@ Deploys queue in the `deploy-production` group and never overlap.
 2. **deploy** (`production` environment): over SSH, copies `docker-compose.yml`, logs in to
    GHCR, sets `IMAGE_TAG`, pulls, runs the migrator, then `docker compose up -d`. The migrator also publishes the committed Pixabay manifest and downloads missing audio into the shared media volume, verifying SHA-256 before adding tracks. Existing track IDs and listening data are preserved, and demo accounts are never created. A failed
    migration or catalogue publication stops the script before the restart, so the old containers keep serving.
-3. **smoke test**: polls `https://$SITE_HOST/api/health` for up to two minutes, then checks that a nonempty manifest produces a visible track with working byte-range audio playback.
+3. **smoke test**: polls `https://www.$SITE_HOST/api/health` for up to three minutes, checks that the bare domain redirects to `www.`, then checks that a nonempty manifest produces a visible track with working byte-range audio playback.
 
 Secrets, in the repository's `production` environment only:
 
@@ -45,9 +45,26 @@ Secrets, in the repository's `production` environment only:
 | ---------------- | --------------------------------------------- |
 | `DEPLOY_HOST`    | Public IP of the VM                           |
 | `DEPLOY_SSH_KEY` | Private key whose public half is on the VM    |
-| `SITE_HOST`      | The production domain (`www.` is derived)     |
+| `SITE_HOST`      | The bare production domain, e.g. `hummi.fm`   |
+
+From `SITE_HOST` the deploy step rewrites three lines of `/opt/hummi/.env` on every deploy: `SITE_ADDRESS`
+(the hosts Caddy serves and holds certificates for: the domain and its `www.` host), `CANONICAL_HOST`
+(`www.` plus the domain; every other host redirects to it) and `App__BaseUrl` (`https://` plus the canonical
+host, used in email links). An Azure `*.cloudapp.azure.com` name has no `www.` host and is its own canonical host.
 
 Application secrets (connection string, signing keys, the SMTP relay for account emails, ADR 0010) live only in `/opt/hummi/.env` on the VM.
+
+## Moving to a custom domain
+
+Caddy only answers for the hosts in `SITE_ADDRESS`, so pointing a domain at the VM is not enough on its own:
+the TLS handshake fails until a deploy has told Caddy about the new name.
+
+1. Create an `A` record for the bare domain and an `A` or `CNAME` record for `www.` pointing at the VM.
+2. Set the secret: `gh secret set SITE_HOST -R QuinntyneBrown/hummi -e production -b hummi.fm` (the bare domain, never `www.`).
+3. Run the Deploy workflow (Actions → Deploy → Run workflow) or push to `main`. Caddy obtains the two
+   certificates on first request; the smoke test waits for that.
+
+The old `*.cloudapp.azure.com` name stops being served once it leaves `SITE_ADDRESS`.
 
 ## Rolling back
 
@@ -83,5 +100,5 @@ By hand:
 3. On the VM, create `/opt/hummi/.env` from `deploy/.env.example` with real values.
 4. Create an SSH key pair for deploys; add the public half to the VM user's `authorized_keys`.
 5. Point the domain and its `www` host at the VM's IP.
-6. In GitHub, create the `production` environment and set `DEPLOY_HOST`, `DEPLOY_SSH_KEY` and `SITE_HOST`.
+6. In GitHub, create the `production` environment and set `DEPLOY_HOST`, `DEPLOY_SSH_KEY` and `SITE_HOST` (the bare domain).
 7. Run the Deploy workflow once (or push to `main`).

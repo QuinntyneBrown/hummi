@@ -115,23 +115,32 @@ jobs:
             sed -i '/^IMAGE_TAG=/d' .env && echo "IMAGE_TAG=${{ env.DEPLOY_SHA }}" >> .env
             # An Azure *.cloudapp.azure.com host has no www. name; a real domain gets both.
             SITE="${{ env.SITE_HOST }}"
-            case "$SITE" in *.cloudapp.azure.com) ADDR="$SITE" ;; *) ADDR="$SITE, www.$SITE" ;; esac
+            case "$SITE" in *.cloudapp.azure.com) ADDR="$SITE"; CANON="$SITE" ;; *) ADDR="$SITE, www.$SITE"; CANON="www.$SITE" ;; esac
             sed -i '/^SITE_ADDRESS=/d' .env && echo "SITE_ADDRESS=$ADDR" >> .env
+            sed -i '/^CANONICAL_HOST=/d' .env && echo "CANONICAL_HOST=$CANON" >> .env
+            sed -i '/^App__BaseUrl=/d' .env && echo "App__BaseUrl=https://$CANON" >> .env
             docker compose pull --quiet
             docker compose run --rm -T migrator < /dev/null
             docker compose up -d --remove-orphans
             docker image prune -af --filter "until=72h" >/dev/null
           REMOTE
+      - name: Resolve canonical host
+        run: |
+          case "$SITE_HOST" in *.cloudapp.azure.com) echo "CANONICAL_HOST=$SITE_HOST" >> "$GITHUB_ENV" ;; *) echo "CANONICAL_HOST=www.$SITE_HOST" >> "$GITHUB_ENV" ;; esac
       - name: Smoke test
         run: |
-          for i in $(seq 1 20); do
-            curl -fsS "https://${SITE_HOST}/api/health" && exit 0
+          for i in $(seq 1 30); do
+            curl -fsS "https://${CANONICAL_HOST}/api/health" && break
+            [ "$i" = 30 ] && echo "health check failed" && exit 1
             sleep 6
           done
-          echo "health check failed" && exit 1
+          if [ "$CANONICAL_HOST" != "$SITE_HOST" ]; then
+            LOCATION=$(curl -sS -o /dev/null -w '%{redirect_url}' "https://${SITE_HOST}/")
+            [ "$LOCATION" = "https://${CANONICAL_HOST}/" ] || { echo "expected redirect to https://${CANONICAL_HOST}/, got '$LOCATION'"; exit 1; }
+          fi
       - name: Verify catalogue playback
         run: |
           if [ "$(jq '.tracks | length' src/backend/Hummi.Cli/Catalogue/pixabay-manifest.json)" -gt 0 ]; then
-            TRACK_ID=$(curl -fsS "https://${SITE_HOST}/api/home/shelves/recently-added" | jq -er '.tracks[0].id')
-            curl -fsS --range 0-1023 "https://${SITE_HOST}/media/tracks/${TRACK_ID}" -o /dev/null
+            TRACK_ID=$(curl -fsS "https://${CANONICAL_HOST}/api/home/shelves/recently-added" | jq -er '.tracks[0].id')
+            curl -fsS --range 0-1023 "https://${CANONICAL_HOST}/media/tracks/${TRACK_ID}" -o /dev/null
           fi
