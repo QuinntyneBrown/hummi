@@ -24,6 +24,9 @@ export interface SettingsDto {
 
 const THEME_KEY = 'hummi.theme';
 
+/** Dark is applied whatever the saved choice, for now (ADR 0025). Set to false to restore Light and Match my device. */
+const ALWAYS_DARK = true;
+
 /**
  * The listener's settings, read from the server when they sign in so every device agrees (L2-033 AC4),
  * and applied: the theme on the document's data-theme (none for "Match my device", L2-049) and the
@@ -70,7 +73,8 @@ export class SettingsStore {
   /** Applies a theme at once, as a visitor's choice or before saving. */
   applyTheme(theme: Theme): void {
     const root = this.document.documentElement;
-    if (theme === 'device') root.removeAttribute('data-theme');
+    if (ALWAYS_DARK) root.setAttribute('data-theme', 'dark');
+    else if (theme === 'device') root.removeAttribute('data-theme');
     else root.setAttribute('data-theme', theme);
     try {
       localStorage.setItem(THEME_KEY, theme);

@@ -209,7 +209,10 @@ test('L2-049 AC1: Appearance offers Match my device (default), Light and Dark', 
   await expect(settings.theme('Dark')).not.toBeChecked();
 });
 
-test('L2-049 AC2, AC4: Match my device follows the colour scheme and shows the matching wordmark', async ({ page }) => {
+// Skipped while the app is always dark (ADR 0025).
+test.skip('L2-049 AC2, AC4: Match my device follows the colour scheme and shows the matching wordmark', async ({
+  page,
+}) => {
   await fakeSettings(page);
   await page.emulateMedia({ colorScheme: 'dark' });
   await new HomePage(page).goto();
@@ -227,7 +230,10 @@ test('L2-049 AC2, AC4: Match my device follows the colour scheme and shows the m
   expect(inLight.stroke).toBe(inLight.coral);
 });
 
-test('L2-049 AC3: Light or Dark, once saved, wins over the device and applies on the next visit', async ({ page }) => {
+// Skipped while the app is always dark (ADR 0025).
+test.skip('L2-049 AC3: Light or Dark, once saved, wins over the device and applies on the next visit', async ({
+  page,
+}) => {
   const fake = await fakeSettings(page);
   await page.emulateMedia({ colorScheme: 'dark' });
   const settings = new SettingsPage(page);
